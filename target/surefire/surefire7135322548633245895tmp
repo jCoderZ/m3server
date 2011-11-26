@@ -1,0 +1,29 @@
+#surefire
+#Sat Nov 26 20:46:45 CET 2011
+testClassesDirectory=C\:\\work\\workspaces\\misc\\m3dditiez\\m3server-assembly\\target\\test-classes
+classPathUrl.4=C\:\\Users\\mrumpf\\.m2\\repository\\org\\apache\\felix\\org.osgi.core\\1.2.0\\org.osgi.core-1.2.0.jar
+classPathUrl.3=C\:\\work\\workspaces\\misc\\m3dditiez\\m3server-plugin-api\\target\\m3server-plugin-api-1.0.0-SNAPSHOT.jar
+classPathUrl.2=C\:\\work\\workspaces\\misc\\m3dditiez\\m3server-core\\target\\m3server-server-core-1.0.0-SNAPSHOT.jar
+useManifestOnlyJar=true
+classPathUrl.1=C\:\\work\\workspaces\\misc\\m3dditiez\\m3server-assembly\\target\\classes
+reportsDirectory=C\:\\work\\workspaces\\misc\\m3dditiez\\m3server-assembly\\target\\surefire-reports
+classPathUrl.0=C\:\\work\\workspaces\\misc\\m3dditiez\\m3server-assembly\\target\\test-classes
+dirscanner.0=directoryScannerOptions
+providerConfiguration=org.apache.maven.surefire.junit.JUnit3Provider
+testSuiteDefinitionTestSourceDirectory=C\:\\work\\workspaces\\misc\\m3dditiez\\m3server-assembly\\src\\test\\java
+surefireClassPathUrl.1=C\:\\Users\\mrumpf\\.m2\\repository\\org\\apache\\maven\\surefire\\surefire-api\\2.7.1\\surefire-api-2.7.1.jar
+surefireClassPathUrl.0=C\:\\Users\\mrumpf\\.m2\\repository\\org\\apache\\maven\\surefire\\surefire-junit3\\2.7.1\\surefire-junit3-2.7.1.jar
+report.2=org.apache.maven.surefire.report.XMLReporter
+useSystemClassLoader=true
+report.1=org.apache.maven.surefire.report.BriefFileReporter
+report.0=org.apache.maven.surefire.report.ForkingConsoleReporter
+excludes0=**/*$*
+isTrimStackTrace=true
+dirscanner.0.params=C\:\\work\\workspaces\\misc\\m3dditiez\\m3server-assembly\\target\\test-classes|[**/Test*.java, **/*Test.java, **/*TestCase.java]|[**/*$*]
+enableAssertions=true
+includes2=**/*TestCase.java
+failIfNoTests=false
+includes1=**/*Test.java
+dirscanner.0.types=java.io.File|java.util.ArrayList|java.util.ArrayList
+includes0=**/Test*.java
+childDelegation=false
