@@ -7,15 +7,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jcoderz.m3ditiez</groupId>
-            <artifactId>m3server-server-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>felix</artifactId>
-            <version>1.0.4</version>
-            <type>pom</type>
+            <artifactId>org.osgi.core</artifactId>
+            <version>1.2.0</version>
         </dependency>
     </dependencies>
     

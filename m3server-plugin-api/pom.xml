@@ -46,8 +46,6 @@
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Bundle-Activator>org.jcoderz.modditiez.m3server.core.Activator</Bundle-Activator>
-						<!-- Private-Package>org.jcoderz.modditize.m3server.core.impl</Private-Package -->
 					</instructions>
 				</configuration>
 			</plugin>
