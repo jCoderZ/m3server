@@ -8,8 +8,9 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>1.2.0</version>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>4.0.2</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
     

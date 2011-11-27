@@ -189,6 +189,10 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+        <repository>
+            <id>Ibiblio</id>
+            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
+        </repository>
 		<repository>
 			<id>JBoss</id>
 			<url>http://repository.jboss.org/</url>
