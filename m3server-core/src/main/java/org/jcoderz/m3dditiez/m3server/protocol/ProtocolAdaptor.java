@@ -13,6 +13,11 @@ public interface ProtocolAdaptor {
 	void start();
 
 	/**
+	 * Stops the adaptor.
+	 */
+	void stop();
+
+	/**
 	 * Returns the name of the adaptor.
 	 * 
 	 * @return the name of the adaptor

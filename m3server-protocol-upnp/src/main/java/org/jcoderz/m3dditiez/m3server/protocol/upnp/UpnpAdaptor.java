@@ -11,6 +11,8 @@ import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceConfiguration;
 import org.fourthline.cling.UpnpServiceImpl;
 import org.fourthline.cling.model.meta.LocalDevice;
+import org.jcoderz.m3dditiez.m3server.protocol.ProtocolAdaptor;
+import org.jcoderz.m3dditiez.m3server.protocol.ProtocolAdaptorException;
 
 /**
  * Implementation of the adaptor for the UPnP protocol. 
@@ -19,15 +21,15 @@ import org.fourthline.cling.model.meta.LocalDevice;
  *
  */
 @Singleton
-public class UpnpAdaptor /*implements ProtocolAdaptor */ {
+public class UpnpAdaptor implements ProtocolAdaptor {
 
 	@Inject
 	private Logger log;
 
 	@Inject
 	private LocalDevice device;
-	
-	//@Logging
+
+	@Override
 	public void start() {
 		try {
 			int port = 8088;
@@ -35,9 +37,24 @@ public class UpnpAdaptor /*implements ProtocolAdaptor */ {
 			UpnpServiceConfiguration devcfg = new DefaultUpnpServiceConfiguration(port);
 			UpnpService upnpService = new UpnpServiceImpl(devcfg);
 			upnpService.getRegistry().addDevice(device);
-			log.info("Successfully started Cling UPnP server");
-		} catch (Exception ex) {
-			log.log(Level.SEVERE, "The Cling UPnP server could not be started", ex);
+			log.info("Successfully started the Cling UPnP server");
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "The Cling UPnP server could not be started", e);
+			throw new ProtocolAdaptorException("", e);
+		}
+	}
+
+	@Override
+	public void stop() {
+		try {
+			log.fine("Stopping Cling UPnP server");
+			
+			// ???
+			
+			log.info("Successfully stopped the Cling UPnP server");
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "The Cling UPnP server could not be stopped", e);
+			throw new ProtocolAdaptorException("", e);
 		}
 	}
 

@@ -23,11 +23,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jcoderz.m3dditiez</groupId>
-            <artifactId>m3server-plugin-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.log</artifactId>
             <version>1.0.1</version>
@@ -60,7 +55,10 @@
                         <Bundle-Activator>org.jcoderz.m3dditiez.m3server.core.impl.Activator</Bundle-Activator>
                         <Import-Package>org.jcoderz.m3dditiez.m3server.provider,
                         *;resolution:=optional</Import-Package>
-                        <Export-Package>org.jcoderz.m3dditiez.m3server.core,org.jcoderz.m3dditiez.m3server.core.model,org.jcoderz.m3dditiez.m3server.protocol</Export-Package>
+                        <Export-Package>org.jcoderz.m3dditiez.m3server.core,
+                        org.jcoderz.m3dditiez.m3server.core.config,
+                        org.jcoderz.m3dditiez.m3server.core.model,
+                        org.jcoderz.m3dditiez.m3server.protocol</Export-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
                     </instructions>
                 </configuration>

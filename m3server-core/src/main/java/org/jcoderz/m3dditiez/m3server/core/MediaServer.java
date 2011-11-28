@@ -1,5 +1,7 @@
 package org.jcoderz.m3dditiez.m3server.core;
 
-public interface MediaServer {
+import java.util.List;
 
+public interface MediaServer {
+	List<String> getRoots();
 }

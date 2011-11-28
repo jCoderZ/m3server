@@ -41,7 +41,27 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>../m3server-provider-api/target</directory>
+            <directory>../m3server-provider-api</directory>
+            <outputDirectory>bundle</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>*-javadoc.jar</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../m3server-provider-filesystem</directory>
+            <outputDirectory>bundle</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>*-javadoc.jar</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../m3server-provider-shoutcast</directory>
             <outputDirectory>bundle</outputDirectory>
             <includes>
                 <include>*.jar</include>

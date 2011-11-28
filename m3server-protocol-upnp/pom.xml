@@ -58,6 +58,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>org.jcoderz.m3dditiez.m3server.protocol.upnp.Activator</Bundle-Activator>
                         <Import-Package>org.jcoderz.m3dditiez.m3server.core,
+                            org.jcoderz.m3dditiez.m3server.core.config,
                             org.jcoderz.m3dditiez.m3server.core.model,
                             org.jcoderz.m3dditiez.m3server.protocol,
                             *;resolution:=optional</Import-Package>
