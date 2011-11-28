@@ -1,3 +1,3 @@
 @echo off
 
-java -jar lib\felix.jar 
+java -jar lib\org.apache.felix.main-4.0.2.jar

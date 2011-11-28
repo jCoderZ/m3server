@@ -52,7 +52,7 @@
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>org.jcoderz.m3dditiez.m3server.protocol.rest.Activator</Bundle-Activator>
-                        <Import-Package>org.osgi.framework,org.jcoderz.m3dditiez.m3server.core,org.jcoderz.m3dditiez.m3server.core.model,javax.net, javax.net.ssl, javax.xml.parsers, org.w3c.dom, org.w3c.dom.ls, org.xml.sax, org.xml.sax.helpers</Import-Package>
+                        <!-- Import-Package>org.osgi.framework,org.jcoderz.m3dditiez.m3server.core,org.jcoderz.m3dditiez.m3server.core.model,javax.net, javax.net.ssl, javax.xml.parsers, org.w3c.dom, org.w3c.dom.ls, org.xml.sax, org.xml.sax.helpers</Import-Package -->
                         <Export-Package></Export-Package>
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
