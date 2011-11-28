@@ -185,31 +185,46 @@
 		<repository>
 			<id>restlet-repo</id>
 			<url>http://maven.restlet.org</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
 		</repository>
         <repository>
             <id>Ibiblio</id>
             <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
 		<repository>
 			<id>JBoss</id>
 			<url>http://repository.jboss.org/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
 		</repository>
 		<repository>
 			<id>Glassfish</id>
 			<url>http://maven.glassfish.org/content/groups/glassfish/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>JBoss</id>
 			<url>http://repository.jboss.org/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
 		</pluginRepository>
 		<pluginRepository>
 			<id>Glassfish</id>
 			<url>http://maven.glassfish.org/content/groups/glassfish/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
 		</pluginRepository>
 		<pluginRepository>
 			<id>4thline-repo</id>

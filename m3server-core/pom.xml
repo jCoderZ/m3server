@@ -58,12 +58,9 @@
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>org.jcoderz.m3dditiez.m3server.core.impl.Activator</Bundle-Activator>
-                        <Import-Package>javax.microedition.io;resolution:=optional,
-                            javax.servlet;resolution:=optional,
-                            javax.servlet.http;resolution:=optional,
-                            javax.xml.parsers,
-                            org.jcoderz.m3dditiez.m3server.core</Import-Package>
-                        <Export-Package>org.jcoderz.m3dditiez.m3server.core,org.jcoderz.m3dditiez.m3server.core.model</Export-Package>
+                        <Import-Package>org.jcoderz.m3dditiez.m3server.provider,
+                        *;resolution:=optional</Import-Package>
+                        <Export-Package>org.jcoderz.m3dditiez.m3server.core,org.jcoderz.m3dditiez.m3server.core.model,org.jcoderz.m3dditiez.m3server.protocol</Export-Package>
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
