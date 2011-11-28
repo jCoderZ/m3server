@@ -41,7 +41,7 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>../m3server-plugin-api/target</directory>
+            <directory>../m3server-provider-api/target</directory>
             <outputDirectory>bundle</outputDirectory>
             <includes>
                 <include>*.jar</include>
@@ -51,7 +51,7 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>../m3server-plugin-cling/target</directory>
+            <directory>../m3server-protocol-upnp/target</directory>
             <outputDirectory>bundle</outputDirectory>
             <includes>
                 <include>*.jar</include>
@@ -61,7 +61,7 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>../m3server-plugin-rest/target</directory>
+            <directory>../m3server-protocol-rest/target</directory>
             <outputDirectory>bundle</outputDirectory>
             <includes>
                 <include>*.jar</include>

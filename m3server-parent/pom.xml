@@ -14,9 +14,9 @@
 	</organization>
 
 	<modules>
-		<module>../m3server-plugin-api</module>
-		<module>../m3server-plugin-cling</module>
-		<module>../m3server-plugin-rest</module>
+		<module>../m3server-provider-api</module>
+		<module>../m3server-protocol-upnp</module>
+		<module>../m3server-protocol-rest</module>
 		<module>../m3server-core</module>
 		<module>../m3server-assembly</module>
 	</modules>
