@@ -1,11 +1,14 @@
 package org.jcoderz.m3dditiez.m3server.protocol.upnp;
 
+import javax.inject.Inject;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
+	@Inject
 	private static UpnpAdaptor adaptor;
 
 //	private static final WeldContainer wc;

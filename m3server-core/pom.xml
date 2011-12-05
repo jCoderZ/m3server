@@ -27,6 +27,11 @@
             <artifactId>org.apache.felix.log</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <dependency>
+            <artifactId>m3server-provider-api</artifactId>
+            <groupId>org.jcoderz.m3dditiez</groupId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <resources>
@@ -54,11 +59,11 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>org.jcoderz.m3dditiez.m3server.core.impl.Activator</Bundle-Activator>
                         <Import-Package>org.jcoderz.m3dditiez.m3server.provider,
-                        *;resolution:=optional</Import-Package>
+                            *;resolution:=optional</Import-Package>
                         <Export-Package>org.jcoderz.m3dditiez.m3server.core,
-                        org.jcoderz.m3dditiez.m3server.core.config,
-                        org.jcoderz.m3dditiez.m3server.core.model,
-                        org.jcoderz.m3dditiez.m3server.protocol</Export-Package>
+                            org.jcoderz.m3dditiez.m3server.core.config,
+                            org.jcoderz.m3dditiez.m3server.core.model,
+                            org.jcoderz.m3dditiez.m3server.protocol</Export-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
                     </instructions>
                 </configuration>

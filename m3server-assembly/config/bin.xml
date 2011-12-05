@@ -9,9 +9,16 @@
     </formats>
     <dependencySets>
         <dependencySet>
-            <outputDirectory>lib</outputDirectory>
+            <outputDirectory>bundle</outputDirectory>
             <scope>runtime</scope>
             <includes />
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <scope>compile</scope>
+            <includes />
+            <useTransitiveDependencies>false</useTransitiveDependencies>
         </dependencySet>
     </dependencySets>
     <fileSets>
@@ -21,6 +28,13 @@
             <includes>
                 <include>*.cmd</include>
                 <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>./lib</directory>
+            <outputDirectory>./lib</outputDirectory>
+            <includes>
+                <include>*.properties</include>
             </includes>
         </fileSet>
         <fileSet>
