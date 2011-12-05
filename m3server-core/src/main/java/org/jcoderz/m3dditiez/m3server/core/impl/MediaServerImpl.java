@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.jcoderz.m3dditiez.m3server.core.MediaServer;
-import org.jcoderz.m3dditiez.m3server.core.config.Configuration;
 import org.jcoderz.m3dditiez.m3server.provider.ContentProvider;
 
 /**
@@ -23,7 +22,7 @@ public class MediaServerImpl implements MediaServer {
 	private Logger log;
 
 	//@Inject
-	private Configuration config;
+	//private Configuration config;
 
 	//@Inject
 	//@Any

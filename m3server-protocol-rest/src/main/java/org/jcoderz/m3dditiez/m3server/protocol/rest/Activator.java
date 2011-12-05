@@ -1,8 +1,5 @@
 package org.jcoderz.m3dditiez.m3server.protocol.rest;
 
-import javax.inject.Inject;
-
-import org.jboss.weld.environment.se.WeldContainer;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -10,12 +7,12 @@ public class Activator implements BundleActivator {
 
 	private static BundleContext context;
 
-	@Inject
-	private static RestletAdaptor adaptor;
+//	@Inject
+//	private static RestletAdaptor adaptor;
 
 	// private static final WeldContainer wc;
 
-	private WeldContainer weld;
+//	private WeldContainer weld;
 
 	public BundleContext getContext() {
 		return context;
@@ -37,9 +34,9 @@ public class Activator implements BundleActivator {
 //		adaptor = weld.instance().select(RestletAdaptor.class).get();
 
 		// adaptor = wc.instance().select(RestletAdaptor.class).get();
-		System.out.println("Starting adaptor=" + adaptor);
+//		System.out.println("Starting adaptor=" + adaptor);
 //		adaptor.start();
-		System.out.println("Starting adaptor=" + adaptor + "...done!");
+//		System.out.println("Starting adaptor=" + adaptor + "...done!");
 	}
 
 	/*
@@ -51,9 +48,9 @@ public class Activator implements BundleActivator {
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
 
-		System.out.println("Stopping adaptor=" + adaptor);
+//		System.out.println("Stopping adaptor=" + adaptor);
 //		adaptor.stop();
-		System.out.println("Stopping adaptor=" + adaptor + "...done!");
+//		System.out.println("Stopping adaptor=" + adaptor + "...done!");
 
 		// stop the Weld container
 //		weld.sh();
