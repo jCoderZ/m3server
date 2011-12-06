@@ -13,12 +13,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-osgi-bundle</artifactId>
-            <version>1.1.4.Final</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jcoderz.m3dditiez</groupId>
             <artifactId>m3server-protocol-rest</artifactId>
             <version>${project.version}</version>
@@ -88,6 +82,36 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.transaction</artifactId>
             <version>3.1.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-core-api</artifactId>
+            <version>1.1.5-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-core-extension</artifactId>
+            <version>1.1.5-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-core-integration</artifactId>
+            <version>1.1.5-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-core-mandatory</artifactId>
+            <version>1.1.5-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-core-spi</artifactId>
+            <version>1.1.5-SNAPSHOT</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>

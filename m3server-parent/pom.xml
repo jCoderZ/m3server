@@ -1,196 +1,198 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jcoderz.m3dditiez</groupId>
-	<artifactId>m3server</artifactId>
-	<name>m3server</name>
-	<version>1.0.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<description>This is the Maven base project for the FawkeZ modules.</description>
-	<url>http://www.jcoderz.org/m3dditiez/</url>
-	<organization>
-		<name>jCoderZ</name>
-		<url>http://www.jcoderz.org/</url>
-	</organization>
-
-	<modules>
-		<module>../m3server-provider-api</module>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.jcoderz.m3dditiez</groupId>
+    <artifactId>m3server</artifactId>
+    <name>m3server</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <description>This is the Maven base project for the FawkeZ modules.</description>
+    <url>http://www.jcoderz.org/m3dditiez/</url>
+    <organization>
+        <name>jCoderZ</name>
+        <url>http://www.jcoderz.org/</url>
+    </organization>
+    <modules>
+        <module>../m3server-provider-api</module>
         <module>../m3server-provider-filesystem</module>
         <module>../m3server-provider-shoutcast</module>
-		<module>../m3server-protocol-upnp</module>
-		<module>../m3server-protocol-rest</module>
-		<module>../m3server-core</module>
-		<module>../m3server-assembly</module>
-	</modules>
-
-	<properties>
-	    <!-- This mus be overwritten from external to deploy to jcoderz.org -->
-	    <secretRepositoryHost>file:/C:/</secretRepositoryHost>
-		<svnRepoBase>https://www.jcoderz.org/svn/m3dditiez</svnRepoBase>
+        <module>../m3server-protocol-upnp</module>
+        <module>../m3server-protocol-rest</module>
+        <module>../m3server-core</module>
+        <module>../m3server-assembly</module>
+    </modules>
+    <properties>
+        <!-- This mus be overwritten from external to deploy to jcoderz.org -->
+        <secretRepositoryHost>file:/C:/</secretRepositoryHost>
+        <svnRepoBase>https://www.jcoderz.org/svn/m3dditiez</svnRepoBase>
         <releaseRepoUrl>${secretRepositoryHost}/repos/maven2</releaseRepoUrl>
         <snapshotRepoUrl>${secretRepositoryHost}/repos/maven2-snapshot</snapshotRepoUrl>
-		<deployRepoUrl>${releaseRepoUrl}</deployRepoUrl>
-		<isRelease>true</isRelease>
+        <deployRepoUrl>${releaseRepoUrl}</deployRepoUrl>
+        <isRelease>true</isRelease>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
-	<scm>
-  		<developerConnection>scm:svn:${svnRepoBase}</developerConnection>
-		<connection>scm:svn:${svnRepoBase}/trunk-ng/</connection>
-	</scm>
-
-	<issueManagement>
-		<system>trac</system>
-		<url>http://www.jcoderz.org/fawkez</url>
-	</issueManagement>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<!-- Restrict execution of source compilation to install -->
-						<phase>install</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.3</version>
-				<executions>
-					<execution>
-						<id>replace-pom-placeholder</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<resources>
-								<resource>
-									<directory>${basedir}</directory>
-									<includes>
-										<include>pom.xml</include>
-									</includes>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-							<outputDirectory>${project.build.directory}/pom-install-deploy-fix</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.3.1</version>
-				<executions>
-					<execution>
-						<id>overwrite-pom</id>
-						<phase>install</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<packaging>pom</packaging>
-							<file>target/pom-install-deploy-fix/pom.xml</file>
-							<pomFile>target/pom-install-deploy-fix/pom.xml</pomFile>
-							<version>${project.version}</version>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.5</version>
-				<executions>
-					<execution>
-						<id>overwrite-pom</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>deploy-file</goal>
-						</goals>
-						<configuration>
-							<packaging>pom</packaging>
-							<file>target/pom-install-deploy-fix/pom.xml</file>
-							<pomFile>target/pom-install-deploy-fix/pom.xml</pomFile>
-							<url>${deployRepoUrl}</url>
-							<version>${project.version}</version>
-							<updateReleaseInfo>${isRelease}</updateReleaseInfo>
-							<uniqueVersion>false</uniqueVersion>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-scm-plugin</artifactId>
-				<version>1.4</version>
-				<configuration>
-					<tag>${project.artifactId}-${VERSION_NUMBER}</tag>
-					<tagBase>${svnRepoBase}/tags</tagBase>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
-
-	<repositories>
-		<repository>
-			<id>jcoderz-snapshot</id>
-			<name>jCoderZ Snapshots</name>
-			<url>http://www.jcoderz.org/repos/maven2-snapshot</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>jcoderz-repo</id>
-			<name>jCoderZ Maven Repository</name>
-			<url>http://www.jcoderz.org/repos/maven2</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>4thline-repo</id>
-			<url>http://4thline.org/m2</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>maven2-repository.dev.java.net</id>
-			<url>http://download.java.net/maven/2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>restlet-repo</id>
-			<url>http://maven.restlet.org</url>
+    </properties>
+    <scm>
+        <developerConnection>scm:svn:${svnRepoBase}</developerConnection>
+        <connection>scm:svn:${svnRepoBase}/trunk-ng/</connection>
+    </scm>
+    <issueManagement>
+        <system>trac</system>
+        <url>http://www.jcoderz.org/fawkez</url>
+    </issueManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-core-api</artifactId>
+            <version>1.1.5-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <!-- Restrict execution of source compilation to 
+                            install -->
+                        <phase>install</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <id>replace-pom-placeholder</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}</directory>
+                                    <includes>
+                                        <include>pom.xml</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.build.directory}/pom-install-deploy-fix</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.3.1</version>
+                <executions>
+                    <execution>
+                        <id>overwrite-pom</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <packaging>pom</packaging>
+                            <file>target/pom-install-deploy-fix/pom.xml</file>
+                            <pomFile>target/pom-install-deploy-fix/pom.xml</pomFile>
+                            <version>${project.version}</version>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>overwrite-pom</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <configuration>
+                            <packaging>pom</packaging>
+                            <file>target/pom-install-deploy-fix/pom.xml</file>
+                            <pomFile>target/pom-install-deploy-fix/pom.xml</pomFile>
+                            <url>${deployRepoUrl}</url>
+                            <version>${project.version}</version>
+                            <updateReleaseInfo>${isRelease}</updateReleaseInfo>
+                            <uniqueVersion>false</uniqueVersion>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.4</version>
+                <configuration>
+                    <tag>${project.artifactId}-${VERSION_NUMBER}</tag>
+                    <tagBase>${svnRepoBase}/tags</tagBase>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
+    <repositories>
+        <repository>
+            <id>jcoderz-snapshot</id>
+            <name>jCoderZ Snapshots</name>
+            <url>http://www.jcoderz.org/repos/maven2-snapshot</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>jcoderz-repo</id>
+            <name>jCoderZ Maven Repository</name>
+            <url>http://www.jcoderz.org/repos/maven2</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>4thline-repo</id>
+            <url>http://4thline.org/m2</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maven2-repository.dev.java.net</id>
+            <url>http://download.java.net/maven/2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-		</repository>
+        </repository>
+        <repository>
+            <id>restlet-repo</id>
+            <url>http://maven.restlet.org</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
         <repository>
             <id>Ibiblio</id>
             <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
@@ -198,84 +200,82 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-		<repository>
-			<id>JBoss</id>
-			<url>http://repository.jboss.org/</url>
+        <repository>
+            <id>JBoss</id>
+            <url>http://repository.jboss.org/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-		</repository>
-		<repository>
-			<id>Glassfish</id>
-			<url>http://maven.glassfish.org/content/groups/glassfish/</url>
+        </repository>
+        <repository>
+            <id>Glassfish</id>
+            <url>http://maven.glassfish.org/content/groups/glassfish/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>JBoss</id>
-			<url>http://repository.jboss.org/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>JBoss</id>
+            <url>http://repository.jboss.org/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>Glassfish</id>
-			<url>http://maven.glassfish.org/content/groups/glassfish/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>Glassfish</id>
+            <url>http://maven.glassfish.org/content/groups/glassfish/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>4thline-repo</id>
-			<url>http://4thline.org/m2</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>maven2-repository.dev.java.net</id>
-			<url>http://download.java.net/maven/2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>onejar-maven-plugin.googlecode.com</id>
-			<url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>snapshots-repo</id>
-			<name>Snapshots Repo</name>
-			<url>${snapshotRepoUrl}</url>
-		</snapshotRepository>
-		<repository>
-			<id>releases-repo</id>
-			<name>Releases Repo</name>
-			<url>${releaseRepoUrl}</url>
-		</repository>
-	</distributionManagement>
-
-	<profiles>
-		<profile>
-			<id>snapshot-deploy-url-override</id>
-			<activation>
-				<property>
-					<name>!VERSION_NUMBER</name>
-				</property>
-			</activation>
-			<properties>
-				<deployRepoUrl>${snapshotRepoUrl}</deployRepoUrl>
-				<isRelease>false</isRelease>
-			</properties>
-		</profile>
-	</profiles>
+        </pluginRepository>
+        <pluginRepository>
+            <id>4thline-repo</id>
+            <url>http://4thline.org/m2</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>maven2-repository.dev.java.net</id>
+            <url>http://download.java.net/maven/2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>onejar-maven-plugin.googlecode.com</id>
+            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>snapshots-repo</id>
+            <name>Snapshots Repo</name>
+            <url>${snapshotRepoUrl}</url>
+        </snapshotRepository>
+        <repository>
+            <id>releases-repo</id>
+            <name>Releases Repo</name>
+            <url>${releaseRepoUrl}</url>
+        </repository>
+    </distributionManagement>
+    <profiles>
+        <profile>
+            <id>snapshot-deploy-url-override</id>
+            <activation>
+                <property>
+                    <name>!VERSION_NUMBER</name>
+                </property>
+            </activation>
+            <properties>
+                <deployRepoUrl>${snapshotRepoUrl}</deployRepoUrl>
+                <isRelease>false</isRelease>
+            </properties>
+        </profile>
+    </profiles>
 </project>
