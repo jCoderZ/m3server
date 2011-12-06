@@ -51,7 +51,7 @@
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Import-Package>*;resolution:=optional</Import-Package>
+                        <Import-Package>org.jcoderz.m3dditiez.m3server.provider,*;resolution:=optional</Import-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
                     </instructions>
                 </configuration>
