@@ -83,6 +83,7 @@
                             org.jcoderz.m3dditiez.m3server.core.model,
                             org.jcoderz.m3dditiez.m3server.protocol</Export-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>

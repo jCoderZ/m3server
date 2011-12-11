@@ -1,4 +1,4 @@
-package org.jcoderz.m3dditiez.m3server.core;
+package org.jcoderz.m3dditiez.m3server.protocol.rest;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -15,15 +15,20 @@ public class App {
 
 	@Inject @OSGiService
 	private LogService log;
+	
+	@Inject
+	private RestletAdaptor adaptor;
 
     public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
         log.log(LogService.LOG_INFO, "CDI Container for bundle "
                 + event.getBundleContext().getBundle() + " started");
+        adaptor.start();
     }
 
     public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
     	log.log(LogService.LOG_INFO, "CDI Container for bundle "
                 + event.getBundleContext().getBundle() + " stopped");
+        adaptor.stop();
     }
 
     public void validListen(@Observes Valid valid) {

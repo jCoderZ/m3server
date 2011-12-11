@@ -45,6 +45,16 @@
             <version>2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.seamless</groupId>
+            <artifactId>seamless-util</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.jcoderz.m3dditiez</groupId>
             <artifactId>m3server-server-core</artifactId>
             <version>${project.version}</version>
@@ -87,6 +97,7 @@
                             org.jcoderz.m3dditiez.m3server.protocol,
                             *;resolution:=optional</Import-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>

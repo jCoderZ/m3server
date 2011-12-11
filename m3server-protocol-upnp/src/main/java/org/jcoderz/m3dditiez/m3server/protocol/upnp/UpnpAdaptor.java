@@ -2,7 +2,6 @@ package org.jcoderz.m3dditiez.m3server.protocol.upnp;
 
 import javax.inject.Inject;
 
-import org.fourthline.cling.DefaultUpnpServiceConfiguration;
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceConfiguration;
 import org.fourthline.cling.UpnpServiceImpl;
@@ -34,7 +33,7 @@ public class UpnpAdaptor implements ProtocolAdaptor {
 		try {
 			int port = 8081;
 			log.log(LogService.LOG_INFO, "Starting Cling UPnP server at port " + port);
-			UpnpServiceConfiguration devcfg = new DefaultUpnpServiceConfiguration(port);
+			UpnpServiceConfiguration devcfg = new ApacheUpnpServiceConfiguration(port);
 			UpnpService upnpService = new UpnpServiceImpl(devcfg);
 			upnpService.getRegistry().addDevice(device);
 			log.log(LogService.LOG_INFO, "Successfully started the Cling UPnP server");
