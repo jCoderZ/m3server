@@ -2,10 +2,14 @@ package org.jcoderz.m3dditiez.m3server.core.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.osgi.api.annotation.OSGiService;
+import org.jboss.weld.environment.osgi.api.annotation.Publish;
 import org.jcoderz.m3dditiez.m3server.core.MediaServer;
 import org.jcoderz.m3dditiez.m3server.provider.ContentProvider;
+import org.osgi.service.log.LogService;
 
 /**
  * This class implements the protocol adaptor and content provider independent part of
@@ -15,17 +19,13 @@ import org.jcoderz.m3dditiez.m3server.provider.ContentProvider;
  * @author Michael Rumpf
  * 
  */
+@Publish
 //@Singleton
 public class MediaServerImpl implements MediaServer {
 
-	//@Inject
-	private Logger log;
+	@Inject @OSGiService
+	private LogService log;
 
-	//@Inject
-	//private Configuration config;
-
-	//@Inject
-	//@Any
 	private /*Instance<*/ List<ContentProvider> providers;
 
 	public void init() {
@@ -33,9 +33,10 @@ public class MediaServerImpl implements MediaServer {
 	}
 
 	public List<String> getRoots() {
+		
 		List<String> roots = new ArrayList<String>();
 		for (ContentProvider p : providers) {
-			log.fine("provider=" + p.getName());
+			log.log(LogService.LOG_DEBUG, "provider=" + p.getName());
 			roots.add(p.getName());
 		}
 		return roots;

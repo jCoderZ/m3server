@@ -1,6 +1,5 @@
 package org.jcoderz.m3dditiez.m3server.protocol.rest;
 
-import org.jcoderz.m3dditiez.m3server.core.MediaServer;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
@@ -14,14 +13,15 @@ import org.restlet.resource.ServerResource;
 public class MediaServerProxy extends ServerResource {
 
 	//@Inject
-	private MediaServer ms;
+//	private MediaServer ms;
 
 	// TODO: add API methods
 	@Get
 	public String helloWorld() {
-		if (ms == null)
-			return "MediaServer not set";
-		return ms.getRoots().toString();
+//		if (ms == null)
+//			return "MediaServer not set";
+//		return ms.getRoots().toString();
+		return null;
 	}
 
 }

@@ -4,7 +4,7 @@
     <groupId>org.jcoderz.m3dditiez</groupId>
     <artifactId>m3server</artifactId>
     <name>m3server</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>This is the Maven base project for the FawkeZ modules.</description>
     <url>http://www.jcoderz.org/m3dditiez/</url>

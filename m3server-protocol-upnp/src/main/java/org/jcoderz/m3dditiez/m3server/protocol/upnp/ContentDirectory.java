@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.inject.Produces;
-
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.model.DefaultServiceManager;
 import org.fourthline.cling.model.meta.DeviceDetails;
@@ -119,7 +117,7 @@ public class ContentDirectory extends AbstractContentDirectoryService {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Produces
+	//@Produces
 	//@Logging
 	public LocalDevice createDevice() {
 

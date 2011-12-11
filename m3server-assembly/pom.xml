@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>m3server-assembly</groupId>
     <artifactId>m3server-assembly</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.SNAPSHOT</version>
     <packaging>pom</packaging>
     <dependencies>
         <dependency>
@@ -11,6 +11,12 @@
             <artifactId>org.apache.felix.main</artifactId>
             <version>4.0.2</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.log</artifactId>
+            <version>1.0.1</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.jcoderz.m3dditiez</groupId>
@@ -43,7 +49,7 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.jcoderz.m3ditiez</groupId>
+            <groupId>org.jcoderz.m3dditiez</groupId>
             <artifactId>m3server-server-core</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
