@@ -46,8 +46,8 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.name}</Bundle-Name>
-						<Bundle-Version>${project.version}</Bundle-Version>
-                        <!-- Export-Package>org.jcoderz.m3dditiez.m3server.provider</Export-Package -->
+						<Bundle-Version>${pom.version}</Bundle-Version>
+                        <Export-Package>org.jcoderz.m3dditiez.m3server.provider</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>

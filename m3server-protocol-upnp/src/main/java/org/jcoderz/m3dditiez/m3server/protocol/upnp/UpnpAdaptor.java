@@ -1,10 +1,14 @@
 package org.jcoderz.m3dditiez.m3server.protocol.upnp;
 
+import javax.inject.Inject;
+
 import org.fourthline.cling.DefaultUpnpServiceConfiguration;
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceConfiguration;
 import org.fourthline.cling.UpnpServiceImpl;
+import org.fourthline.cling.model.meta.LocalDevice;
 import org.jboss.weld.environment.osgi.api.annotation.OSGiService;
+import org.jcoderz.m3dditiez.m3server.core.MediaServer;
 import org.jcoderz.m3dditiez.m3server.protocol.ProtocolAdaptor;
 import org.jcoderz.m3dditiez.m3server.protocol.ProtocolAdaptorException;
 import org.osgi.service.log.LogService;
@@ -17,12 +21,14 @@ import org.osgi.service.log.LogService;
  */
 public class UpnpAdaptor implements ProtocolAdaptor {
 
-	@OSGiService
+	@Inject @OSGiService
 	private LogService log;
 
-//	@Inject
-//	private LocalDevice device;
+	private LocalDevice device;
 
+	@Inject @OSGiService
+	private MediaServer server;
+	
 	@Override
 	public void start() {
 		try {
@@ -30,7 +36,7 @@ public class UpnpAdaptor implements ProtocolAdaptor {
 			log.log(LogService.LOG_INFO, "Starting Cling UPnP server at port " + port);
 			UpnpServiceConfiguration devcfg = new DefaultUpnpServiceConfiguration(port);
 			UpnpService upnpService = new UpnpServiceImpl(devcfg);
-			//upnpService.getRegistry().addDevice(device);
+			upnpService.getRegistry().addDevice(device);
 			log.log(LogService.LOG_INFO, "Successfully started the Cling UPnP server");
 		} catch (Exception e) {
 			log.log(LogService.LOG_ERROR, "The Cling UPnP server could not be started", e);

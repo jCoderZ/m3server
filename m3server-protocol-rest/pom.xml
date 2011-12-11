@@ -81,8 +81,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>org.jcoderz.m3dditiez.m3server.protocol.rest.Activator</Bundle-Activator>
+                        <Bundle-Version>${pom.version}</Bundle-Version>
                         <Import-Package>org.jcoderz.m3dditiez.m3server.core,
                             org.jcoderz.m3dditiez.m3server.core.config,
                             org.jcoderz.m3dditiez.m3server.core.model,

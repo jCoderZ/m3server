@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+import org.jboss.weld.environment.osgi.api.Service;
 import org.jboss.weld.environment.osgi.api.annotation.OSGiService;
 import org.jboss.weld.environment.osgi.api.annotation.Publish;
 import org.jcoderz.m3dditiez.m3server.core.MediaServer;
@@ -20,13 +22,14 @@ import org.osgi.service.log.LogService;
  * 
  */
 @Publish
-//@Singleton
+@Singleton
 public class MediaServerImpl implements MediaServer {
 
 	@Inject @OSGiService
 	private LogService log;
 
-	private /*Instance<*/ List<ContentProvider> providers;
+	@Inject
+	private Service<ContentProvider> providers;
 
 	public void init() {
 		System.err.println("yyy: " + getRoots());

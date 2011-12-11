@@ -1,5 +1,9 @@
 package org.jcoderz.m3dditiez.m3server.protocol.rest;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.osgi.api.annotation.OSGiService;
+import org.jcoderz.m3dditiez.m3server.core.MediaServer;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
@@ -11,6 +15,10 @@ import org.restlet.resource.ServerResource;
  */
 //@Singleton
 public class MediaServerProxy extends ServerResource {
+
+	@Inject @OSGiService
+	private MediaServer server;
+	
 
 	//@Inject
 //	private MediaServer ms;

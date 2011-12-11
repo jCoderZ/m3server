@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
+
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.model.DefaultServiceManager;
 import org.fourthline.cling.model.meta.DeviceDetails;
@@ -29,6 +31,8 @@ import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.SortCriterion;
 import org.fourthline.cling.support.model.container.Container;
+import org.jboss.weld.environment.osgi.api.annotation.OSGiService;
+import org.jcoderz.m3dditiez.m3server.core.MediaServer;
 import org.seamless.util.io.IO;
 
 /**
@@ -40,6 +44,9 @@ import org.seamless.util.io.IO;
  */
 public class ContentDirectory extends AbstractContentDirectoryService {
 
+	@Inject @OSGiService
+	private MediaServer server;
+	
 	private static final DeviceType MEDIA_SERVER_DEVICE_TYPE = new UDADeviceType(
 			"MediaServer", 3);
 
