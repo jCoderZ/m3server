@@ -44,7 +44,7 @@
             <groupId>org.jboss.weld.osgi</groupId>
             <artifactId>weld-osgi-core-api</artifactId>
             <version>1.1.5-SNAPSHOT</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>

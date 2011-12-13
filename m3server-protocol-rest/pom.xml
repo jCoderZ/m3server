@@ -87,7 +87,7 @@
                             org.jcoderz.m3dditiez.m3server.core.model,
                             org.jcoderz.m3dditiez.m3server.protocol,
                             *;resolution:=optional</Import-Package>
-                        <Embed-Dependency>*;scope=compile</Embed-Dependency>
+                        <Embed-Dependency>*;scope=compile;artifactId=!org.osgi.core</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
