@@ -161,8 +161,8 @@ public class ContentDirectory extends AbstractContentDirectoryService {
 
 		LocalDevice device = null;
 		try {
-			Icon icon = new Icon("image/png", 48, 48, 8,
-					ContentDirectory.class.getResource("icon.png"));
+			Icon icon = new Icon("image/png", 48, 48, 8, 
+					ContentDirectory.class.getResource("/images/icon.png"));
 
 			device = new LocalDevice(identity, MEDIA_SERVER_DEVICE_TYPE,
 					details, icon, new LocalService[] {

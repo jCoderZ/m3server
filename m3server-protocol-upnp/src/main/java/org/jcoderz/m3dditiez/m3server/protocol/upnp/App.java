@@ -20,12 +20,16 @@ public class App {
 	private UpnpAdaptor adaptor;
 
     public void onStartup(@Observes BundleContainerEvents.BundleContainerInitialized event) {
+//        System.out.println("CDI Container for bundle "
+//                + event.getBundleContext().getBundle() + " started: log=" + log);
         log.log(LogService.LOG_INFO, "CDI Container for bundle "
                 + event.getBundleContext().getBundle() + " started");
         adaptor.start();
     }
 
     public void onShutdown(@Observes BundleContainerEvents.BundleContainerShutdown event) {
+//        System.out.println("CDI Container for bundle "
+//                + event.getBundleContext().getBundle() + " stopped: log=" + log);
     	log.log(LogService.LOG_INFO, "CDI Container for bundle "
                 + event.getBundleContext().getBundle() + " stopped");
         adaptor.stop();

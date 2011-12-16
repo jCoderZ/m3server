@@ -1,6 +1,7 @@
 package org.jcoderz.m3dditiez.m3server.protocol.upnp;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceConfiguration;
@@ -18,11 +19,13 @@ import org.osgi.service.log.LogService;
  * @author Michael Rumpf
  *
  */
+@Singleton
 public class UpnpAdaptor implements ProtocolAdaptor {
 
 	@Inject @OSGiService
 	private LogService log;
 
+	@Inject
 	private LocalDevice device;
 
 	@Inject @OSGiService
@@ -35,6 +38,9 @@ public class UpnpAdaptor implements ProtocolAdaptor {
 			log.log(LogService.LOG_INFO, "Starting Cling UPnP server at port " + port);
 			UpnpServiceConfiguration devcfg = new ApacheUpnpServiceConfiguration(port);
 			UpnpService upnpService = new UpnpServiceImpl(devcfg);
+			
+			ContentDirectory cd = new ContentDirectory();
+			device = cd.createDevice();
 			upnpService.getRegistry().addDevice(device);
 			log.log(LogService.LOG_INFO, "Successfully started the Cling UPnP server");
 		} catch (Exception e) {
