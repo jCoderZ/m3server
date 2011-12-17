@@ -13,7 +13,7 @@
         <url>http://www.jcoderz.org/</url>
     </organization>
     <modules>
-        <module>../m3server-provider-api</module>
+        <module>../m3server-base</module>
         <module>../m3server-provider-filesystem</module>
         <module>../m3server-provider-shoutcast</module>
         <module>../m3server-protocol-upnp</module>
@@ -40,12 +40,6 @@
         <url>http://www.jcoderz.org/fawkez</url>
     </issueManagement>
     <dependencies>
-        <dependency>
-            <groupId>org.jboss.weld.osgi</groupId>
-            <artifactId>weld-osgi-core-api</artifactId>
-            <version>1.1.5-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>

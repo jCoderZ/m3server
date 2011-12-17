@@ -2,26 +2,10 @@ package org.jcoderz.m3dditiez.m3server.protocol.upnp;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
-import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.meta.DeviceDetails;
-import org.fourthline.cling.model.meta.DeviceIdentity;
-import org.fourthline.cling.model.meta.Icon;
-import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.LocalService;
-import org.fourthline.cling.model.meta.ManufacturerDetails;
-import org.fourthline.cling.model.meta.ModelDetails;
-import org.fourthline.cling.model.types.DeviceType;
 import org.fourthline.cling.model.types.ErrorCode;
-import org.fourthline.cling.model.types.UDADeviceType;
-import org.fourthline.cling.model.types.UDN;
-import org.fourthline.cling.support.avtransport.impl.AVTransportService;
-import org.fourthline.cling.support.connectionmanager.ConnectionManagerService;
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService;
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException;
 import org.fourthline.cling.support.contentdirectory.DIDLParser;
@@ -31,35 +15,29 @@ import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.SortCriterion;
 import org.fourthline.cling.support.model.container.Container;
-import org.jboss.weld.environment.osgi.api.annotation.OSGiService;
-import org.jcoderz.m3dditiez.m3server.core.MediaServer;
+import org.jcoderz.m3dditiez.m3server.logging.Logging;
 import org.seamless.util.io.IO;
+import org.slf4j.Logger;
 
 /**
- * NOTE: CDI injection is not working yet as this class is instantiated outside
- * of the CDI container.
  * 
  * @author Michael Rumpf
  * 
  */
 public class ContentDirectory extends AbstractContentDirectoryService {
 
-	@Inject @OSGiService
-	private MediaServer server;
-	
-	private static final DeviceType MEDIA_SERVER_DEVICE_TYPE = new UDADeviceType(
-			"MediaServer", 3);
+	// @Inject @OSGiService
+	// private MediaServer server;
 
-	private Logger log = Logger.getLogger(ContentDirectory.class.getName());
+	@Inject
+	private Logger log;
 
-	public ContentDirectory() {
-	}
-
+	@Logging
 	public BrowseResult browse(String objectID, BrowseFlag browseFlag,
 			String filter, long firstResult, long maxResults,
 			SortCriterion[] orderby) throws ContentDirectoryException {
 
-		System.out.println("################## browse called");
+		log.debug("################## browse called");
 		try {
 			if (this != null) {
 				List<String> roots = null;
@@ -70,8 +48,9 @@ public class ContentDirectory extends AbstractContentDirectoryService {
 					Container c = new Container();
 					c.setTitle(root);
 					c.setId("" + i);
-					c.setParentID("" +0);
-					c.setClazz(new DIDLObject.Class("object.container.storageFolder"));
+					c.setParentID("" + 0);
+					c.setClazz(new DIDLObject.Class(
+							"object.container.storageFolder"));
 					content.addContainer(c);
 					i++;
 				}
@@ -85,21 +64,23 @@ public class ContentDirectory extends AbstractContentDirectoryService {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			log.log(Level.SEVERE, "Browse action failed", ex);
+			log.error("Browse action failed", ex);
 			throw new ContentDirectoryException(ErrorCode.ACTION_FAILED,
 					ex.toString());
 		}
 	}
 
+	@Logging
 	public BrowseResult search(String containerId, String searchCriteria,
 			String filter, long firstResult, long maxResults,
 			SortCriterion[] orderBy) throws ContentDirectoryException {
 		try {
+			log.debug("################## search called");
 			return new BrowseResult(
 					new DIDLParser().generate(new DIDLContent()), 0, 0);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			log.log(Level.SEVERE, "Search action failed", ex);
+			log.error("Search action failed", ex);
 			throw new ContentDirectoryException(ErrorCode.ACTION_FAILED,
 					ex.toString());
 		}
@@ -123,54 +104,4 @@ public class ContentDirectory extends AbstractContentDirectoryService {
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	//@Produces
-	//@Logging
-	public LocalDevice createDevice() {
-
-		DeviceIdentity identity = new DeviceIdentity(
-				UDN.uniqueSystemIdentifier("m3server"));
-
-		DeviceDetails details = new DeviceDetails(
-				"m3server",
-				new ManufacturerDetails("jCoderz.org"),
-				new ModelDetails(
-						"MediaServer",
-						"An implementation of the UPnP media server specification",
-						"v1"));
-
-		AnnotationLocalServiceBinder alsb = new AnnotationLocalServiceBinder();
-		LocalService<ConnectionManagerService> connectionManagerService = alsb
-				.read(ConnectionManagerService.class);
-		connectionManagerService
-				.setManager(new DefaultServiceManager<ConnectionManagerService>(
-						connectionManagerService,
-						ConnectionManagerService.class));
-
-		LocalService<AVTransportService> avTransportService = new AnnotationLocalServiceBinder()
-				.read(AVTransportService.class);
-		avTransportService
-				.setManager(new DefaultServiceManager<AVTransportService>(
-						avTransportService, AVTransportService.class));
-
-		LocalService<ContentDirectory> contentDirectory = new AnnotationLocalServiceBinder()
-				.read(ContentDirectory.class);
-		contentDirectory
-				.setManager(new DefaultServiceManager<ContentDirectory>(
-						contentDirectory, ContentDirectory.class));
-
-		LocalDevice device = null;
-		try {
-			Icon icon = new Icon("image/png", 48, 48, 8, 
-					ContentDirectory.class.getResource("/images/icon.png"));
-
-			device = new LocalDevice(identity, MEDIA_SERVER_DEVICE_TYPE,
-					details, icon, new LocalService[] {
-							connectionManagerService, avTransportService,
-							contentDirectory });
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return device;
-	}
 }

@@ -3,11 +3,11 @@ package org.jcoderz.m3dditiez.m3server.core.config.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jcoderz.m3dditiez.m3server.core.config.Configuration;
 import org.jcoderz.m3dditiez.m3server.core.config.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A singleton for accessing configuration properties.
@@ -18,8 +18,7 @@ import org.jcoderz.m3dditiez.m3server.core.config.ConfigurationException;
 //@Singleton
 public class ConfigurationImpl implements Configuration {
 
-	//@Inject
-	private Logger log;
+	private static final Logger log = LoggerFactory.getLogger(ConfigurationImpl.class);
 
 	private static final String CONFIG_FILE = "config.properties";
 
@@ -35,10 +34,10 @@ public class ConfigurationImpl implements Configuration {
 			if (is != null) {
 				p.load(is);
 			} else {
-				log.warning("Could not read config file: " + CONFIG_FILE);
+				log.warn("Could not read config file: " + CONFIG_FILE);
 			}
 		} catch (IOException ex) {
-			log.log(Level.SEVERE, "Exception while reading config file + "
+			log.error("Exception while reading config file + "
 					+ CONFIG_FILE, ex);
 			throw new ConfigurationException(
 					"Exception while reading config file + " + CONFIG_FILE, ex);

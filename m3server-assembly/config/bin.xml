@@ -55,7 +55,7 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>../m3server-provider-api/target</directory>
+            <directory>../m3server-base/target</directory>
             <outputDirectory>bundle</outputDirectory>
             <includes>
                 <include>*.jar</include>

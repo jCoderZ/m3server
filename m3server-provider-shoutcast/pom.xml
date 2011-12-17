@@ -28,15 +28,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.log</artifactId>
-            <version>1.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jcoderz.m3dditiez</groupId>
-            <artifactId>m3server-provider-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -44,6 +38,12 @@
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jcoderz.m3dditiez</groupId>
+            <artifactId>m3server-base</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
@@ -70,7 +70,9 @@
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Import-Package>org.jcoderz.m3dditiez.m3server.provider,*;resolution:=optional</Import-Package>
+                        <Import-Package>org.jcoderz.m3dditiez.m3server.logging,
+                        org.jcoderz.m3dditiez.m3server.provider,
+                        *;resolution:=optional</Import-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
