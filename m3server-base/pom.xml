@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>m3server-provider-api</artifactId>
+	<artifactId>m3server-base</artifactId>
 	<packaging>bundle</packaging>
 	<parent>
 		<groupId>org.jcoderz.m3dditiez</groupId>
@@ -10,18 +10,36 @@
 		<relativePath>../m3server-parent</relativePath>
 	</parent>
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<version>1.2.0</version>
+        <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-core-api</artifactId>
+            <version>1.1.5-SNAPSHOT</version>
             <scope>provided</scope>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.osgi</groupId>
+            <artifactId>weld-osgi-core-mandatory</artifactId>
+            <version>1.1.5-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>1.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	<build>
 		<resources>
@@ -47,7 +65,11 @@
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-Version>${pom.version}</Bundle-Version>
-                        <Export-Package>org.jcoderz.m3dditiez.m3server.provider</Export-Package>
+                        <Export-Package>org.jcoderz.m3dditiez.m3server.provider,
+                        org.jcoderz.m3dditiez.m3server.logging</Export-Package>
+                        <Import-Package>*;resolution:=optional</Import-Package>
+                        <Embed-Dependency>*;scope=compile</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
 					</instructions>
 				</configuration>
 			</plugin>
