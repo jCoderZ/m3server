@@ -2,6 +2,7 @@ package org.jcoderz.m3dditiez.m3server.protocol.rest;
 
 
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.jboss.weld.environment.osgi.api.annotation.OSGiService;
@@ -20,19 +21,18 @@ import org.slf4j.Logger;
  */
 public class RestletAdaptor implements ProtocolAdaptor {
 
-	private Server restServer;
-
 	private @Inject @Any Logger log;
 	
 	@Inject @OSGiService
 	private MediaServer server;
-	
+
+	@Inject
+	private Server restServer;
+
 	@Override
 	public void start() {
 		try {
-			int port = 8082; //config.getInteger(RestletAdaptor.class, "port");
-			log.info("Starting RESTlet server at port " + port);
-			restServer = new Server(Protocol.HTTP, port, MediaServerProxy.class);
+			log.info("Starting RESTlet server at port " + restServer.getPort());
 			restServer.start();
 			log.info("Successfully started RESTlet server");
 		} catch (Exception e) {
@@ -41,6 +41,11 @@ public class RestletAdaptor implements ProtocolAdaptor {
 					"An unknown exception occured while starting the RESTlet server",
 					e);
 		}
+	}
+
+	private @Produces Server createServer() {
+		int port = 8082; //config.getInteger(RestletAdaptor.class, "port");
+		return new Server(Protocol.HTTP, port, MediaServerProxy.class);
 	}
 
 	@Override

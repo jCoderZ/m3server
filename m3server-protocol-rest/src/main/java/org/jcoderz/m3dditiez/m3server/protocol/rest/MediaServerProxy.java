@@ -9,6 +9,7 @@ import org.jcoderz.m3dditiez.m3server.logging.Logging;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements the server resources for the REST API protocol adaptor.
@@ -22,7 +23,7 @@ public class MediaServerProxy extends ServerResource {
 	@Inject @OSGiService
 	private MediaServer server;
 
-	private @Inject Logger log;
+	private Logger log = LoggerFactory.getLogger(MediaServerProxy.class);
 
 	//@Inject
 //	private MediaServer ms;
@@ -32,9 +33,12 @@ public class MediaServerProxy extends ServerResource {
 	@Logging
 	public String helloWorld() {
 		log.debug("path=" + "helloWorld");
+		java.util.logging.Logger l = java.util.logging.Logger.getLogger(MediaServerProxy.class.getName());
+		l.info("###################################################################################");
 //		if (ms == null)
 //			return "MediaServer not set";
 //		return ms.getRoots().toString();
+		l.info("###################################################################################");
 		return null;
 	}
 
