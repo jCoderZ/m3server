@@ -6,7 +6,7 @@
         </encoder>
     </appender>
     <appender name="Log" class="ch.qos.logback.core.FileAppender">
-        <file>weld-osgi.log</file>
+        <file>m3server-logback.log</file>
         <append>false</append>
         <encoder>
             <pattern> %d{HH:mm:ss.SSS} %-15.-15([%-14.-14(%.-13thread])) %-5level %.-250(%logger{25} - %msg) %n %xEx{full}

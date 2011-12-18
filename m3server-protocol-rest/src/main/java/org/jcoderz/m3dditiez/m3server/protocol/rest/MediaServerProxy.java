@@ -33,11 +33,14 @@ public class MediaServerProxy extends ServerResource {
 	@Logging
 	public String helloWorld() {
 		log.debug("path=" + "helloWorld");
+		org.apache.log4j.Logger lo = org.apache.log4j.Logger.getLogger(MediaServerProxy.class);
 		java.util.logging.Logger l = java.util.logging.Logger.getLogger(MediaServerProxy.class.getName());
 		l.info("###################################################################################");
+		lo.info("**********************************************************************************");
 //		if (ms == null)
 //			return "MediaServer not set";
 //		return ms.getRoots().toString();
+		lo.info("**********************************************************************************");
 		l.info("###################################################################################");
 		return null;
 	}
