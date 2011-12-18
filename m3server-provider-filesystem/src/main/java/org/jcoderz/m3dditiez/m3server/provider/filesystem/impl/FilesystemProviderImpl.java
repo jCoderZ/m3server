@@ -22,6 +22,7 @@ public class FilesystemProviderImpl implements FilesystemProvider {
 
 	@Override
 	public List<String> getChildren(String path) {
+		log.debug("path=" + path);
 		return Collections.EMPTY_LIST;
 	}
 

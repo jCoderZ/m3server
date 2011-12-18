@@ -4,8 +4,6 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
-import org.slf4j.Logger;
-
 /**
  * xxx
  *
@@ -15,7 +13,7 @@ import org.slf4j.Logger;
 @Interceptor @Logging
 public class LoggingInterceptor {
 
-	private static final Logger log = org.slf4j.LoggerFactory.getLogger(LoggingInterceptor.class);
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LoggingInterceptor.class);
 
 	@AroundInvoke
 	public Object log(InvocationContext ctx) throws Exception {

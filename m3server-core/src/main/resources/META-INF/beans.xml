@@ -5,11 +5,4 @@
            http://java.sun.com/xml/ns/javaee http://jboss.org/schema/cdi/beans_1_0.xsd
            http://jboss.org/schema/weld/beans http://jboss.org/schema/weld/beans_1_1.xsd">
     
-    <weld:scan>
-        <!-- Don't include GWT support if GWT is not installed -->
-        <weld:exclude name="com.acme.gwt.**">
-            <weld:if-class-available name="!com.google.GWT"/>
-        </weld:exclude>
-    </weld:scan>
-
 </beans>

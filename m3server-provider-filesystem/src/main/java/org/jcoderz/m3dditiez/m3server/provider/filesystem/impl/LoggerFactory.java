@@ -1,18 +1,18 @@
-package org.jcoderz.m3dditiez.m3server.logging;
+package org.jcoderz.m3dditiez.m3server.provider.filesystem.impl;
+
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
 /**
- * This logger factory creates a logger in the context of the class to where it gets injected.
+ * NOTE: This is a work-around to make the Logger injection point working.
+ * This class can hopefully be removed again when the LoggerFactory class from the base bundle works.
  *
  * @author Michael Rumpf
  *
  */
-@Singleton
 public class LoggerFactory {
 
 	public @Produces Logger createLogger(InjectionPoint injectionPoint) { 

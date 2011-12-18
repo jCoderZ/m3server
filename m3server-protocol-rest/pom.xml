@@ -29,12 +29,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
@@ -87,6 +81,7 @@
                             org.jcoderz.m3dditiez.m3server.core.model,
                             org.jcoderz.m3dditiez.m3server.protocol,
                             org.jcoderz.m3dditiez.m3server.logging,
+                            org.slf4j,
                             *;resolution:=optional</Import-Package>
                         <Embed-Dependency>*;scope=compile;artifactId=!org.osgi.core</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

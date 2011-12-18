@@ -11,7 +11,6 @@ import org.jboss.weld.environment.osgi.api.annotation.Publish;
 import org.jcoderz.m3dditiez.m3server.core.MediaServer;
 import org.jcoderz.m3dditiez.m3server.provider.ContentProvider;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the protocol adaptor and content provider independent part of
@@ -25,7 +24,8 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class MediaServerImpl implements MediaServer {
 
-	private static final Logger log = LoggerFactory.getLogger(MediaServerImpl.class);
+	@Inject
+	private Logger log;
 
 	@Inject
 	private Service<ContentProvider> providers;

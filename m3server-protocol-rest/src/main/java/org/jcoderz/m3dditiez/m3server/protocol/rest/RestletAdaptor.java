@@ -1,5 +1,7 @@
 package org.jcoderz.m3dditiez.m3server.protocol.rest;
 
+
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import org.jboss.weld.environment.osgi.api.annotation.OSGiService;
@@ -20,8 +22,7 @@ public class RestletAdaptor implements ProtocolAdaptor {
 
 	private Server restServer;
 
-	@Inject
-	private Logger log;
+	private @Inject @Any Logger log;
 	
 	@Inject @OSGiService
 	private MediaServer server;

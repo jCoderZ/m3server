@@ -22,8 +22,7 @@ public class MediaServerProxy extends ServerResource {
 	@Inject @OSGiService
 	private MediaServer server;
 
-	@Inject
-	private Logger log;
+	private @Inject Logger log;
 
 	//@Inject
 //	private MediaServer ms;
@@ -32,6 +31,7 @@ public class MediaServerProxy extends ServerResource {
 	@Get
 	@Logging
 	public String helloWorld() {
+		log.debug("path=" + "helloWorld");
 //		if (ms == null)
 //			return "MediaServer not set";
 //		return ms.getRoots().toString();

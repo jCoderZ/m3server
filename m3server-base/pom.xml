@@ -29,12 +29,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
@@ -67,7 +61,7 @@
 						<Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>org.jcoderz.m3dditiez.m3server.provider,
                         org.jcoderz.m3dditiez.m3server.logging</Export-Package>
-                        <Import-Package>*;resolution:=optional</Import-Package>
+                        <Import-Package>org.slf4j,*;resolution:=optional</Import-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
 					</instructions>

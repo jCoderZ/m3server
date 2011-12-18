@@ -8,13 +8,11 @@ import org.jboss.weld.environment.osgi.api.events.BundleContainerEvents;
 import org.jboss.weld.environment.osgi.api.events.Invalid;
 import org.jboss.weld.environment.osgi.api.events.Valid;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class App {
 
-	@Inject
-	private Logger log;
+	private @Inject Logger log;
 	
 	@Inject
 	private RestletAdaptor adaptor;
