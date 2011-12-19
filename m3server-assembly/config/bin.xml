@@ -31,6 +31,10 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>./log</directory>
+            <outputDirectory>./log</outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>./lib</directory>
             <outputDirectory>./lib</outputDirectory>
             <includes>
