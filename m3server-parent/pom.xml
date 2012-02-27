@@ -159,6 +159,9 @@
             <name>jCoderZ Snapshots</name>
             <url>http://www.jcoderz.org/repos/maven2-snapshot</url>
             <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>jcoderz-repo</id>
