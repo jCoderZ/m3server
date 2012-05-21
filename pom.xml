@@ -13,13 +13,13 @@
         <url>http://www.jcoderz.org/</url>
     </organization>
     <modules>
-        <module>../m3server-base</module>
-        <module>../m3server-provider-filesystem</module>
-        <module>../m3server-provider-shoutcast</module>
-        <module>../m3server-protocol-upnp</module>
-        <module>../m3server-protocol-rest</module>
-        <module>../m3server-core</module>
-        <module>../m3server-assembly</module>
+        <module>m3server-base</module>
+        <module>m3server-provider-filesystem</module>
+        <module>m3server-provider-shoutcast</module>
+        <module>m3server-protocol-upnp</module>
+        <module>m3server-protocol-rest</module>
+        <module>m3server-core</module>
+        <module>m3server-assembly</module>
     </modules>
     <properties>
         <!-- This mus be overwritten from external to deploy to jcoderz.org -->

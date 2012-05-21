@@ -7,7 +7,6 @@
         <groupId>org.jcoderz.m3dditiez</groupId>
         <artifactId>m3server</artifactId>
         <version>1.0.0.SNAPSHOT</version>
-        <relativePath>../m3server-parent</relativePath>
     </parent>
     <dependencies>
         <dependency>
