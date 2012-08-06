@@ -19,9 +19,9 @@ import org.jcoderz.m3server.model.Mp3Info;
 public class SearchRESTService {
 
 	@GET
-	@Path("/{key}")
+	@Path("/key/{key}")
 	@Produces("application/json")
-	public Mp3Info lookupMemberById(@PathParam("key") String key) {
+	public Mp3Info search(@PathParam("key") String key) {
 		System.out.println("key=" + key);
 		Mp3Info m3i = new Mp3Info();
 		m3i.setAlbum("Under the blood red sky");
