@@ -19,3 +19,53 @@ SLF4J Cyclic Dependecy => Resolved in Eclipse 3.8M5
 http://bugzilla.slf4j.org/show_bug.cgi?id=75
 http://ekkescorner.wordpress.com/2009/09/04/osgi-logging-part-3-slf4j-logback-as-osgi-bundles/
 
+
+
+### Ideas ###
+MediaServerCore
+
+
+BrowseEngine - display a hierarchical structure 
+  - FileSystem
+  - Shoutcast
+SearchEngine - Search a hierarchical structure
+
+
+Types of plugins:
+* Menu Contributors / Backend
+* Adaptors
+* ...
+
+ProtocolAdaptor
+* REST
+* UPnP/DLNA
+* HTTP
+* ...
+
+A ProtocolAdaptor opens a port to provide protocol access to a client.
+
+
+LibraryAdaptor
+* FileSystem
+* GoogleMusic
+* iTunes
+* ...
+
+A library adapter is an adpater for a local or remote set of media files.
+
+
+SearchAdaptor
+* Lucene
+* ...
+
+A search adaptor is 
+
+Misc
+* Playlist???
+* Feeds???
+* Shoutcast
+    http://code.google.com/p/streamscraper/
+
+Plugin:
+   list<???> search(term)
+
