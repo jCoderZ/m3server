@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.jcoderz.m3server.model.Mp3Info;
+import org.jcoderz.m3server.Mp3Info;
 
 /**
  * JAX-RS Example

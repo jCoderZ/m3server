@@ -1,4 +1,4 @@
-package org.jcoderz.m3server.model;
+package org.jcoderz.m3server;
 
 public class Mp3Info {
 	String artist;
