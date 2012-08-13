@@ -1,12 +1,15 @@
 package org.jcoderz.m3server.rest;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import org.jcoderz.m3server.MediaLibrary;
 import org.jcoderz.m3server.Mp3Info;
+import org.jcoderz.m3server.Playlist;
 
 /**
  * JAX-RS Example
@@ -18,17 +21,15 @@ import org.jcoderz.m3server.Mp3Info;
 @RequestScoped
 public class SearchRESTService {
 
+	@Inject
+	MediaLibrary ml;
+
 	@GET
 	@Path("/key/{key}")
 	@Produces("application/json")
-	public Mp3Info search(@PathParam("key") String key) {
+	public Playlist search(@PathParam("key") String key) {
 		System.out.println("key=" + key);
-		Mp3Info m3i = new Mp3Info();
-		m3i.setAlbum("Under the blood red sky");
-		m3i.setArtist("U2");
-		m3i.setReleased("1999");
-		m3i.setSize(1000000L);
-		m3i.setTitle("Sundy bloody sunday");
-		return m3i;
+		Playlist pl = ml.search(key);
+		return pl;
 	}
 }

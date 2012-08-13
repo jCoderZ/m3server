@@ -1,6 +1,9 @@
 package org.jcoderz.m3server;
 
-public class Mp3Info {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class Mp3Info implements Serializable {
 	String artist;
 	String title;
 	String album;
