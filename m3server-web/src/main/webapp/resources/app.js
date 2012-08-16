@@ -26,6 +26,7 @@ function search(term) {
     var jqxhr = $.getJSON("http://localhost:8080/m3server-web/rest/library/search?term=" + term, function(json) {
 		$('#searchresultlist').empty();
 		jQuery.each(json.mp3, function(i, val) {
+			/*
 		    // TODO: because listview("refresh") takes too much time, we apply the styles directly 
 			$('#searchresultlist').append($('<li>', {
 				'data-corners': 'false', 
@@ -48,7 +49,14 @@ function search(term) {
 			    'class': 'ui-icon ui-icon-arrow-r ui-icon-shadow',
 			    'html': '&nbsp;'
 			}))));
-			//TODO: use .listview("refresh"); instead
+			*/
+			$('#searchresultlist').append($('<li>').append($('<a/>', {
+			    'href': 'rest/library/browse/' + val['path']
+			}).append($('<h3>', {
+			    'text': val['title']
+			})).append($('<p>', {
+			    'text': val['artist'] + ' - ' + val['album']
+			})))).listview("refresh");
         });
     }).error(function() {alert("error: '" + term + "'");});
 }
@@ -57,6 +65,7 @@ function browse(path) {
     var jqxhr = $.getJSON("http://localhost:8080/m3server-web/rest/library/browse" + path, function(json) {
 		$('#browseresultlist').empty();
 		jQuery.each(json, function(i, val) {
+			/*
 		    // TODO: because listview("refresh") takes too much time, we apply the styles directly
 			$('#browseresultlist').append($('<li>', {
 				'data-corners': 'false', 
@@ -80,7 +89,12 @@ function browse(path) {
 			    'class': 'ui-icon ui-icon-arrow-r ui-icon-shadow',
 			    'html': '&nbsp;'
 			}))));
-			//TODO: use .listview("refresh"); instead
+			*/
+			$('#browseresultlist').append($('<li>').append($('<a/>', {
+			    'href': 'rest/library/browse/' + path + '/' + val,
+			    'class': 'browselink',
+			    'text': val
+			}))).listview("refresh");
         });
     }).error(function() {alert("error: '" + term + "'");});
 
