@@ -9,5 +9,11 @@
         <dependent-module archiveName="m3server-ejb-0.0.1-SNAPSHOT.jar" deploy-path="/" handle="module:/resource/m3server-ejb/m3server-ejb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="lucene-core-3.6.0.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/lucene/lucene-core/3.6.0/lucene-core-3.6.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang-2.6.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/commons-lang/commons-lang/2.6/commons-lang-2.6.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
     </wb-module>
 </project-modules>
