@@ -16,19 +16,18 @@ import org.jcoderz.m3server.Playlist;
  * This class produces a RESTful service to read the contents of the members
  * table.
  */
-@Path("/index")
 @RequestScoped
-public class SearchRESTService {
+@Path("/browser")
+public class BrowserRESTService {
 
 	@Inject
 	MediaLibrary ml;
 
 	@GET
-	@Path("/search")
+	@Path("/browse")
 	@Produces("application/json")
-	public Playlist search(@QueryParam("term") String term) {
-		Playlist pl = ml.search(term);
-		System.out.println("term=" + term + " -> " + pl);
-		return pl;
+	public Playlist search(@QueryParam("path") String path) {
+		System.out.println("path=" + path + " -> " + "RESULT");
+		return null;
 	}
 }

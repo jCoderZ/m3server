@@ -2,6 +2,8 @@ package org.jcoderz.m3server;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 @SuppressWarnings("serial")
 public class Mp3Info implements Serializable {
 	String artist;
@@ -57,5 +59,10 @@ public class Mp3Info implements Serializable {
 
 	public void setSize(long size) {
 		this.size = size;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

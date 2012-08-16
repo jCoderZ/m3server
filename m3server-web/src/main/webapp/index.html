@@ -1,36 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>My Page</title>
+<title>M3Server</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
 	href="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.css" />
 <script src="resources/jquery-1.7.2.min.js"></script>
-<script src="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.js"></script>
 <script src="resources/app.js"></script>
+<script src="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.js"></script>
 </head>
 <body>
 
-	<div data-role="page">
+	<div data-role="page" id="play-page">
 
-		<div data-role="header">
-			<h1>MP3 Player</h1>
+		<div data-role="header" data-position="fixed" data-id="header">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#play-page" class="ui-btn-active ui-state-persist" data-role="tab" data-iconpos="top" data-icon="grid">Play</a></li>
+					<li><a href="#browse-page" data-role="tab" data-iconpos="top" data-icon="grid">Browse</a></li>
+					<li><a href="#search-page" data-role="tab" data-iconpos="top" data-icon="search">Search</a></li>
+					<li><a href="#settings-page" data-role="tab" data-iconpos="top" data-icon="info">Settings</a></li>
+				</ul>
+			</div>
 		</div>
-		<!-- /header -->
 
-		<div data-role="content">
-				<input type="text" name="key" id="term" value="" />
-				<button type="submit" name="submit" id="search" value="submit" data-theme="b">Submit</button>
-				
-				
-				<ul id="resultlist"/>
-				<div id="result"/>
-		</div>
-		<!-- /content -->
+		<div data-role="content">Play content</div>
 
 	</div>
-	<!-- /page -->
 
+	<div data-role="page" id="browse-page">
+
+		<div data-role="header" data-position="fixed" data-id="header">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#play-page" data-role="tab" data-iconpos="top" data-icon="grid">Play</a></li>
+					<li><a href="#browse-page" class="ui-btn-active ui-state-persist" data-role="tab" data-iconpos="top" data-icon="grid">Browse</a></li>
+					<li><a href="#search-page" data-role="tab" data-iconpos="top" data-icon="search">Search</a></li>
+					<li><a href="#settings-page" data-role="tab" data-iconpos="top" data-icon="info">Settings</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div data-role="content">
+		
+		</div>
+
+	</div>
+
+	<div data-role="page" id="search-page">
+
+		<div data-role="header" data-position="fixed" data-id="header">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#play-page" data-role="tab" data-iconpos="top" data-icon="grid">Play</a></li>
+					<li><a href="#browse-page" data-role="tab" data-iconpos="top" data-icon="grid">Browse</a></li>
+					<li><a href="#search-page" class="ui-btn-active ui-state-persist" data-role="tab" data-iconpos="top" data-icon="search">Search</a></li>
+					<li><a href="#settings-page" data-role="tab" data-iconpos="top" data-icon="info">Settings</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div data-role="content">
+			<form id="searchform" action="rest/index/search" method="get">
+				<input type="search" name="term" id="term" value="" />
+			</form>
+			 <div id="searchresult"><ul id="searchresultlist" data-filter="true" data-role="listview"></ul></div>
+		</div>
+
+	</div>
+
+	<div data-role="page" id="settings-page">
+
+		<div data-role="header" data-position="fixed" data-id="header">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#play-page" data-role="tab" data-iconpos="top" data-icon="grid">Play</a></li>
+					<li><a href="#browse-page" data-role="tab" data-iconpos="top" data-icon="grid">Browse</a></li>
+					<li><a href="#search-page" data-role="tab" data-iconpos="top" data-icon="search">Search</a></li>
+					<li><a href="#settings-page" class="ui-btn-active ui-state-persist" data-role="tab" data-iconpos="top" data-icon="info">Settings</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div data-role="content">Settings content</div>
+
+	</div>
 </body>
 </html>
 

@@ -61,7 +61,8 @@ public class MediaLibrary {
 				mp3.setPath(doc.get("path"));
 				mp3.setTitle(doc.get("title"));
 				mp3.setReleased(doc.get("released"));
-				mp3.setSize(Long.valueOf(doc.get("size")));
+				String size = doc.get("size");
+				mp3.setSize(size != null ? Long.valueOf(size) : 0L);
 				pl.getMp3().add(mp3);
 			}
 		} catch (Exception ex) {
@@ -70,93 +71,11 @@ public class MediaLibrary {
 		return pl;
 	}
 
-	// public void facetSearch () {
-	// IndexReader indexReader = IndexReader.open(lucene);
-	// Searcher searcher = new IndexSearcher(indexReader);
-	// TaxonomyReader taxo = new DirectoryTaxonomyReader(taxoDir);
-	// Query q = new TermQuery(new Term(SimpleUtils.TEXT, "white"));
-	// TopScoreDocCollector tdc = TopScoreDocCollector.create(10, true);
-	// FacetSearchParams facetSearchParams = new FacetSearchParams();
-	// facetSearchParams.addFacetRequest(new CountFacetRequest(
-	// new CategoryPath("author"), 10));
-	// FacetsCollector facetsCollector = new FacetsCollector(facetSearchParams,
-	// indexReader, taxo);
-	// searcher.search(q, MultiCollector.wrap(topDocsCollector,
-	// facetsCollector));
-	// List<FacetResult> res = facetsCollector.getFacetResults();
-	// }
 	public Playlist search(Query query) {
 		return null;
 	}
 
 	public Playlist getAllArtists() {
-		// TermEnum terms = null;
-		// TermDocs td = null;
-		//
-		// try {
-		// terms = ireader.terms(new Term("title"));
-		// System.out.println("docFreq=" + terms.docFreq());
-		// terms = ireader.terms(new Term("artist"));
-		// System.out.println("docFreq=" + terms.docFreq());
-		// td = ireader.termDocs();
-		// do {
-		// Term currentTerm = terms.term();
-		//
-		// if (!currentTerm.field().equals("artist")) {
-		// break;
-		// }
-		//
-		// int numDocs = 0;
-		// td.seek(terms);
-		// while (td.next()) {
-		// numDocs++;
-		// }
-		//
-		// // System.out.println(currentTerm.field() + " : "
-		// // + currentTerm.text() + " --> " + numDocs);
-		// } while (terms.next());
-		// } catch (Exception ex) {
-		// ex.printStackTrace();
-		// } finally {
-		// if (td != null) {
-		// try {
-		// td.close();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// }
-		// if (terms != null) {
-		// try {
-		// terms.close();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// }
-		// }
-		try {
-			for (int docNum = 0; docNum < ireader.numDocs(); docNum++) {
-				System.out.println(ireader.document(docNum).getField("artist")
-						.stringValue());
-				TermFreqVector tfv = ireader.getTermFreqVector(docNum,
-						"contents");
-				if (tfv == null) {
-					// ignore empty fields
-					continue;
-				}
-				String terms[] = tfv.getTerms();
-				int termCount = terms.length;
-				int freqs[] = tfv.getTermFrequencies();
-				System.out.println("artist=" + " " + terms.length);
-
-				// for (int t = 0; t < termCount; t++) {
-				// System.out.println(terms[t] + " " + freqs[t]);
-				// }
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 		return null;
 	}
 
