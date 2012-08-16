@@ -109,7 +109,7 @@ public class MediaLibrary {
 			try {
 				File root = new File(M3_LIBRARY_HOME_FOLDER, M3_AUDIO_ROOT);
 				File subpath = new File(root, path);
-				if (subpath.exists()) {
+				if (subpath.exists() && subpath.isDirectory()) {
 					content.addAll(Arrays.asList(subpath.list()));
 				}
 				else {
