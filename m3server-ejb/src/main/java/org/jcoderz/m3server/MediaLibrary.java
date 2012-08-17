@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -24,6 +23,13 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 
+/**
+ * This is the main class which provides an interface to all of the
+ * media library functionality.
+ * 
+ * @author mrumpf
+ *
+ */
 @Stateless
 public class MediaLibrary {
 
@@ -53,6 +59,7 @@ public class MediaLibrary {
 			lucene = FSDirectory.open(new File(M3_LIBRARY_HOME_FOLDER,
 					M3_LUCENE_ROOT));
 			analyzer = new StandardAnalyzer(Version.LUCENE_36);
+			// in Lucene 4 the readonly flag is set to true per default
 			ireader = IndexReader.open(lucene, true);
 			isearcher = new IndexSearcher(ireader);
 		} catch (IOException ex) {
@@ -101,7 +108,8 @@ public class MediaLibrary {
 	public List<String> browse(String path) {
 		List<String> content = new ArrayList<String>();
 		if (path == null || path.isEmpty()) {
-			// TODO: generate from TagQuality once the m3util project is available
+			// TODO: generate from TagQuality once the m3util project is
+			// available
 			content.add("01-gold");
 			content.add("02-silver");
 			content.add("03-bronze");
@@ -111,9 +119,9 @@ public class MediaLibrary {
 				File subpath = new File(root, path);
 				if (subpath.exists() && subpath.isDirectory()) {
 					content.addAll(Arrays.asList(subpath.list()));
-				}
-				else {
-					// TODO 
+				} else {
+
+					// TODO
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();

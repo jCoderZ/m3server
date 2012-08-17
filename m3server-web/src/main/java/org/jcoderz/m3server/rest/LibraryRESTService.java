@@ -14,10 +14,7 @@ import org.jcoderz.m3server.MediaLibrary;
 import org.jcoderz.m3server.Playlist;
 
 /**
- * JAX-RS Example
- * 
- * This class produces a RESTful service to read the contents of the members
- * table.
+ * This class provides a RESTful service to the MediaLibrary functionality.
  */
 @Path("/library")
 @RequestScoped
