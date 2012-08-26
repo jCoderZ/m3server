@@ -30,8 +30,9 @@ function search(term) {
 			    'text': val['title']
 			})).append($('<p>', {
 			    'text': val['artist'] + ' - ' + val['album']
-			})))).listview("refresh");
+			}))));
         });
+		$('#searchresultlist').listview("refresh");
     }).error(function() {alert("error: '" + term + "'");});
 }
 
