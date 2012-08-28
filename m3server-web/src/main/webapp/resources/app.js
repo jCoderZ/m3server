@@ -48,20 +48,26 @@ function browse(path) {
 			    'href': 'rest/library/browse/' + p + '/../',
 			    'class': 'browselink',
 			    'text': '..'
-			}))).listview("refresh");
+			})).append('<img/>', {
+				'src': 'rest/library/browse/' + p + '/cover'
+			}));
 		}
+		$('#browseresultlist').listview("refresh");
     
 		jQuery.each(json, function(i, val) {
-			segment = val;
+			segment = val.name;
 			if (p != null && p != "") {
-				segment = p + '/' + val;
+				segment = p + '/' + val.name;
 			}
 			$('#browseresultlist').append($('<li>').append($('<a/>', {
 			    'href': 'rest/library/browse/' + segment,
 			    'class': 'browselink',
-			    'text': val
-			}))).listview("refresh");
+			    'text': val.name
+			}).append($('<img/>', {
+				'src': 'rest/library/browse/' + segment + '/cover'
+			}))));
         });
+		$('#browseresultlist').listview("refresh");
     }).error(function() {alert("error: '" + term + "'");});
 
     // install onClick handler on all links with class browselink

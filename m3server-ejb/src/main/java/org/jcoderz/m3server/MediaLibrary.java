@@ -3,7 +3,6 @@ package org.jcoderz.m3server;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,33 +21,31 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
+import org.jaudiotagger.tag.datatype.Artwork;
+import org.jcoderz.mp3.intern.MusicBrainzMetadata;
+import org.jcoderz.mp3.intern.util.Environment;
 
 /**
- * This is the main class which provides an interface to all of the
- * media library functionality.
+ * This is the main class which provides an interface to all of the media
+ * library functionality.
  * 
  * @author mrumpf
- *
+ * 
  */
 @Stateless
 public class MediaLibrary {
 
-	// TODO: hard-coded until the Environment class from m3util is available
-	// here
-	private static final String M3_LIBRARY_HOME = "/media/0B83-851C";
-
-	private static final File M3_LIBRARY_HOME_FOLDER;
 	static {
-		M3_LIBRARY_HOME_FOLDER = new File(M3_LIBRARY_HOME);
-		if (!M3_LIBRARY_HOME_FOLDER.exists()
-				|| !M3_LIBRARY_HOME_FOLDER.isDirectory()) {
-			throw new RuntimeException("M3_LIBRARY_HOME=" + M3_LIBRARY_HOME
+		if (!Environment.M3_LIBRARY_HOME.exists()
+				|| !Environment.M3_LIBRARY_HOME.isDirectory()) {
+			throw new RuntimeException("M3_LIBRARY_HOME="
+					+ Environment.M3_LIBRARY_HOME
 					+ " does not exist or is not a directory");
 		}
 	}
 
 	private static final String M3_LUCENE_ROOT = "tools/var/lib/lucene";
-	private static final String M3_AUDIO_ROOT = "audio";
+	public static final String M3_AUDIO_ROOT = "audio";
 	private Directory lucene;
 	private Analyzer analyzer;
 	private IndexReader ireader;
@@ -56,7 +53,7 @@ public class MediaLibrary {
 
 	public MediaLibrary() {
 		try {
-			lucene = FSDirectory.open(new File(M3_LIBRARY_HOME_FOLDER,
+			lucene = FSDirectory.open(new File(Environment.M3_LIBRARY_HOME,
 					M3_LUCENE_ROOT));
 			analyzer = new StandardAnalyzer(Version.LUCENE_36);
 			// in Lucene 4 the readonly flag is set to true per default
@@ -105,29 +102,53 @@ public class MediaLibrary {
 		return null;
 	}
 
-	public List<String> browse(String path) {
-		List<String> content = new ArrayList<String>();
-		if (path == null || path.isEmpty()) {
-			// TODO: generate from TagQuality once the m3util project is
-			// available
-			content.add("01-gold");
-			content.add("02-silver");
-			content.add("03-bronze");
-		} else {
-			try {
-				File root = new File(M3_LIBRARY_HOME_FOLDER, M3_AUDIO_ROOT);
-				File subpath = new File(root, path);
-				if (subpath.exists() && subpath.isDirectory()) {
-					content.addAll(Arrays.asList(subpath.list()));
-				} else {
-
-					// TODO
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
+	public List<Item> browse(String path) {
+		List<Item> content = new ArrayList<Item>();
+		content.addAll(FileSystemBrowser.createItemList(path));
 		return content;
+	}
+
+	public Artwork coverImage(String file) {
+		File root = new File(Environment.M3_LIBRARY_HOME,
+				MediaLibrary.M3_AUDIO_ROOT);
+		if (file == null || file.isEmpty()) {
+			// TODO throw Exception
+		}
+
+		Artwork result = null;
+		File f = new File(root, file);
+		if (!f.exists()) {
+			// TODO throw Exception
+			throw new RuntimeException("File " + file + " does not exist!");
+		}
+		if (f.isDirectory()) {
+			String[] files = f.list();
+			for (String ff : files) {
+				File folderFile = new File(f, ff);
+				if (folderFile.isFile()) {
+					MusicBrainzMetadata mb = new MusicBrainzMetadata(folderFile);
+					result = mb.getCoverImage();
+				}
+			}
+			if (result == null) {
+				result = new Artwork();
+				result.setBinaryData(FileSystemBrowser.FOLDER_ICON_DEFAULT);
+				result.setMimeType("image/png");
+			}
+		} else if (f.isFile()) {
+			MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
+			result = mb.getCoverImage();
+			// when no image has been found inside the file
+			if (result == null || result.getBinaryData() == null) {
+				result.setBinaryData(FileSystemBrowser.FILE_ICON_DEFAULT);
+				result.setMimeType("image/png");
+			}
+		} else {
+			// TODO throw Exception
+			throw new RuntimeException("Unknown file type " + file);
+		}
+
+		return result;
 	}
 
 	public static void main(String[] args) {
