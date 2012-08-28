@@ -105,7 +105,6 @@
 			<groupId>org.jcoderz.m3dditiez</groupId>
 			<artifactId>mp3-ng</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
