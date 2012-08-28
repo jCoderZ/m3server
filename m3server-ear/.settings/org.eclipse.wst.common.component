@@ -198,5 +198,8 @@
         <dependent-module archiveName="derby-10.9.1.0.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/derby/derby/10.9.1.0/derby-10.9.1.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="commons-io-2.4.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/commons-io/commons-io/2.4/commons-io-2.4.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
     </wb-module>
 </project-modules>
