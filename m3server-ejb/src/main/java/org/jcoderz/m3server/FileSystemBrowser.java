@@ -25,8 +25,7 @@ public class FileSystemBrowser {
 
 	static {
 		InputStream folderInputStream = Thread.currentThread()
-				.getContextClassLoader()
-				.getResourceAsStream("folder.png");
+				.getContextClassLoader().getResourceAsStream("folder.png");
 
 		FOLDER_ICON_DEFAULT = readFromStream(folderInputStream);
 		InputStream fileInputStream = Thread.currentThread()
@@ -40,24 +39,25 @@ public class FileSystemBrowser {
 
 		byte[] buffer = new byte[1024];
 		try {
-		while (in.read(buffer) != -1) {out.write(buffer); }
-		}
-		catch (IOException ex) {
+			while (in.read(buffer) != -1) {
+				out.write(buffer);
+			}
+		} catch (IOException ex) {
 			// TODO: throw exception
 		}
 
-		return out.toByteArray();		
+		return out.toByteArray();
 	}
 
-	public static synchronized List<Item> createItemList() {
+	public static Object createItemList() {
 		return createItemList(null);
 	}
 
-	public static synchronized List<Item> createItemList(String path) {
+	public static Object createItemList(String path) {
+		Object result = null;
 		List<Item> items = new ArrayList<Item>();
 		File key = null;
-		File root = new File(Environment.M3_LIBRARY_HOME,
-				MediaLibrary.M3_AUDIO_ROOT);
+		File root = Environment.getAudioFolder();
 		if (path == null || path.isEmpty()) {
 			key = root;
 		} else {
@@ -71,7 +71,12 @@ public class FileSystemBrowser {
 					if (f.isDirectory()) {
 						FolderItem fi = new FolderItem();
 						fi.setPath(path);
-						fi.setName(file);
+						// Workaround: for "#" Resource interpreted as Image but transferred with MIME type application/json: "http://localhost:8080/m3server-web/rest/library/browse/01-gold/".
+						String n = file;
+						if ("#".equals(file)) {
+							n = "_";
+						}
+						fi.setName(n);
 						fi.setIcon(path + "/" + file + "/cover");
 						items.add(fi);
 					} else {
@@ -81,15 +86,18 @@ public class FileSystemBrowser {
 						fi.setPath(path);
 						fi.setName(file);
 						fi.setIcon(path + "/" + file + "/cover");
-						fi.setUrl(path + "/" + file + "/content");
+						fi.setUrl(path + "/" + file);
 						items.add(fi);
 					}
 				}
+				result = items;
+			} else if (key.isFile()) {
+				result = key;
 			} else {
-				// TODO: throw exception
+				// TODO: throw exception: unknown type
 			}
 		}
-		return items;
+		return result;
 	}
 
 	/**

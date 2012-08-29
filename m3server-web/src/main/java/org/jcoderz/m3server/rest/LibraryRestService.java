@@ -1,8 +1,8 @@
 package org.jcoderz.m3server.rest;
 
 import java.io.File;
-import java.util.List;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -13,10 +13,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.jaudiotagger.tag.datatype.Artwork;
-import org.jcoderz.m3server.Item;
 import org.jcoderz.m3server.MediaLibrary;
 import org.jcoderz.m3server.Playlist;
-import org.jcoderz.mp3.intern.util.Environment;
 
 /**
  * This class provides a RESTful service to the MediaLibrary functionality.
@@ -39,31 +37,33 @@ public class LibraryRestService {
 
 	@GET
 	@Path("/browse{path:.*}")
-	@Produces("application/json")
-	public List<Item> browse(@PathParam("path") String path) {
-		System.out.println("path=" + path);
-		List<Item> result = ml.browse(path);
-		System.out.println("result=" + result);
-		return result;
+	public Response browse(@PathParam("path") String path) {
+		System.err.println("path: " + path);
+		Object result = ml.browse(path);
+		String mt = "application/json";
+		if (result instanceof File) {
+			mt = new MimetypesFileTypeMap().getContentType((File) result);
+		}
+		return 	Response.ok(result, mt).build();
 	}
 
 	@GET
-	@Path("/browse{file:.*}/content")
-	@Produces("audio/mpeg")
-	public File file(@PathParam("file") String file) {
-		System.out.println("file=" + file);
-		File root = new File(Environment.getLibraryHome(), "audio");
-		File result = new File(root, file);
-		System.out.println("result=" + result);
-		return result;
+	@Path("/browse{path:.*}/cover")
+	public Response cover(@PathParam("path") String path) {
+		Artwork c = ml.coverImage(path);
+		// Workaround for wrong mime-type: Chrome is reporting: "Resource interpreted as Image but transferred with MIME type image/jpg"
+		String mt = c.getMimeType();
+		if ("image/jpg".equals(mt)) {
+			mt = "image/jpeg";
+		}
+		return Response.ok(c.getBinaryData(), mt).build();
 	}
+
 	@GET
-	@Path("/browse{file:.*}/cover")
-	@Produces("image/jpg")
-	public Response cover(@PathParam("file") String file) {
-		System.out.println("file=" + file);
-		Artwork cover = ml.coverImage(file);
-		System.out.println("result=" + cover);
-		return Response.ok(cover.getBinaryData(), cover.getMimeType()).build();
+	@Path("/browse{path:.*}/info")
+	public Response info(@PathParam("path") String path, @QueryParam("tag") String tag) {
+		System.err.println("info: " + path + ", tag: " + tag);
+		// TODO: tag=all -> return MusicBrainzMetaData
+		return null;
 	}
 }

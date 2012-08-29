@@ -2,9 +2,7 @@ package org.jcoderz.m3server;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.ejb.Stateless;
 
@@ -35,6 +33,8 @@ import org.jcoderz.mp3.intern.util.Environment;
 @Stateless
 public class MediaLibrary {
 
+	private static final String M3_AUDIO_ROOT = "audio";
+
 	static {
 		if (!Environment.M3_LIBRARY_HOME.exists()
 				|| !Environment.M3_LIBRARY_HOME.isDirectory()) {
@@ -44,8 +44,6 @@ public class MediaLibrary {
 		}
 	}
 
-	private static final String M3_LUCENE_ROOT = "tools/var/lib/lucene";
-	public static final String M3_AUDIO_ROOT = "audio";
 	private Directory lucene;
 	private Analyzer analyzer;
 	private IndexReader ireader;
@@ -53,8 +51,7 @@ public class MediaLibrary {
 
 	public MediaLibrary() {
 		try {
-			lucene = FSDirectory.open(new File(Environment.M3_LIBRARY_HOME,
-					M3_LUCENE_ROOT));
+			lucene = FSDirectory.open(Environment.getLuceneFolder());
 			analyzer = new StandardAnalyzer(Version.LUCENE_36);
 			// in Lucene 4 the readonly flag is set to true per default
 			ireader = IndexReader.open(lucene, true);
@@ -98,19 +95,12 @@ public class MediaLibrary {
 		return null;
 	}
 
-	public Playlist getAllArtists() {
-		return null;
-	}
-
-	public List<Item> browse(String path) {
-		List<Item> content = new ArrayList<Item>();
-		content.addAll(FileSystemBrowser.createItemList(path));
-		return content;
+	public Object browse(String path) {
+		return FileSystemBrowser.createItemList(path);
 	}
 
 	public Artwork coverImage(String file) {
-		File root = new File(Environment.M3_LIBRARY_HOME,
-				MediaLibrary.M3_AUDIO_ROOT);
+		File root = new File(Environment.getLibraryHome(), MediaLibrary.M3_AUDIO_ROOT);
 		if (file == null || file.isEmpty()) {
 			// TODO throw Exception
 		}
@@ -149,21 +139,5 @@ public class MediaLibrary {
 		}
 
 		return result;
-	}
-
-	public static void main(String[] args) {
-		try {
-			MediaLibrary ml = new MediaLibrary();
-
-			Collection<String> fields = ml.getFieldInfos();
-			for (String field : fields) {
-				// path, cover-image, cover-image-type are not indexed
-				System.out.println(field);
-			}
-			ml.search("ärzte");
-			ml.getAllArtists();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 	}
 }
