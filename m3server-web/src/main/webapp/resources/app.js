@@ -5,61 +5,42 @@ $(document).ready(function(){
 		cssSelectorAncestor: "#jp_container_1"
 	}, [
 		{
-			title:"Cro Magnon Man",
-			mp3:"http://www.jplayer.org/audio/mp3/TSP-01-Cro_magnon_man.mp3",
+			title:"Mamma Mia",
+			mp3:"rest/library/browse/01-gold/A/ABBA/ABBA/01%20-%20Mamma%20Mia.mp3",
 		},
 		{
-			title:"Your Face",
-			mp3:"http://www.jplayer.org/audio/mp3/TSP-05-Your_face.mp3",
-		},
-		{
-			title:"Cyber Sonnet",
-			mp3:"http://www.jplayer.org/audio/mp3/TSP-07-Cybersonnet.mp3",
-		},
-		{
-			title:"Tempered Song",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-01-Tempered-song.mp3",
-		},
-		{
-			title:"Hidden",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-02-Hidden.mp3",
-		},
-		{
-			title:"Lentement",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-03-Lentement.mp3",
-		},
-		{
-			title:"Lismore",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-04-Lismore.mp3",
-		},
-		{
-			title:"The Separation",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-05-The-separation.mp3",
-		},
-		{
-			title:"Beside Me",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-06-Beside-me.mp3",
-		},
-		{
-			title:"Bubble",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-07-Bubble.mp3",
-		},
-		{
-			title:"Stirring of a Fool",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-08-Stirring-of-a-fool.mp3",
-		},
-		{
-			title:"Partir",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-09-Partir.mp3",
-		},
-		{
-			title:"Thin Ice",
-			mp3:"http://www.jplayer.org/audio/mp3/Miaow-10-Thin-ice.mp3",
+			title:"Hey, Hey Helen",
+			mp3:"http://localhost:8080/m3server-web/rest/library/browse/01-gold/A/ABBA/ABBA/02%20-%20Hey%2C%20Hey%20Helen.mp3",
 		}
 	], {
-		swfPath: "../js",
-		supplied: "mp3",
-		wmode: "window"
+	swfPath: '../js',
+	 solution: 'html, flash',
+	 supplied: 'mp3',
+	 preload: 'metadata',
+	 volume: 0.8,
+	 muted: false,
+	 backgroundColor: '#000000',
+	 cssSelectorAncestor: '#jp_container_1',
+	 cssSelector: {
+	  play: '.jp-play',
+	  pause: '.jp-pause',
+	  stop: '.jp-stop',
+	  seekBar: '.jp-seek-bar',
+	  playBar: '.jp-play-bar',
+	  mute: '.jp-mute',
+	  unmute: '.jp-unmute',
+	  volumeBar: '.jp-volume-bar',
+	  volumeBarValue: '.jp-volume-bar-value',
+	  volumeMax: '.jp-volume-max',
+	  currentTime: '.jp-current-time',
+	  duration: '.jp-duration',
+	  repeat: '.jp-repeat',
+	  repeatOff: '.jp-repeat-off',
+	  gui: '.jp-gui',
+	  noSolution: '.jp-no-solution'
+	 },
+	 errorAlerts: true,
+	 warningAlerts: true
 	});
 
 	$("#jplayer_inspector_1").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
