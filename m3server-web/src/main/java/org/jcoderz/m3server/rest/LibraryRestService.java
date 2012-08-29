@@ -38,12 +38,12 @@ public class LibraryRestService {
 	@GET
 	@Path("/browse{path:.*}")
 	public Response browse(@PathParam("path") String path) {
-		System.err.println("path: " + path);
 		Object result = ml.browse(path);
 		String mt = "application/json";
 		if (result instanceof File) {
-			mt = new MimetypesFileTypeMap().getContentType((File) result);
+			mt = "audio/mpeg3";
 		}
+		System.err.println("path: " + path + ", mt: " + mt);
 		return 	Response.ok(result, mt).build();
 	}
 
