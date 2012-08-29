@@ -71,12 +71,7 @@ public class FileSystemBrowser {
 					if (f.isDirectory()) {
 						FolderItem fi = new FolderItem();
 						fi.setPath(path);
-						// Workaround: for "#" Resource interpreted as Image but transferred with MIME type application/json: "http://localhost:8080/m3server-web/rest/library/browse/01-gold/".
-						String n = file;
-						if ("#".equals(file)) {
-							n = "_";
-						}
-						fi.setName(n);
+						fi.setName(file);
 						fi.setIcon(path + "/" + file + "/cover");
 						items.add(fi);
 					} else {
