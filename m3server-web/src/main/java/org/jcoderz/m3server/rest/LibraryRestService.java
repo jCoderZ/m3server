@@ -2,7 +2,6 @@ package org.jcoderz.m3server.rest;
 
 import java.io.File;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;

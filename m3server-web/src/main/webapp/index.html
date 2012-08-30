@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset=utf-8 />
 <title>M3Server</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
 	href="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.css" />
-<link href="resources/jQuery.jPlayer.2.1.0/skin/blue.monday/jplayer.blue.monday.css"
-	rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="resources/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="resources/app.js"></script>
 <script type="text/javascript"
 	src="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.js"></script>
-<script type="text/javascript"
-	src="resources/jQuery.jPlayer.2.1.0/jquery.jplayer.min.js"></script>
-<script type="text/javascript" src="resources/jQuery.jPlayer.2.1.0/add-on/jplayer.playlist.min.js"></script>
-<script type="text/javascript" src="resources/jQuery.jPlayer.2.1.0/add-on/jquery.jplayer.inspector.js"></script>
+
+<script type="text/javascript" src="resources/jquery.jmp3.js"></script>
 </head>
 <body>
 
@@ -37,61 +34,32 @@
 		</div>
 
 		<div data-role="content">
-			<div id="jquery_jplayer_1" class="jp-jplayer"></div>
 
-			<div id="jp_container_1" class="jp-audio">
-				<div class="jp-type-playlist">
-					<div class="jp-gui jp-interface">
-						<ul class="jp-controls">
-							<li><a href="javascript:;" class="jp-previous" tabindex="1">previous</a></li>
-							<li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
-							<li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
-							<li><a href="javascript:;" class="jp-next" tabindex="1">next</a></li>
-							<li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
-							<li><a href="javascript:;" class="jp-mute" tabindex="1"
-								title="mute">mute</a></li>
-							<li><a href="javascript:;" class="jp-unmute" tabindex="1"
-								title="unmute">unmute</a></li>
-							<li><a href="javascript:;" class="jp-volume-max"
-								tabindex="1" title="max volume">max volume</a></li>
-						</ul>
-						<div class="jp-progress">
-							<div class="jp-seek-bar">
-								<div class="jp-play-bar"></div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		// custom options
+		$("#sound").jmp3({
+			backcolor: "ffd700",
+			forecolor: "8B4513",
+			width: 300,
+			showdownload: "false"
+		});
+		$("#external").jmp3({
+			backcolor: "ffd700",
+			forecolor: "8B4513",
+			width: 300,
+			showdownload: "false"
+		});
+					
+	});
+</script>
 
-							</div>
-						</div>
-						<div class="jp-volume-bar">
-							<div class="jp-volume-bar-value"></div>
-						</div>
-						<div class="jp-current-time"></div>
-						<div class="jp-duration"></div>
-						<ul class="jp-toggles">
-							<li><a href="javascript:;" class="jp-shuffle" tabindex="1"
-								title="shuffle">shuffle</a></li>
-							<li><a href="javascript:;" class="jp-shuffle-off"
-								tabindex="1" title="shuffle off">shuffle off</a></li>
-							<li><a href="javascript:;" class="jp-repeat" tabindex="1"
-								title="repeat">repeat</a></li>
-							<li><a href="javascript:;" class="jp-repeat-off"
-								tabindex="1" title="repeat off">repeat off</a></li>
-						</ul>
-					</div>
-					<div class="jp-playlist">
-						<ul>
-							<li></li>
-						</ul>
-					</div>
-					<div class="jp-no-solution">
-						<span>Update Required</span> To play the media you will need to
-						either update your browser to a recent version or update your <a
-							href="http://get.adobe.com/flashplayer/" target="_blank">Flash
-							plugin</a>.
-					</div>
-				</div>
-			</div>
-
-			<div id="jplayer_inspector_1"></div>
+	<div id="music">
+		<p>Servlet:<br /><span id="sound" class="mp3">/m3server-web/mp3test?path=01-gold/A/ABBA/ABBA/01%20-%20Mamma%20Mia.mp3</span></p>
+		<br clear="all" />
+		<p>JAX-RS:<br /><span id="external" class="mp3">/m3server-web/rest/library/browse/01-gold/A/ABBA/ABBA/01%20-%20Mamma%20Mia.mp3</span></p>
+		<br clear="all" />
+	</div>
 
 
 		</div>

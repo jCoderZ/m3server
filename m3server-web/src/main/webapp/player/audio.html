@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test download from servlet and jax-rs</title>
+<meta charset=utf-8 />
+</head>
+<body>
+
+<h1>Internet</h1>
+
+<audio controls="controls" autobuffer="autobuffer" preload="none" autoplay="false" src="http://www.jplayer.org/audio/mp3/Miaow-03-Lentement.mp3" >
+  Your browser does not support the audio element.
+</audio>
+
+<h1>Servlet</h1>
+
+<audio controls="controls" autobuffer="autobuffer" preload="none" autoplay="false" src="/m3server-web/mp3test?path=01-gold/A/ABBA/ABBA/01%20-%20Mamma%20Mia.mp3" >
+  Your browser does not support the audio element.
+</audio>
+<!-- 
+<h1>JAX-RS (RESTEasy)</h1>
+
+<audio controls="controls" autobuffer="autobuffer" preload="none" autoplay="false">
+  <source src="/m3server-web/rest/library/browse/01-gold/A/ABBA/ABBA/01%20-%20Mamma%20Mia.mp3" type="audio/mpeg" />
+  Your browser does not support the audio element.
+</audio>
+ -->
+</body>
+</html>
