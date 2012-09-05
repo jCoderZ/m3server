@@ -5,11 +5,6 @@ $(document).ready(function(){
 		jPlayer: "#jquery_jplayer_1",
 		cssSelectorAncestor: "#jp_container_1"
 	}, [
-		{
-			title:"For Starters",
-			mp3:"rest/library/browse/01-gold/A/A/A%20vs.%20Monkey%20Kong/01%20-%20For%20Starters.mp3",
-			poster: "rest/library/browse/01-gold/A/A/A%20vs.%20Monkey%20Kong/01%20-%20For%20Starters.mp3/cover"
-		}
 	], {
 		swfPath: "jQuery.jPlayer.2.1.0",
 		supplied: "oga, mp3",
