@@ -85,8 +85,7 @@ function browse(path) {
 			if (p != null && p != "") {
 				segment = p + '/' + encodeURIComponent(val.name);
 			}
-			if (val.name.substring(-4) === ".mp3") {
-				alert("file=" + val.name);
+			if (val.name.endsWith(".mp3")) {
 				$('#browseresultlist').append($('<li>').append($('<a/>', {
 				    'href': 'rest/library/browse/' + segment,
 				    'class': 'browselink',
@@ -94,11 +93,10 @@ function browse(path) {
 				    'click': function(event) {
 						event.preventDefault();
 				    	playlist.add({
-				    		  title:"Tempered Song",
-				    		  artist:"Miaow",
-				    		  mp3:"http://www.jplayer.org/audio/mp3/Miaow-01-Tempered-song.mp3",
-				    		  oga:"http://www.jplayer.org/audio/ogg/Miaow-01-Tempered-song.ogg",
-				    		  poster: "http://www.jplayer.org/audio/poster/Miaow_640x360.png"
+				    		  title: val.name,
+				    		  artist: val.artist,
+				    		  mp3:"rest/library/browse/" + segment,
+				    		  poster: "rest/library/browse/" + segment + "/cover"
 				    		});
 				    	return false;
 				    }
@@ -123,7 +121,7 @@ function browse(path) {
 			}
         });
 		$('#browseresultlist').listview("refresh");
-    }).error(function() { alert("error: '" + path + "'"); });
+    }).error(function() { alert("browse error: '" + path + "'"); });
 }
 
 function stripTrailingSlash(path) {
@@ -142,3 +140,7 @@ function stripLeadingSlash(path) {
 	return result;
 }
 
+String.prototype.endsWith = function(pattern) {
+    var d = this.length - pattern.length;
+    return d >= 0 && this.lastIndexOf(pattern) === d;
+};

@@ -38,6 +38,7 @@ jQuery.fn.jmp3 = function(passedOptions){
 		"backcolor": "",									// background color
 		"forecolor": "ffffff",								// foreground color (buttons)
 		"width": "25",										// width of player
+		"height": "500",										// width of player
 		"repeat": "no",										// repeat mp3?
 		"volume": "50",										// mp3 volume (0-100)
 		"autoplay": "false",								// play immediately on page load?
@@ -59,14 +60,14 @@ jQuery.fn.jmp3 = function(passedOptions){
 		if (validfilename == -1) { return false; }
 		// build the player HTML
 		var mp3html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
-		mp3html += 'width="' + options.width + '" height="20" ';
+		mp3html += 'width="' + options.width + '" height="' + options.height + '" ';
 		mp3html += 'codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab">';
 		mp3html += '<param name="movie" value="' + playerpath + 'singlemp3player.swf?';
 		mp3html += 'showDownload=' + options.showdownload + '&file=' + filename + '&autoStart=' + options.autoplay;
 		mp3html += '&backColor=' + options.backcolor + '&frontColor=' + options.forecolor;
 		mp3html += '&repeatPlay=' + options.repeat + '&songVolume=' + options.volume + '" />';
 		mp3html += '<param name="wmode" value="transparent" />';
-		mp3html += '<embed wmode="transparent" width="' + options.width + '" height="20" ';
+		mp3html += '<embed wmode="transparent" width="' + options.width + '" height="' + options.height + '" ';
 		mp3html += 'src="' + playerpath + 'singlemp3player.swf?'
 		mp3html += 'showDownload=' + options.showdownload + '&file=' + filename + '&autoStart=' + options.autoplay;
 		mp3html += '&backColor=' + options.backcolor + '&frontColor=' + options.forecolor;
