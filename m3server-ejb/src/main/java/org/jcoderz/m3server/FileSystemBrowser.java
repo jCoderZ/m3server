@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jcoderz.mp3.intern.MusicBrainzMetadata;
 import org.jcoderz.mp3.intern.util.Environment;
 
 /**
@@ -75,11 +76,15 @@ public class FileSystemBrowser {
 						fi.setIcon(path + "/" + file + "/cover");
 						items.add(fi);
 					} else {
-						FileItem fi = new FileItem();
+						MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
+						AudioFileItem fi = new AudioFileItem();
 						fi.setPath(path);
 						fi.setSize(f.length());
 						fi.setPath(path);
 						fi.setName(file);
+						fi.setAlbum(mb.getAlbum());
+						fi.setArtist(mb.getArtist());
+						fi.setTitle(mb.getTitle());
 						fi.setIcon(path + "/" + file + "/cover");
 						fi.setUrl(path + "/" + file);
 						items.add(fi);

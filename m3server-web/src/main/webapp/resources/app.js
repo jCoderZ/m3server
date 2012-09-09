@@ -41,7 +41,19 @@ function search(term) {
 		$('#searchresultlist').empty();
 		jQuery.each(json.mp3, function(i, val) {
 			$('#searchresultlist').append($('<li>').append($('<a/>', {
-			    'href': 'rest/library/browse/' + val['path']
+			    'href': 'rest/library/browse/' + val['path'],
+			    'class': 'browselink',
+			    'text': val.name,
+			    'click': function(event) {
+					event.preventDefault();
+			    	playlist.add({
+			    		  title: val.title,
+			    		  artist: val.artist,
+			    		  mp3:"rest/library/browse/" + val['path'],
+			    		  poster: "rest/library/browse/" + val['path'] + "/cover"
+			    		});
+			    	return false;
+			    }
 			}).append($('<h3>', {
 			    'text': val['title']
 			})).append($('<p>', {
@@ -88,7 +100,7 @@ function browse(path) {
 				    'click': function(event) {
 						event.preventDefault();
 				    	playlist.add({
-				    		  title: val.name,
+				    		  title: val.title,
 				    		  artist: val.artist,
 				    		  mp3:"rest/library/browse/" + segment,
 				    		  poster: "rest/library/browse/" + segment + "/cover"
