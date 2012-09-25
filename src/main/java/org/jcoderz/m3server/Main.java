@@ -29,7 +29,7 @@ public class Main {
          ResourceConfig rc = new PackagesResourceConfig("org.jcoderz.m3server.rest");
          rc.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
          HttpServer httpServer = GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
-         httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("/home/micha/workspaces/jcoderz/m3server/src/main/webapp"),"/test");
+         httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("/home/micha/workspaces/jcoderz/m3server/src/main/webapp"), "/ui");
          return httpServer;
      }
      

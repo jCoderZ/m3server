@@ -37,11 +37,11 @@ $(document).ready(function(){
 });
 
 function search(term) {
-    var jqxhr = $.getJSON("rest/library/search?term=" + term, function(json) {
+    var jqxhr = $.getJSON("library/search?term=" + term, function(json) {
 		$('#searchresultlist').empty();
 		jQuery.each(json.mp3, function(i, val) {
 			$('#searchresultlist').append($('<li>').append($('<a/>', {
-			    'href': 'rest/library/browse/' + val['path'],
+			    'href': 'library/browse/' + val['path'],
 			    'class': 'browselink',
 			    'text': val.name,
 			    'click': function(event) {
@@ -49,8 +49,8 @@ function search(term) {
 			    	playlist.add({
 			    		  title: val.title,
 			    		  artist: val.artist,
-			    		  mp3:"rest/library/browse/" + val['path'],
-			    		  poster: "rest/library/browse/" + val['path'] + "/cover"
+			    		  mp3:"library/browse/" + val['path'],
+			    		  poster: "library/browse/" + val['path'] + "/cover"
 			    		});
 			    	return false;
 			    }
@@ -68,22 +68,22 @@ function browse(path) {
 	p = stripTrailingSlash(path);
 	p = stripLeadingSlash(p);
 	
-    var jqxhr = $.getJSON("rest/library/browse/" + p, function(json) {
+    var jqxhr = $.getJSON("library/browse/" + p, function(json) {
 		$('#browseresultlist').empty();
 		// show ".." only when we are not already at the top
 		if (p != null && p != "") {
 			$('#browseresultlist').append($('<li>').append($('<a/>', {
-			    'href': 'rest/library/browse/' + p + '/../',
+			    'href': 'library/browse/' + p + '/../',
 			    'class': 'browselink',
 			    'text': '..',
 			    'click': function(event) {
 					event.preventDefault();
-					var path = this.href.replace(/^.*\/rest\/library\/browse/, '');
+					var path = this.href.replace(/^.*\/library\/browse/, '');
 					browse(path);
 			    	return false;
 			    }
 			}).append($('<img/>', {
-				'src': 'rest/library/browse/' + p + '/../cover'
+				'src': 'library/browse/' + p + '/../cover'
 			}))));
 		}
     
@@ -94,7 +94,7 @@ function browse(path) {
 			}
 			if (val.name.endsWith(".mp3")) {
 				$('#browseresultlist').append($('<li>').append($('<a/>', {
-				    'href': 'rest/library/browse/' + segment,
+				    'href': 'library/browse/' + segment,
 				    'class': 'browselink',
 				    'text': val.name,
 				    'click': function(event) {
@@ -102,28 +102,28 @@ function browse(path) {
 				    	playlist.add({
 				    		  title: val.title,
 				    		  artist: val.artist,
-				    		  mp3:"rest/library/browse/" + segment,
-				    		  poster: "rest/library/browse/" + segment + "/cover"
+				    		  mp3:"library/browse/" + segment,
+				    		  poster: "library/browse/" + segment + "/cover"
 				    		});
 				    	return false;
 				    }
 				}).append($('<img/>', {
-					'src': 'rest/library/browse/' + segment + '/cover'
+					'src': 'library/browse/' + segment + '/cover'
 				}))));
 			}
 			else {
 				$('#browseresultlist').append($('<li>').append($('<a/>', {
-				    'href': 'rest/library/browse/' + segment,
+				    'href': 'library/browse/' + segment,
 				    'class': 'browselink',
 				    'text': val.name,
 				    'click': function(event) {
 						event.preventDefault();
-						var path = this.href.replace(/^.*\/rest\/library\/browse/, '');
+						var path = this.href.replace(/^.*\/library\/browse/, '');
 						browse(path);
 				    	return false;
 				    }
 				}).append($('<img/>', {
-					'src': 'rest/library/browse/' + segment + '/cover'
+					'src': 'library/browse/' + segment + '/cover'
 				}))));
 			}
         });
