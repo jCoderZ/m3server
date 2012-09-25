@@ -6,7 +6,7 @@
 	<artifactId>m3server</artifactId>
 	<name>m3server application</name>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 	<description>This is the Maven base project for the m3server modules.</description>
 	<url>https://github.com/jCoderZ/m3server/</url>
 	<organization>
@@ -26,12 +26,6 @@
 		<artifactId>oss-parent</artifactId>
 		<version>7</version>
 	</parent>
-
-	<modules>
-		<module>m3server-ejb</module>
-		<module>m3server-web</module>
-		<module>m3server-ear</module>
-	</modules>
 
 	<scm>
 		<url>git@github.com:jCoderZ/m3server.git</url>
@@ -61,92 +55,67 @@
 		</developer>
 	</developers>
 
-	<properties>
-		<!-- Explicitly declaring the source encoding eliminates the following 
-			message: -->
-		<!-- [WARNING] Using platform encoding (UTF-8 actually) to copy filtered 
-			resources, i.e. build is platform dependent! -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- Define the version of JBoss' Java EE 6 APIs and Tools we want to import. -->
-		<jboss.bom.version>1.0.0.Final</jboss.bom.version>
-		<!-- Alternatively, comment out the above line, and un-comment the line 
-			below to use version 1.0.0.M12-redhat-1 which is a release certified to work 
-			with JBoss EAP 6. It requires you have access to the JBoss EAP 6 maven repository. -->
-		<!-- <jboss.bom.version>1.0.0.M12-redhat-1</jboss.bom.version>> -->
-	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-
-			<!-- Define the version of the EJB jar so that we don't need to repeat 
-				ourselves in every module -->
-			<dependency>
-				<groupId>org.jcoderz.m3server</groupId>
-				<artifactId>m3server-ejb</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-				<type>ejb</type>
-			</dependency>
-
-			<!-- Define the version of the WAR so that we don't need to repeat ourselves 
-				in every module -->
-			<dependency>
-				<groupId>org.jcoderz.m3server</groupId>
-				<artifactId>m3server-web</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-				<type>war</type>
-				<scope>compile</scope>
-			</dependency>
-
-			<!-- JBoss distributes a complete set of Java EE 6 APIs including a Bill 
-				of Materials (BOM). A BOM specifies the versions of a "stack" (or a collection) 
-				of artifacts. We use this here so that we always get the correct versions 
-				of artifacts. Here we use the jboss-javaee-6.0-with-tools stack (you can 
-				read this as the JBoss stack of the Java EE 6 APIs, with some extras tools 
-				for your project, such as Arquillian for testing) and the jboss-javaee-6.0-with-hibernate 
-				stack you can read this as the JBoss stack of the Java EE 6 APIs, with extras 
-				from the Hibernate family of projects) -->
-			<dependency>
-				<groupId>org.jboss.bom</groupId>
-				<artifactId>jboss-javaee-6.0-with-tools</artifactId>
-				<version>${jboss.bom.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.bom</groupId>
-				<artifactId>jboss-javaee-6.0-with-hibernate</artifactId>
-				<version>${jboss.bom.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
-			<!-- JSR-303 (Bean Validation) Implementation -->
-			<!-- Provides portable constraints such as @Email -->
-			<!-- Hibernate Validator is shipped in JBoss AS 7 -->
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-validator</artifactId>
-				<version>4.2.0.Final</version>
-				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>org.slf4j</groupId>
-						<artifactId>slf4j-api</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<!-- Test dependencies -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.10</version>
-				<type>jar</type>
-				<scope>test</scope>
-			</dependency>
-
-		</dependencies>
-	</dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>3.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jcoderz.m3dditiez</groupId>
+			<artifactId>mp3-ng</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs-all</artifactId>
+			<version>2.3.4.Final</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.teleal.cling</groupId>
+			<artifactId>cling-core</artifactId>
+			<version>1.0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.14</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-grizzly2</artifactId>
+			<version>1.14</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.grizzly</groupId>
+			<artifactId>grizzly-http-servlet-server</artifactId>
+			<version>2.2.15</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>1.14</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<pluginManagement>
@@ -157,21 +126,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>2.3.2</version>
 					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
-					</configuration>
-				</plugin>
-				<!-- The JBoss AS plugin deploys your ear to a local JBoss AS container -->
-				<!-- Due to Maven's lack of intelligence with EARs we need to configure 
-					the jboss-as maven plugin to skip deployment for all modules. We then enable 
-					it specifically in the ear module. -->
-				<plugin>
-					<groupId>org.jboss.as.plugins</groupId>
-					<artifactId>jboss-as-maven-plugin</artifactId>
-					<version>7.1.1.Final</version>
-					<inherited>true</inherited>
-					<configuration>
-						<skip>true</skip>
+						<source>1.7</source>
+						<target>1.7</target>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -188,4 +144,13 @@
 		</plugins>
 	</reporting>
 
+	<repositories>
+		<repository>
+			<id>4thline.org-repo</id>
+			<url>http://4thline.org/m2</url>
+			<snapshots>
+				<enabled>false</enabled> <!-- Or 'true', if you want -->
+			</snapshots>
+		</repository>
+	</repositories>
 </project>
