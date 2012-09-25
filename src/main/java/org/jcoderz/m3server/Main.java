@@ -6,6 +6,7 @@ import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
 import org.jcoderz.m3server.rest.Mp3Test;
@@ -27,7 +28,9 @@ public class Main {
          System.out.println("Starting grizzly...");
          ResourceConfig rc = new PackagesResourceConfig("org.jcoderz.m3server.rest");
          rc.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
-         return GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
+         HttpServer httpServer = GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
+         httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("/home/micha/workspaces/jcoderz/m3server/src/main/webapp"),"/test");
+         return httpServer;
      }
      
      public static void main(String[] args) throws IOException {
