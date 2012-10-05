@@ -6,63 +6,64 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @SuppressWarnings("serial")
 public class Mp3Info implements Serializable {
-	String artist;
-	String title;
-	String album;
-	String path;
-	String released;
-	long size;
 
-	public String getArtist() {
-		return artist;
-	}
+    String artist;
+    String title;
+    String album;
+    String path;
+    String released;
+    long size;
 
-	public void setArtist(String artist) {
-		this.artist = artist;
-	}
+    public String getArtist() {
+        return artist;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getAlbum() {
-		return album;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setAlbum(String album) {
-		this.album = album;
-	}
+    public String getAlbum() {
+        return album;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public void setAlbum(String album) {
+        this.album = album;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public String getReleased() {
-		return released;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	public void setReleased(String released) {
-		this.released = released;
-	}
+    public String getReleased() {
+        return released;
+    }
 
-	public long getSize() {
-		return size;
-	}
+    public void setReleased(String released) {
+        this.released = released;
+    }
 
-	public void setSize(long size) {
-		this.size = size;
-	}
+    public long getSize() {
+        return size;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

@@ -71,9 +71,9 @@ public final class ProtocolAdapterRegistry {
      * Starts all registered protocol adapters.
      */
     public static void startupAdapters() {
-        logger.log(Level.INFO, "Starting " + adapters.size() + " adapters");
+        logger.log(Level.INFO, "Starting {0} adapters", adapters.size());
         for (ProtocolAdapter pa : adapters.values()) {
-            logger.log(Level.INFO, "Starting adapter " + pa.getName());
+            logger.log(Level.INFO, "Starting adapter {0}", pa.getName());
             pa.startup();
         }
     }

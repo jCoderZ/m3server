@@ -13,16 +13,14 @@ import org.jcoderz.m3server.renderer.Renderer;
 @Path("/renderer")
 public class RendererService {
 
-	@GET
-	@Path("/search")
-	@Produces("application/json")
-	public Response renderers() {
-		List<Renderer> r = new ArrayList<Renderer>();
+    @GET
+    @Path("/search")
+    @Produces("application/json")
+    public Response renderers() {
+        List<Renderer> r = new ArrayList<Renderer>();
 //		Playlist pl = ml.search(term);
 //		System.out.println("term=" + term + " -> " + pl);
 //		return pl;
-		return Response.ok(r.toArray(new Renderer[r.size()])).build();
-	}
-
-
+        return Response.ok(r.toArray(new Renderer[r.size()])).build();
+    }
 }

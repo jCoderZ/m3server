@@ -14,8 +14,8 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.jcoderz.m3server.Main;
 
 /**
- * ClasspathHttpHandler processes requests to static resources inside a
- * Java archive (JAR).
+ * ClasspathHttpHandler processes requests to static resources inside a Java
+ * archive (JAR).
  *
  * @author mrumpf
  */

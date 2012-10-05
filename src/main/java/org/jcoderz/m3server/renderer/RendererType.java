@@ -5,4 +5,7 @@ package org.jcoderz.m3server.renderer;
  *
  * @author mrumpf
  */
-public enum RendererType {MPD, UPNP, AIRPLAY}
+public enum RendererType {
+
+    MPD, UPNP, AIRPLAY
+}

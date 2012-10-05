@@ -2,7 +2,7 @@ package org.jcoderz.m3server.protocol;
 
 /**
  * TODO: No yet implemented
- * 
+ *
  * @author mrumpf
  */
 public class AirplayProtocolAdapter extends ProtocolAdapter {
@@ -16,7 +16,7 @@ public class AirplayProtocolAdapter extends ProtocolAdapter {
     public void shutdown() {
         // do nothing
     }
-    
+
     @Override
     public String getName() {
         return AirplayProtocolAdapter.class.getSimpleName();

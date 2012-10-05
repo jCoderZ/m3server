@@ -9,8 +9,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.grizzly.http.server.HttpServer;
 
 /**
- * This is the HTTP adapter that provides the REST services and the
- * jQuery UI.
+ * This is the HTTP adapter that provides the REST services and the jQuery UI.
  *
  * @author mrumpf
  */
@@ -23,7 +22,6 @@ public class HttpProtocolAdapter extends ProtocolAdapter {
     public static final String HTTP_STATIC_CONTENT_ROOT_FOLDER_KEY = "http.static.content.root.folder";
     public static final String HTTP_STATIC_CONTENT_ROOT_CONTEXT_KEY = "http.static.content.root.context";
     public static final String HTTP_PACKAGE_RESOURCE_KEY = "http.package.resources";
-
     private HttpServer httpServer;
 
     @Override
