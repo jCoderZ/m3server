@@ -1,49 +1,39 @@
 package org.jcoderz.m3server;
 
 import java.io.IOException;
-import java.net.URI;
+import java.util.Properties;
+import org.jcoderz.m3server.protocol.HttpProtocolAdapter;
+import org.jcoderz.m3server.protocol.ProtocolAdapterRegistry;
+import org.jcoderz.m3server.protocol.UpnpProtocolAdapter;
 
-import javax.ws.rs.core.UriBuilder;
-
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.StaticHttpHandler;
-import org.glassfish.grizzly.servlet.ServletRegistration;
-import org.glassfish.grizzly.servlet.WebappContext;
-import org.jcoderz.m3server.rest.Mp3Test;
-
-import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.api.json.JSONConfiguration;
-
+/**
+ * This is the main entry point for the m3server.
+ *
+ * @author mrumpf
+ */
 public class Main {
 
-    private static URI getBaseURI() {
-         return UriBuilder.fromUri("http://localhost/").port(9998).build();
-     }
- 
-     public static final URI BASE_URI = getBaseURI();
- 
-     protected static HttpServer startServer() throws IOException {
-         System.out.println("Starting grizzly...");
-         ResourceConfig rc = new PackagesResourceConfig("org.jcoderz.m3server.rest");
-         rc.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
-         HttpServer httpServer = GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
-         httpServer.getServerConfiguration().addHttpHandler(new StaticHttpHandler("/home/micha/workspaces/jcoderz/m3server/src/main/webapp"), "/ui");
-         return httpServer;
-     }
-     
-     public static void main(String[] args) throws IOException {
-         HttpServer httpServer = startServer();
+    public static void main(String[] args) throws IOException {
 
-         WebappContext ctx = new WebappContext("Test", "/contextPath");
+        Properties httpProps = new Properties();
+        httpProps.put(HttpProtocolAdapter.HTTP_PORT_KEY, 8080);
+        httpProps.put(HttpProtocolAdapter.HTTP_REST_SERVICES_ROOT_CONTEXT_KEY, "m3server/rest");
+        httpProps.put(HttpProtocolAdapter.HTTP_PROTOCOL_KEY, "http");
+        httpProps.put(HttpProtocolAdapter.HTTP_HOSTNAME_KEY, "localhost");
+        httpProps.put(HttpProtocolAdapter.HTTP_PACKAGE_RESOURCE_KEY, "org.jcoderz.m3server.rest");
+        httpProps.put(HttpProtocolAdapter.HTTP_STATIC_CONTENT_ROOT_FOLDER_KEY, "/home/micha/workspaces/jcoderz/m3server/src/main/resources/ui");
+        httpProps.put(HttpProtocolAdapter.HTTP_STATIC_CONTENT_ROOT_CONTEXT_KEY, "/ui");
+        ProtocolAdapterRegistry.register(HttpProtocolAdapter.class, httpProps);
 
-         final ServletRegistration reg = ctx.addServlet("xxx", new Mp3Test());
-         ctx.deploy(httpServer);
-         System.out.println(String.format("Jersey app started with WADL available at "
-                 + "%sapplication.wadl\nTry out %shelloworld\nHit enter to stop it...",
-                 BASE_URI, BASE_URI));
-         System.in.read();
-         httpServer.stop();
-     }    
+//        not yet supported
+//        Properties airplayProps = new Properties();
+//        ProtocolAdapterRegistry.register(AirplayProtocolAdapter.class, airplayProps);
+
+        Properties upnpProps = new Properties();
+        ProtocolAdapterRegistry.register(UpnpProtocolAdapter.class, upnpProps);
+
+        ProtocolAdapterRegistry.startupAdapters();
+        ProtocolAdapterRegistry.waitForTermination();
+        ProtocolAdapterRegistry.shutdownAdapters();
+    }
 }

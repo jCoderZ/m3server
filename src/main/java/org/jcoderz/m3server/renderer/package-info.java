@@ -1,7 +1,6 @@
 /**
- * The idea is to create an abstraction layer on different remote audio 
- * playing solutions. The m3server provides a common set of features, which
- * the renderers must implement.
+ * This package provides classes for implementing an abstraction layer
+ * on different remote audio playing solutions and for managing devices.
  * 
  * @author mrumpf
  *
