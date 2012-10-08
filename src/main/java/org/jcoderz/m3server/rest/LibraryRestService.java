@@ -10,8 +10,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.jaudiotagger.tag.datatype.Artwork;
-import org.jcoderz.m3server.MediaLibrary;
-import org.jcoderz.m3server.Playlist;
+import org.jcoderz.m3server.library.MediaLibrary;
+import org.jcoderz.m3server.library.Playlist;
 
 /**
  * This class provides a RESTful service to the MediaLibrary functionality.
@@ -21,20 +21,11 @@ import org.jcoderz.m3server.Playlist;
 @Path("/library")
 public class LibraryRestService {
 
-    private MediaLibrary ml;
-
-    /**
-     * Default constructor.
-     */
-    public LibraryRestService() {
-        ml = new MediaLibrary();
-    }
-
     @GET
     @Path("/search")
     @Produces("application/json")
     public Playlist search(@QueryParam("term") String term) {
-        Playlist pl = ml.search(term);
+        Playlist pl = MediaLibrary.getMediaLibrary().search(term);
         System.out.println("term=" + term + " -> " + pl);
         return pl;
     }
@@ -42,7 +33,7 @@ public class LibraryRestService {
     @GET
     @Path("/browse{path:.*}")
     public Response browse(@PathParam("path") String path) {
-        Object result = ml.browse(path);
+        Object result = MediaLibrary.getMediaLibrary().browse(path);
         String mt = "application/json";
         if (result instanceof File) {
             mt = "audio/mpeg";
@@ -56,7 +47,7 @@ public class LibraryRestService {
     @GET
     @Path("/browse{path:.*}/cover")
     public Response cover(@PathParam("path") String path) {
-        Artwork c = ml.coverImage(path);
+        Artwork c = MediaLibrary.getMediaLibrary().coverImage(path);
         // Workaround for wrong mime-type: Chrome is reporting: "Resource interpreted as Image but transferred with MIME type image/jpg"
         String mt = c.getMimeType();
         if ("image/jpg".equals(mt)) {

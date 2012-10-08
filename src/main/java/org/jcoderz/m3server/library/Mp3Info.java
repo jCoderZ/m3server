@@ -1,4 +1,4 @@
-package org.jcoderz.m3server;
+package org.jcoderz.m3server.library;
 
 import java.io.Serializable;
 

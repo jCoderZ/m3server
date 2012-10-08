@@ -1,4 +1,4 @@
-package org.jcoderz.m3server;
+package org.jcoderz.m3server.library;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +31,7 @@ import org.jcoderz.mp3.intern.util.Environment;
 public class MediaLibrary {
 
     private static final String M3_AUDIO_ROOT = "audio";
+    private static final MediaLibrary ml;
 
     static {
         if (!Environment.M3_LIBRARY_HOME.exists()
@@ -39,13 +40,14 @@ public class MediaLibrary {
                     + Environment.M3_LIBRARY_HOME
                     + " does not exist or is not a directory");
         }
+        ml = new MediaLibrary();
     }
     private Directory lucene;
     private Analyzer analyzer;
     private IndexReader ireader;
     private IndexSearcher isearcher;
 
-    public MediaLibrary() {
+    private MediaLibrary() {
         try {
             lucene = FSDirectory.open(Environment.getLuceneFolder());
             analyzer = new StandardAnalyzer(Version.LUCENE_36);
@@ -55,6 +57,10 @@ public class MediaLibrary {
         } catch (IOException ex) {
             throw new RuntimeException("Initialization failed", ex);
         }
+    }
+
+    public static MediaLibrary getMediaLibrary() {
+        return ml;
     }
 
     public Collection<String> getFieldInfos() {

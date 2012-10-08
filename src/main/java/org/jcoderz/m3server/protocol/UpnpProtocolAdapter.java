@@ -5,10 +5,12 @@ import java.util.logging.Logger;
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
 import org.jcoderz.m3server.renderer.UpnpRenderer;
+import org.jcoderz.m3server.server.UpnpMediaServer;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.model.meta.RemoteDevice;
+import org.teleal.cling.model.meta.Service;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
 
@@ -22,11 +24,15 @@ public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryList
     private static final Logger logger = Logger.getLogger(UpnpProtocolAdapter.class.getName());
     private static final String MEDIA_RENDERER = "MediaRenderer";
     private UpnpService upnpService;
+    private LocalDevice mediaServerDevice;
 
     @Override
     public void startup() {
         // UPnP discovery is asynchronous, we need a callback
         upnpService = new UpnpServiceImpl(this);
+
+        mediaServerDevice = UpnpMediaServer.createDevice();
+        upnpService.getRegistry().addDevice(mediaServerDevice);
 
         // broadcast an immediate search message for all devices
         upnpService.getControlPoint().search();
@@ -34,6 +40,7 @@ public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryList
 
     @Override
     public void shutdown() {
+        upnpService.getRegistry().removeDevice(mediaServerDevice);
         upnpService.shutdown();
     }
 
@@ -49,8 +56,11 @@ public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryList
         if (MEDIA_RENDERER.equals(device.getType().getType())) {
             Renderer r = RendererRegistry.findRenderer(device.getDetails().getFriendlyName());
             if (r == null) {
-                RendererRegistry.addRenderer(new UpnpRenderer(device));
+                r = new UpnpRenderer(upnpService, device);
+                RendererRegistry.addRenderer(r);
             }
+            //logger.log(Level.INFO, "Playing: ");
+            //r.play("http://dradio_mp3_dlf_m.akacast.akamaistream.net/7/249/142684/v1/gnl.akacast.akamaistream.net/dradio_mp3_dlf_m");
         }
     }
 

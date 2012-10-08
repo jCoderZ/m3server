@@ -3,8 +3,7 @@ package org.jcoderz.m3server.renderer;
 import java.net.URL;
 
 /**
- * The Renderer interface. <ul> <li>MPD</li> <li>UPnP</li> <li>AirPlay</li>
- * <li>...</li> </ul>
+ * The Renderer interface.
  *
  * @author mrumpf
  *
@@ -30,5 +29,15 @@ public interface Renderer {
      *
      * @param url the URL to play
      */
-    void play(URL url);
+    void play(String url);
+
+    /**
+     * Stops playback of the renderer.
+     */
+    void stop();
+
+    /**
+     * Pauses playback of the renderer.
+     */
+    void pause();
 }

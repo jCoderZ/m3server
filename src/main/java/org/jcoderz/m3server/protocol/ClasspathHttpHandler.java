@@ -11,7 +11,6 @@ import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.http.server.io.OutputBuffer;
 import org.glassfish.grizzly.http.server.util.MimeType;
 import org.glassfish.grizzly.http.util.HttpStatus;
-import org.jcoderz.m3server.Main;
 
 /**
  * ClasspathHttpHandler processes requests to static resources inside a Java
@@ -22,7 +21,17 @@ import org.jcoderz.m3server.Main;
 public class ClasspathHttpHandler extends HttpHandler {
 
     private static final Logger LOGGER = Grizzly.logger(ClasspathHttpHandler.class);
+    private Class clazz;
 
+    /**
+     * Constructor.
+     *
+     * @param c the resource as the root for the resource lookup
+     */
+    public ClasspathHttpHandler(Class c) {
+        clazz = c;
+    }
+    
     @Override
     public void service(final Request request, final Response response) throws Exception {
         final String uri = getRelativeURI(request);
@@ -86,7 +95,7 @@ public class ClasspathHttpHandler extends HttpHandler {
         if (dot < 0) {
             uri = uri + "index.html";
         }
-        InputStream is = Main.class.getResourceAsStream(uri);
+        InputStream is = clazz.getResourceAsStream(uri);
         if (is == null) {
             return found;
         } else {
