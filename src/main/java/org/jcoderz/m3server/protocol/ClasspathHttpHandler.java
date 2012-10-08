@@ -95,7 +95,8 @@ public class ClasspathHttpHandler extends HttpHandler {
         if (dot < 0) {
             uri = uri + "index.html";
         }
-        InputStream is = clazz.getResourceAsStream(uri);
+        // TODO: "ui" prefix ???
+        InputStream is = clazz.getResourceAsStream("ui/" + uri);
         if (is == null) {
             return found;
         } else {
