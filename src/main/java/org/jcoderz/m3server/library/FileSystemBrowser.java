@@ -26,12 +26,12 @@ public class FileSystemBrowser {
 
     static {
         InputStream folderInputStream = Thread.currentThread()
-                .getContextClassLoader().getResourceAsStream("folder.png");
+                .getContextClassLoader().getResourceAsStream("org/jcoderz/m3server/ui/resources/images/folder.png");
 
         FOLDER_ICON_DEFAULT = readFromStream(folderInputStream);
         InputStream fileInputStream = Thread.currentThread()
                 .getContextClassLoader()
-                .getResourceAsStream("audio-x-generic.png");
+                .getResourceAsStream("org/jcoderz/m3server/ui/resources/images/audio-x-generic.png");
         FILE_ICON_DEFAULT = readFromStream(fileInputStream);
     }
 
