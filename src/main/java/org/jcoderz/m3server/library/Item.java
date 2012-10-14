@@ -8,17 +8,36 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class Item {
 
+    private MimeType mimetype;
     private String path;
     private String name;
     private String icon;
+    private String creator;
 
     public Item() {
     }
 
-    public Item(String path, String name, String icon) {
+    public Item(String path, String name, String icon, String creator) {
         this.path = path;
         this.name = name;
         this.icon = icon;
+        this.creator = creator;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public MimeType getMimetype() {
+        return mimetype;
+    }
+
+    public void setMimetype(MimeType mimetype) {
+        this.mimetype = mimetype;
     }
 
     public String getIcon() {

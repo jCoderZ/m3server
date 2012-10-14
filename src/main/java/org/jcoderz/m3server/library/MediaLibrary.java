@@ -3,11 +3,13 @@ package org.jcoderz.m3server.library;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -87,7 +89,7 @@ public class MediaLibrary {
                 mp3.setSize(size != null ? Long.valueOf(size) : 0L);
                 pl.getMp3().add(mp3);
             }
-        } catch (Exception ex) {
+        } catch (ParseException | IOException | NumberFormatException ex) {
             ex.printStackTrace();
         }
         return pl;
@@ -97,7 +99,7 @@ public class MediaLibrary {
         return null;
     }
 
-    public Object browse(String path) {
+    public List<Item> browse(String path) {
         return FileSystemBrowser.createItemList(path);
     }
 
@@ -132,6 +134,7 @@ public class MediaLibrary {
             result = mb.getCoverImage();
             // when no image has been found inside the file
             if (result == null || result.getBinaryData() == null) {
+                result = new Artwork();
                 result.setBinaryData(FileSystemBrowser.FILE_ICON_DEFAULT);
                 result.setMimeType("image/png");
             }

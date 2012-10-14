@@ -1,15 +1,12 @@
 package org.jcoderz.m3server.library;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  *
  * @author mrumpf
  */
 public class FolderItem extends Item {
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public FolderItem(String path, String name, String icon, String creator) {
+        super(path, name, icon, creator);
     }
 }

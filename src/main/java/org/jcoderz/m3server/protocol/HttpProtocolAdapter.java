@@ -39,8 +39,7 @@ public class HttpProtocolAdapter extends ProtocolAdapter {
                     + getString(HTTP_REST_SERVICES_ROOT_CONTEXT_KEY)).port(getInteger(HTTP_PORT_KEY)).build();
             logger.log(Level.INFO, "HTTP server REST services: {0}", uri);
             httpServer = GrizzlyServerFactory.createHttpServer(uri, rc);
-            //String uiRoot = getString(HTTP_STATIC_CONTENT_ROOT_CONTEXT_KEY);
-            //logger.log(Level.INFO, "HTTP server UI: {0}", uiRoot);
+            // bind static content to root folder
             httpServer.getServerConfiguration().addHttpHandler(new ClasspathHttpHandler(Main.class), "/");
         } catch (IOException ex) {
             throw new ProtocolAdapterException("Failed to start the HTTP server", ex);

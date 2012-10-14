@@ -50,12 +50,11 @@ public class FileSystemBrowser {
         return out.toByteArray();
     }
 
-    public static Object createItemList() {
+    public static List<Item> createItemList() {
         return createItemList(null);
     }
 
-    public static Object createItemList(String path) {
-        Object result = null;
+    public static List<Item> createItemList(String path) {
         List<Item> items = new ArrayList<Item>();
         File key = null;
         File root = Environment.getAudioFolder();
@@ -70,18 +69,18 @@ public class FileSystemBrowser {
                 for (String file : files) {
                     File f = new File(key, file);
                     if (f.isDirectory()) {
-                        FolderItem fi = new FolderItem();
-                        fi.setPath(path);
-                        fi.setName(file);
-                        fi.setIcon(path + "/" + file + "/cover");
+                        FolderItem fi = new FolderItem(path, file, path + "/" + file + "/cover", "???");
+                        fi.setMimetype(MimeType.FOLDER);
                         items.add(fi);
                     } else {
                         MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
                         AudioFileItem fi = new AudioFileItem();
-                        fi.setPath(path);
                         fi.setSize(f.length());
                         fi.setPath(path);
                         fi.setName(file);
+                        fi.setMimetype(MimeType.MP3);
+                        fi.setLengthString(mb.getLengthString());
+                        fi.setLengthInMilliseconds(mb.getLengthInMilliSeconds());
                         fi.setAlbum(mb.getAlbum());
                         fi.setArtist(mb.getArtist());
                         fi.setTitle(mb.getTitle());
@@ -90,13 +89,18 @@ public class FileSystemBrowser {
                         items.add(fi);
                     }
                 }
-                result = items;
             } else if (key.isFile()) {
-                result = key;
+                FileItem fi = new FileItem();
+                fi.setSize(key.length());
+                fi.setPath(path);
+                fi.setName(key.getName());
+                fi.setIcon(path + "/" + key.getName() + "/cover");
+                fi.setUrl(path + "/" + key.getName());
+                items.add(fi);
             } else {
                 // TODO: throw exception: unknown type
             }
         }
-        return result;
+        return items;
     }
 }

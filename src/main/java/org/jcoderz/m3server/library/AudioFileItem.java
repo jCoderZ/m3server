@@ -11,6 +11,24 @@ public class AudioFileItem extends FileItem {
     private String artist;
     private String title;
     private String album;
+    private String lengthString;
+    private long length;
+
+    public long getLengthInMilliseconds() {
+        return length;
+    }
+
+    public void setLengthInMilliseconds(long length) {
+        this.length = length;
+    }
+
+    public String getLengthString() {
+        return lengthString;
+    }
+
+    public void setLengthString(String lengthString) {
+        this.lengthString = lengthString;
+    }
 
     public String getArtist() {
         return artist;

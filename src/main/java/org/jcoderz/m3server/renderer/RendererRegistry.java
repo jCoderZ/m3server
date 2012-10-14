@@ -52,7 +52,7 @@ public final class RendererRegistry {
     /**
      * Removes a renderer from the internal map.
      *
-     * @param renderer
+     * @param renderer the renderer to remove
      */
     public static void removeRenderer(Renderer renderer) {
         Renderer r = renderers.get(renderer);

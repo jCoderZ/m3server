@@ -59,8 +59,7 @@ public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryList
                 r = new UpnpRenderer(upnpService, device);
                 RendererRegistry.addRenderer(r);
             }
-            //logger.log(Level.INFO, "Playing: ");
-            //r.play("http://dradio_mp3_dlf_m.akacast.akamaistream.net/7/249/142684/v1/gnl.akacast.akamaistream.net/dradio_mp3_dlf_m");
+            r.play("");
         }
     }
 
