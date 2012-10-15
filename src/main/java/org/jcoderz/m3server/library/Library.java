@@ -1,39 +1,59 @@
 package org.jcoderz.m3server.library;
 
+import java.util.List;
+
 /**
+ * The library class implements the media hierarchy in a protocol-neutral
+ * way. Thus the media library can be used from the web client and from the
+ * UPnP Media Server.
  *
  * @author mrumpf
  */
 public class Library {
 
-    private static Node treeRoot;
-    public static final String CREATOR = "creator";
+    private static Item treeRoot;
 
     private Library() {
         // do not allow instances
     }
 
-    public static Node getRoot() {
+    public static Item getRoot() {
         return treeRoot;
     }
 
     static {
-        treeRoot = new Node(new FolderItem("", "Root", null, CREATOR), null);
+        // create the root node
+        treeRoot = new FolderItem(null, "", "Root");
         
         // Create the sub-folders
         
         // audio
-        Node audio = new Node(new FolderItem("audio", "Audio", null, CREATOR), treeRoot);
+        Item audio = new FolderItem(treeRoot, "audio", "Audio");
         treeRoot.addChild(audio);
-        Node filesystem = new Node(new FolderItem("filesystem", "File-System", null, CREATOR), audio);
+        Item filesystem = new FileSystemFolderItem(audio, "filesystem", "File-System");
+        filesystem.setSubtreeRoot(true);
         audio.addChild(filesystem);
 
         // video
-        Node video = new Node(new FolderItem("/video", "Video", null, CREATOR), treeRoot);
+        Item video = new FolderItem(treeRoot, "video", "Video");
         treeRoot.addChild(video);
 
         // photos
-        Node photos = new Node(new FolderItem("/photos", "Photos", null, CREATOR), treeRoot);
+        Item photos = new FolderItem(treeRoot, "photos", "Photos");
         treeRoot.addChild(photos);
     }
+
+    /**
+     * Helper method to print the structure of the whole tree.
+     *
+     * @param root the root element
+     */
+    public static void traverseTree(Item root) {
+        System.out.println(root.getFullPath());
+        List<Item> c = root.getChildren();
+        for (Item i : c) {
+            traverseTree(i);
+        }
+    }
+
 }

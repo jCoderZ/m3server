@@ -1,7 +1,9 @@
 package org.jcoderz.m3server.library;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,6 +36,35 @@ public class MediaLibrary {
 
     private static final String M3_AUDIO_ROOT = "audio";
     private static final MediaLibrary ml;
+
+    public static final byte[] FOLDER_ICON_DEFAULT;
+    public static final byte[] FILE_ICON_DEFAULT;
+
+    static {
+        InputStream folderInputStream = Thread.currentThread()
+                .getContextClassLoader().getResourceAsStream("org/jcoderz/m3server/ui/resources/images/folder.png");
+
+        FOLDER_ICON_DEFAULT = readFromStream(folderInputStream);
+        InputStream fileInputStream = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream("org/jcoderz/m3server/ui/resources/images/audio-x-generic.png");
+        FILE_ICON_DEFAULT = readFromStream(fileInputStream);
+    }
+
+    public static byte[] readFromStream(InputStream in) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[1024];
+        try {
+            while (in.read(buffer) != -1) {
+                out.write(buffer);
+            }
+        } catch (IOException ex) {
+            // TODO: throw exception
+        }
+
+        return out.toByteArray();
+    }
 
     static {
         if (!Environment.M3_LIBRARY_HOME.exists()
@@ -100,7 +131,7 @@ public class MediaLibrary {
     }
 
     public List<Item> browse(String path) {
-        return FileSystemBrowser.createItemList(path);
+        return null;//FileSystemFolderItem.createItemList(path);
     }
 
     public Artwork coverImage(String file) {
@@ -126,7 +157,7 @@ public class MediaLibrary {
             }
             if (result == null) {
                 result = new Artwork();
-                result.setBinaryData(FileSystemBrowser.FOLDER_ICON_DEFAULT);
+                result.setBinaryData(FOLDER_ICON_DEFAULT);
                 result.setMimeType("image/png");
             }
         } else if (f.isFile()) {
@@ -135,7 +166,7 @@ public class MediaLibrary {
             // when no image has been found inside the file
             if (result == null || result.getBinaryData() == null) {
                 result = new Artwork();
-                result.setBinaryData(FileSystemBrowser.FILE_ICON_DEFAULT);
+                result.setBinaryData(FILE_ICON_DEFAULT);
                 result.setMimeType("image/png");
             }
         } else {

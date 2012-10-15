@@ -1,71 +1,94 @@
 package org.jcoderz.m3server.library;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import java.util.List;
 
 /**
  *
  * @author mrumpf
  */
-public class Item {
+public interface Item {
 
-    private MimeType mimetype;
-    private String path;
-    private String name;
-    private String icon;
-    private String creator;
+    /**
+     * Adds a child to the internal child list.
+     * 
+     * @param child the child to add
+     */
+    void addChild(Item child);
 
-    public Item() {
-    }
+    /**
+     * Returns the number of children.
+     *
+     * @return  the number of children
+     */
+    int getChildCount();
 
-    public Item(String path, String name, String icon, String creator) {
-        this.path = path;
-        this.name = name;
-        this.icon = icon;
-        this.creator = creator;
-    }
+    /**
+     * Returns the children list.
+     * 
+     * @return the children list
+     */
+    List<Item> getChildren();
 
-    public String getCreator() {
-        return creator;
-    }
+    /**
+     * Returns the child at the given list position.
+     *
+     * @param index the index
+     * @return the child from the index position
+     */
+    Item getChild(int index);
 
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
+    /**
+     * Removes the specified child from the list.
+     *
+     * @param child the child to remove
+     */
+    void removeChild(Item child);
 
-    public MimeType getMimetype() {
-        return mimetype;
-    }
+    /**
+     * Returns the parent of this item.
+     *
+     * @return the parent or null if this item is the root node
+     */
+    Item getParent();
 
-    public void setMimetype(MimeType mimetype) {
-        this.mimetype = mimetype;
-    }
+    /**
+     * Returns the full path in the library tree.
+     *
+     * @return the full path in the library tree
+     */
+    String getFullPath();
 
-    public String getIcon() {
-        return icon;
-    }
+    /**
+     * Returns the path only to the next subtree root.
+     * 
+     * @return the path to the next subtree root
+     */
+    String getFullSubtreePath();
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
+    /**
+     * Returns whether the item is the root of a subtree.
+     *
+     * @return whether the item is the root of a subtree
+     */
+    boolean isSubtreeRoot();
 
-    public String getPath() {
-        return path;
-    }
+    /**
+     * Sets the flag to indicate that the item is the root of a subtree.
+     *
+     * @param isSubtreeRoot true when the node is a subtree root item
+     */
+    void setSubtreeRoot(boolean isSubtreeRoot);
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+    
+    String getCreator();
 
-    public String getName() {
-        return name;
-    }
+    String getDisplayName();
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    String getName();
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+    void setCreator(String creator);
+
+    void setDisplayName(String name);
+
+    void setName(String path);
 }

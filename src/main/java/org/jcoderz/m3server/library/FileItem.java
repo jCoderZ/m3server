@@ -6,7 +6,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author mrumpf
  */
-public class FileItem extends Item {
+public class FileItem extends AbstractItem {
 
     private long size;
     private String url;

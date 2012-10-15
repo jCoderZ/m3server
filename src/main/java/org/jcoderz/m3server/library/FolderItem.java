@@ -4,9 +4,9 @@ package org.jcoderz.m3server.library;
  *
  * @author mrumpf
  */
-public class FolderItem extends Item {
+public class FolderItem extends AbstractItem {
 
-    public FolderItem(String path, String name, String icon, String creator) {
-        super(path, name, icon, creator);
+    public FolderItem(Item parent, String name, String displayName) {
+        super(parent, name, displayName);
     }
 }

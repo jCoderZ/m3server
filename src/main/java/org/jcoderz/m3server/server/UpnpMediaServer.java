@@ -7,10 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
+import org.jcoderz.m3server.library.AbstractItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.MediaLibrary;
-import org.jcoderz.m3server.library.Node;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.teleal.cling.model.DefaultServiceManager;
 import org.teleal.cling.model.ValidationException;
@@ -52,7 +52,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
     private static final Logger logger = Logger.getLogger(UpnpMediaServer.class.getName());
     private static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
-    private static final Map<Long, Node> idItemMap = new HashMap<>();
+    private static final Map<Long, Item> idItemMap = new HashMap<>();
     private static long idCounter = 1;
     private static final String ROOT_ID = "0";
     private static final String ROOT_PARENT_ID = "-1";
@@ -77,11 +77,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             switch (objectID) {
                 case ROOT_ID: {
                     if (BrowseFlag.METADATA.equals(browseFlag)) {
-                        Container c = createContainer(Library.getRoot());
+                        Container c = createDidlObject(Library.getRoot());
                         didl.addContainer(c);
                     } else if (BrowseFlag.DIRECT_CHILDREN.equals(browseFlag)) {
-                        for (Node n : Library.getRoot().getChildren()) {
-                            Container c = createContainer(n);
+                        for (Item i : Library.getRoot().getChildren()) {
+                            Container c = createDidlObject(i);
                             didl.addContainer(c);
                         }
                     }
@@ -94,12 +94,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                             AudioFileItem fi = (AudioFileItem) item;
                             System.err.println("AudioFileItem=" + fi);
                             didl.addItem(new MusicTrack(
-                                    fi.getPath(), "3",
+                                    fi.getName(), "3",
                                     fi.getTitle(),
                                     "???", fi.getAlbum(), fi.getArtist(),
                                     new Res(
-                                    new MimeType(fi.getMimetype().getType(),
-                                    fi.getMimetype().getSubtype()),
+                                    new MimeType() /* TODO: assign correct mime-type */,
                                     fi.getSize(),
                                     fi.getLengthString(),
                                     fi.getSize(), fi.getUrl())));
@@ -107,7 +106,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                         } else if (item instanceof FolderItem) {
                             FolderItem fi = (FolderItem) item;
                             System.err.println("FolderItem=" + fi);
-                            Container c = new Container("10", "1", fi.getName(), MEDIA_SERVER_NAME, DIDL_CLASS_OBJECT_CONTAINER, 0);
+                            Container c = new Container("10", "1", fi.getDisplayName(), MEDIA_SERVER_NAME, DIDL_CLASS_OBJECT_CONTAINER, 0);
                             didl.addContainer(c);
                         } else {
                             // TODO
@@ -144,7 +143,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
      * parentID="-1" restricted="1" childCount="3"> <dc:title>Root</dc:title>
      * <upnp:class>object.container</upnp:class> </container> </DIDL-Lite>
      */
-    private Container createContainer(Node item) {
+    private Container createDidlObject(Item item) {
         Container c = new Container();
         if (item.getParent() == null) {
             c.setId(ROOT_ID);
@@ -157,7 +156,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
         c.setChildCount(item.getChildCount());
         c.setRestricted(true);
-        c.setTitle(item.getItem().getName());
+        c.setTitle(item.getDisplayName());
         c.setCreator(MEDIA_SERVER_NAME);
         c.setClazz(DIDL_CLASS_OBJECT_CONTAINER);
         return c;
