@@ -3,9 +3,9 @@ package org.jcoderz.m3server.library;
 import java.util.List;
 
 /**
- * The library class implements the media hierarchy in a protocol-neutral
- * way. Thus the media library can be used from the web client and from the
- * UPnP Media Server.
+ * The library class implements the media hierarchy in a protocol-neutral way.
+ * Thus the media library can be used from the web client and from the UPnP
+ * Media Server.
  *
  * @author mrumpf
  */
@@ -24,9 +24,9 @@ public class Library {
     static {
         // create the root node
         treeRoot = new FolderItem(null, "", "Root");
-        
+
         // Create the sub-folders
-        
+
         // audio
         Item audio = new FolderItem(treeRoot, "audio", "Audio");
         treeRoot.addChild(audio);
@@ -44,16 +44,16 @@ public class Library {
     }
 
     /**
-     * Helper method to print the structure of the whole tree.
+     * Helper method that traverses the tree and applies the visitor to each
+     * node.
      *
-     * @param root the root element
+     * @param root the root element of the tree
      */
-    public static void traverseTree(Item root) {
-        System.out.println(root.getFullPath());
+    public static void visitTree(Item root, Visitor visitor) {
+        root.accept(visitor);
         List<Item> c = root.getChildren();
         for (Item i : c) {
-            traverseTree(i);
+            visitTree(i, visitor);
         }
     }
-
 }

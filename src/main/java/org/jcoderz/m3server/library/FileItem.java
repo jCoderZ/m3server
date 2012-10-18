@@ -11,6 +11,10 @@ public class FileItem extends AbstractItem {
     private long size;
     private String url;
 
+    public FileItem(Item parent, String name, String displayName) {
+        super(parent, name, displayName);
+    }
+
     public long getSize() {
         return size;
     }

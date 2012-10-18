@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jcoderz.mp3.intern.util.Environment;
+import org.jcoderz.m3util.intern.util.Environment;
 
 /**
  * Servlet implementation class Mp3Test

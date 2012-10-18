@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
-import org.jcoderz.m3server.library.AbstractItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.MediaLibrary;
@@ -49,7 +48,6 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
     public static final String MEDIA_SERVER_TYPE = "MediaServer";
     public static final String MEDIA_SERVER_NAME = "m3server";
-
     private static final Logger logger = Logger.getLogger(UpnpMediaServer.class.getName());
     private static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
     private static final Map<Long, Item> idItemMap = new HashMap<>();

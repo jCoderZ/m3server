@@ -1,7 +1,6 @@
 package org.jcoderz.m3server.util;
 
 import java.util.logging.LogManager;
-import org.jcoderz.m3server.Main;
 
 /**
  * This is a utility class that hides the logger initialization behind an easy
@@ -16,7 +15,7 @@ public class Logging {
     public static synchronized java.util.logging.Logger getLogger(Class clazz) {
         if (!initialized) {
             try {
-                LogManager.getLogManager().readConfiguration(Main.class.getResourceAsStream("logging.properties"));
+                LogManager.getLogManager().readConfiguration(Logging.class.getResourceAsStream("logging.properties"));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

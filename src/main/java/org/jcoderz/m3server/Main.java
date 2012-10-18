@@ -2,9 +2,11 @@ package org.jcoderz.m3server;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Logger;
 import org.jcoderz.m3server.protocol.HttpProtocolAdapter;
 import org.jcoderz.m3server.protocol.ProtocolAdapterRegistry;
 import org.jcoderz.m3server.protocol.UpnpProtocolAdapter;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  * This is the main entry point for the m3server.
@@ -13,11 +15,14 @@ import org.jcoderz.m3server.protocol.UpnpProtocolAdapter;
  */
 public class Main {
 
+    private static final Logger logger = Logging.getLogger(Main.class);
+
     public static void main(String[] args) throws IOException {
-        System.out.println("java.util.logging.config.file=" + System.getenv("java.util.logging.config.file"));
+        logger.info("Starting m3server...");
+
         Properties httpProps = new Properties();
         httpProps.put(HttpProtocolAdapter.HTTP_PORT_KEY, 8080);
-        // Bug in Grizzly? Only one folder possible "m3server/rest" does not work! 
+        // Bug in Grizzly? Only one folder possible "m3server/rest" does not work!
         httpProps.put(HttpProtocolAdapter.HTTP_REST_SERVICES_ROOT_CONTEXT_KEY, "rest");
         httpProps.put(HttpProtocolAdapter.HTTP_PROTOCOL_KEY, "http");
         httpProps.put(HttpProtocolAdapter.HTTP_HOSTNAME_KEY, "localhost");

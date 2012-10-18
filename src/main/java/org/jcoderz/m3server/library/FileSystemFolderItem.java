@@ -1,11 +1,12 @@
 package org.jcoderz.m3server.library;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jcoderz.mp3.intern.MusicBrainzMetadata;
-import org.jcoderz.mp3.intern.util.Environment;
+import org.jcoderz.m3util.intern.MusicBrainzMetadata;
+import org.jcoderz.m3util.intern.util.Environment;
 
 /**
  *
@@ -13,6 +14,22 @@ import org.jcoderz.mp3.intern.util.Environment;
  *
  */
 public class FileSystemFolderItem extends AbstractItem {
+
+    private static final FilenameFilter MP3_FILTER = new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+            final File file = new File(dir, name);
+            boolean result = false;
+            if (!file.isHidden()) {
+                if (file.isDirectory()) {
+                    result = !file.getName().startsWith(".");
+                } else if (file.isFile()) {
+                    result = file.getName().toLowerCase().endsWith(".mp3");
+                }
+            }
+            return result;
+        }
+    };
 
     public FileSystemFolderItem(Item parent, String name, String displayName) {
         super(parent, name, displayName);
@@ -30,17 +47,17 @@ public class FileSystemFolderItem extends AbstractItem {
         }
         if (key.exists()) {
             if (key.isDirectory()) {
-                String[] files = key.list();
+                String[] files = key.list(MP3_FILTER);
                 for (String file : files) {
                     File f = new File(key, file);
                     if (f.isDirectory()) {
-                        FileSystemFolderItem fi = new FileSystemFolderItem(parent, file, file);
+                        FileSystemFolderItem fi = new FileSystemFolderItem(this, file, file);
                         children.add(fi);
                     } else {
                         MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
-                        AudioFileItem fi = new AudioFileItem();
+                        AudioFileItem fi = new AudioFileItem(this, file, file);
                         fi.setSize(f.length());
-                        fi.setName(p);
+                        fi.setName(file);
                         fi.setDisplayName(file);
                         fi.setLengthString(mb.getLengthString());
                         fi.setLengthInMilliseconds(mb.getLengthInMilliSeconds());
@@ -52,10 +69,8 @@ public class FileSystemFolderItem extends AbstractItem {
                     }
                 }
             } else if (key.isFile()) {
-                FileItem fi = new FileItem();
+                FileItem fi = new FileItem(this, p, key.getName());
                 fi.setSize(key.length());
-                fi.setName(p);
-                fi.setDisplayName(key.getName());
                 fi.setUrl(p + "/" + key.getName());
                 children.add(fi);
             } else {
@@ -65,5 +80,4 @@ public class FileSystemFolderItem extends AbstractItem {
 
         return children;
     }
-
 }

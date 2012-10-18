@@ -10,7 +10,7 @@ public interface Item {
 
     /**
      * Adds a child to the internal child list.
-     * 
+     *
      * @param child the child to add
      */
     void addChild(Item child);
@@ -18,13 +18,13 @@ public interface Item {
     /**
      * Returns the number of children.
      *
-     * @return  the number of children
+     * @return the number of children
      */
     int getChildCount();
 
     /**
      * Returns the children list.
-     * 
+     *
      * @return the children list
      */
     List<Item> getChildren();
@@ -60,7 +60,7 @@ public interface Item {
 
     /**
      * Returns the path only to the next subtree root.
-     * 
+     *
      * @return the path to the next subtree root
      */
     String getFullSubtreePath();
@@ -79,7 +79,6 @@ public interface Item {
      */
     void setSubtreeRoot(boolean isSubtreeRoot);
 
-    
     String getCreator();
 
     String getDisplayName();
@@ -91,4 +90,6 @@ public interface Item {
     void setDisplayName(String name);
 
     void setName(String path);
+
+    void accept(Visitor visitor);
 }

@@ -75,16 +75,14 @@ public abstract class AbstractItem implements Item {
 
     private String createPath(Item item, boolean subTreeOnly) {
         String result = null;
-        if (item.getParent() != null && (!subTreeOnly || !item.isSubtreeRoot())) {
+        if (item.getParent() != null && !(subTreeOnly && item.isSubtreeRoot())) {
             String p = createPath(item.getParent(), subTreeOnly);
             if (p.endsWith("/")) {
                 result = p + item.getName();
-            }
-            else {
+            } else {
                 result = p + "/" + item.getName();
             }
-        }
-        else {
+        } else {
             result = "/";
         }
         return result;
@@ -126,7 +124,12 @@ public abstract class AbstractItem implements Item {
     }
 
     @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return name;
     }
 }

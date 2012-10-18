@@ -4,7 +4,6 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jcoderz.m3server</groupId>
     <artifactId>m3server</artifactId>
-    <name>m3server application</name>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>This is the Maven base project for the m3server modules.</description>
@@ -66,8 +65,8 @@
             <version>2.6</version>
         </dependency>
         <dependency>
-            <groupId>org.jcoderz.m3dditiez</groupId>
-            <artifactId>mp3-ng</artifactId>
+            <groupId>org.jcoderz.m3util</groupId>
+            <artifactId>m3base</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -103,13 +102,6 @@
             <version>1.14</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http-servlet-server</artifactId>
             <version>2.2.15</version>
@@ -119,12 +111,44 @@
             <artifactId>jersey-json</artifactId>
             <version>1.14</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>1.6.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.6.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.6.6</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <M3_LIBRARY_HOME>${basedir}/src/test/library</M3_LIBRARY_HOME>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
-                <!-- Compiler plugin enforces Java 1.6 compatibility and activates annotation 
+                <!-- Compiler plugin enforces Java 1.6 compatibility and activates annotation
            					processors -->
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>

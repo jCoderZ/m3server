@@ -22,8 +22,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.ReaderUtil;
 import org.apache.lucene.util.Version;
 import org.jaudiotagger.tag.datatype.Artwork;
-import org.jcoderz.mp3.intern.MusicBrainzMetadata;
-import org.jcoderz.mp3.intern.util.Environment;
+import org.jcoderz.m3util.intern.MusicBrainzMetadata;
+import org.jcoderz.m3util.intern.util.Environment;
 
 /**
  * This is the main class which provides an interface to all of the media
@@ -36,7 +36,6 @@ public class MediaLibrary {
 
     private static final String M3_AUDIO_ROOT = "audio";
     private static final MediaLibrary ml;
-
     public static final byte[] FOLDER_ICON_DEFAULT;
     public static final byte[] FILE_ICON_DEFAULT;
 
