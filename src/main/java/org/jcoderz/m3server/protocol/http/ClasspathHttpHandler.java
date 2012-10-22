@@ -1,4 +1,4 @@
-package org.jcoderz.m3server.protocol;
+package org.jcoderz.m3server.protocol.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ public class ClasspathHttpHandler extends HttpHandler {
     public ClasspathHttpHandler(Class c) {
         clazz = c;
     }
-    
+
     @Override
     public void service(final Request request, final Response response) throws Exception {
         final String uri = getRelativeURI(request);

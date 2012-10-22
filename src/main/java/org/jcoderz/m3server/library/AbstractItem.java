@@ -18,6 +18,7 @@ public abstract class AbstractItem implements Item {
     protected String displayName;
     protected String icon;
     protected String creator;
+    protected Object data;
 
     public AbstractItem() {
     }

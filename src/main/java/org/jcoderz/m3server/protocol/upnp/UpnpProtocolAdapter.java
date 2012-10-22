@@ -1,7 +1,8 @@
-package org.jcoderz.m3server.protocol;
+package org.jcoderz.m3server.protocol.upnp;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jcoderz.m3server.protocol.ProtocolAdapter;
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
 import org.jcoderz.m3server.renderer.UpnpRenderer;

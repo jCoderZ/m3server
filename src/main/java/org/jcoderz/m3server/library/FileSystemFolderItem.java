@@ -13,7 +13,7 @@ import org.jcoderz.m3util.intern.util.Environment;
  * @author mrumpf
  *
  */
-public class FileSystemFolderItem extends AbstractItem {
+public class FileSystemFolderItem extends FolderItem {
 
     private static final FilenameFilter MP3_FILTER = new FilenameFilter() {
         @Override

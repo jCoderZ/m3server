@@ -31,6 +31,7 @@ import org.teleal.cling.support.model.BrowseFlag;
 import org.teleal.cling.support.model.BrowseResult;
 import org.teleal.cling.support.model.DIDLContent;
 import org.teleal.cling.support.model.DIDLObject;
+import org.teleal.cling.support.model.PersonWithRole;
 import org.teleal.cling.support.model.Protocol;
 import org.teleal.cling.support.model.ProtocolInfo;
 import org.teleal.cling.support.model.ProtocolInfos;
@@ -50,12 +51,16 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     public static final String MEDIA_SERVER_NAME = "m3server";
     private static final Logger logger = Logger.getLogger(UpnpMediaServer.class.getName());
     private static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
-    private static final Map<Long, Item> idItemMap = new HashMap<>();
-    private static long idCounter = 1;
-    private static final String ROOT_ID = "0";
-    private static final String ROOT_PARENT_ID = "-1";
+    private static final Map<Long, UpnpContainer> idUpnpObjectMap = new HashMap<>();
+    private static long idCounter = 0;
+    private static final Long ROOT_ID = 0L;
+    private static final Long ROOT_PARENT_ID = -1L;
 
     public UpnpMediaServer() {
+    }
+
+    public static long getNextId() {
+        return ++idCounter;
     }
 
     @Override
@@ -63,6 +68,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             String filter,
             long firstResult, long maxResults,
             SortCriterion[] orderby) throws ContentDirectoryException {
+        long id = Long.valueOf(objectID).longValue();
         try {
             MediaLibrary ml = MediaLibrary.getMediaLibrary();
             logger.info("### objectID=" + objectID);
@@ -70,61 +76,55 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             logger.info("filter=" + filter);
             logger.info("first=" + firstResult + ", max=" + maxResults);
             logger.info("sortCriterion=" + orderby.toString());
-
             DIDLContent didl = new DIDLContent();
-            switch (objectID) {
-                case ROOT_ID: {
-                    if (BrowseFlag.METADATA.equals(browseFlag)) {
-                        Container c = createDidlObject(Library.getRoot());
-                        didl.addContainer(c);
-                    } else if (BrowseFlag.DIRECT_CHILDREN.equals(browseFlag)) {
-                        for (Item i : Library.getRoot().getChildren()) {
-                            Container c = createDidlObject(i);
-                            didl.addContainer(c);
-                        }
-                    }
-                    break;
-                }
-                case "1": {
-                    List<Item> items = ml.browse(null);
-                    for (Item item : items) {
-                        if (item instanceof AudioFileItem) {
-                            AudioFileItem fi = (AudioFileItem) item;
-                            System.err.println("AudioFileItem=" + fi);
-                            didl.addItem(new MusicTrack(
-                                    fi.getName(), "3",
-                                    fi.getTitle(),
-                                    "???", fi.getAlbum(), fi.getArtist(),
-                                    new Res(
-                                    new MimeType() /* TODO: assign correct mime-type */,
-                                    fi.getSize(),
-                                    fi.getLengthString(),
-                                    fi.getSize(), fi.getUrl())));
 
-                        } else if (item instanceof FolderItem) {
-                            FolderItem fi = (FolderItem) item;
-                            System.err.println("FolderItem=" + fi);
-                            Container c = new Container("10", "1", fi.getDisplayName(), MEDIA_SERVER_NAME, DIDL_CLASS_OBJECT_CONTAINER, 0);
-                            didl.addContainer(c);
-                        } else {
-                            // TODO
-                        }
+            if (id == ROOT_ID) {
+                didl = new DIDLContent();
+                if (BrowseFlag.METADATA.equals(browseFlag)) {
+                    Container c = createDidlContainer(id, ROOT_PARENT_ID, Library.getRoot());
+                    didl.addContainer(c);
+                } else if (BrowseFlag.DIRECT_CHILDREN.equals(browseFlag)) {
+                    for (Item i : Library.getRoot().getChildren()) {
+                        Long nextId = getNextId();
+                        Container didlContainer = createDidlContainer(nextId, ROOT_ID, i);
+                        idUpnpObjectMap.put(nextId, new UpnpContainer(nextId, didlContainer, i));
+                        didl.addContainer(didlContainer);
                     }
-                    break;
                 }
-                case "2": {
-                    break;
-                }
-                case "3": {
-                    break;
-                }
-                default: {
-                    List<Item> items = ml.browse(objectID);
+            } else if (id > ROOT_ID) {
+                UpnpContainer container2Browse = idUpnpObjectMap.get(id);
+                if (container2Browse != null) {
+                    Item i = container2Browse.getItem();
+                    if (i instanceof FolderItem) {
+                        FolderItem fi = (FolderItem) i;
+                        List<Item> children = fi.getChildren();
+                        for (Item c : children) {
+                            Long nextId = getNextId();
+                            if (FolderItem.class.isAssignableFrom(c.getClass())) {
+                                FolderItem f = (FolderItem) c;
+                                Container didlContainer = createDidlContainer(nextId, id, f);
+                                didl.addContainer(didlContainer);
+                                idUpnpObjectMap.put(nextId, new UpnpContainer(nextId, didlContainer, c));
+                            } else if (AudioFileItem.class.isAssignableFrom(c.getClass())) {
+                                AudioFileItem af = (AudioFileItem) c;
+                                org.teleal.cling.support.model.item.Item didlItem = createDidlItem(nextId, id, af);
+                                didl.addItem(didlItem);
+                                idUpnpObjectMap.put(nextId, new UpnpContainer(nextId, didlItem, c));
+                            } else {
+                                // TODO: ???
+                            }
+                        }
+                    } else {
+                        // TODO: handle browse on FileItem
+                        // is it poosible to get a "browse" request on a file? Maybe file details?
+                    }
+                } else {
+                    // throw new Exception("Unknown ID");
                 }
             }
-            int count = didl.getItems().size() + didl.getContainers().size();
-            return new BrowseResult(new DIDLParser().generate(didl), count, count);
+            return new BrowseResult(new DIDLParser().generate(didl), 1L, 1L);
         } catch (Exception ex) {
+            logger.log(Level.SEVERE, "An exception occured during browsing of folder " + id, ex);
             throw new ContentDirectoryException(
                     ContentDirectoryErrorCode.CANNOT_PROCESS,
                     ex.toString());
@@ -141,23 +141,29 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
      * parentID="-1" restricted="1" childCount="3"> <dc:title>Root</dc:title>
      * <upnp:class>object.container</upnp:class> </container> </DIDL-Lite>
      */
-    private Container createDidlObject(Item item) {
+    private Container createDidlContainer(long nextId, long parentId, Item item) {
         Container c = new Container();
-        if (item.getParent() == null) {
-            c.setId(ROOT_ID);
-            c.setParentID(ROOT_PARENT_ID);
-        } else {
-            c.setId("" + idCounter);
-            idCounter++;
-            idItemMap.put(idCounter, item);
-        }
-
-        c.setChildCount(item.getChildCount());
+        c.setId("" + nextId);
+        c.setParentID("" + parentId);
+        c.setChildCount(0 /*item.getChildCount()*/);
         c.setRestricted(true);
         c.setTitle(item.getDisplayName());
         c.setCreator(MEDIA_SERVER_NAME);
         c.setClazz(DIDL_CLASS_OBJECT_CONTAINER);
         return c;
+    }
+
+    private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, AudioFileItem item) {
+        MimeType mimeType = new MimeType("audio", "mpeg");
+        PersonWithRole artist = new PersonWithRole(item.getArtist(), "Performer");
+        org.teleal.cling.support.model.item.Item result = new MusicTrack(
+                "" + nextId, "" + parentId,
+                item.getTitle(),
+                item.getArtist(),
+                item.getAlbum(),
+                item.getArtist(),
+                new Res(mimeType, item.getSize(), "00:03:25", 8192l, "http://10.0.0.1/files/101.mp3"));
+        return result;
     }
 
     @Override
@@ -218,5 +224,30 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             Logger.getLogger(UpnpMediaServer.class.getName()).log(Level.SEVERE, null, ex);
         }
         return device;
+    }
+
+    public static class UpnpContainer {
+
+        private Long id;
+        private DIDLObject object;
+        private Item item;
+
+        public UpnpContainer(Long id, DIDLObject object, Item item) {
+            this.id = id;
+            this.object = object;
+            this.item = item;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        DIDLObject getContainer() {
+            return object;
+        }
+
+        Item getItem() {
+            return item;
+        }
     }
 }

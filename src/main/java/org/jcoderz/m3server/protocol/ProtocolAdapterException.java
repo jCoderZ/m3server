@@ -16,7 +16,7 @@ public class ProtocolAdapterException extends RuntimeException {
      * @param msg the exception message
      * @param ex the parent exception
      */
-    ProtocolAdapterException(String msg, IOException ex) {
+    public ProtocolAdapterException(String msg, IOException ex) {
         super(msg, ex);
     }
 }

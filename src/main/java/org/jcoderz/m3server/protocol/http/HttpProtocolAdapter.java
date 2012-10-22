@@ -1,4 +1,4 @@
-package org.jcoderz.m3server.protocol;
+package org.jcoderz.m3server.protocol.http;
 
 import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import javax.ws.rs.core.UriBuilder;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.jcoderz.m3server.Main;
+import org.jcoderz.m3server.protocol.ProtocolAdapter;
+import org.jcoderz.m3server.protocol.ProtocolAdapterException;
 
 /**
  * This is the HTTP adapter that provides the REST services and the jQuery UI.
@@ -18,8 +20,8 @@ import org.jcoderz.m3server.Main;
  * @author mrumpf
  */
 public class HttpProtocolAdapter extends ProtocolAdapter {
-    private static final Logger logger = Logger.getLogger(HttpProtocolAdapter.class.getName());
 
+    private static final Logger logger = Logger.getLogger(HttpProtocolAdapter.class.getName());
     public static final String HTTP_PORT_KEY = "http.port";
     public static final String HTTP_PROTOCOL_KEY = "http.protocol";
     public static final String HTTP_HOSTNAME_KEY = "http.hostname";

@@ -1,4 +1,6 @@
-package org.jcoderz.m3server.protocol;
+package org.jcoderz.m3server.protocol.airplay;
+
+import org.jcoderz.m3server.protocol.ProtocolAdapter;
 
 /**
  * TODO: No yet implemented

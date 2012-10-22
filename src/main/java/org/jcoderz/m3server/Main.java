@@ -3,9 +3,9 @@ package org.jcoderz.m3server;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.jcoderz.m3server.protocol.HttpProtocolAdapter;
+import org.jcoderz.m3server.protocol.http.HttpProtocolAdapter;
 import org.jcoderz.m3server.protocol.ProtocolAdapterRegistry;
-import org.jcoderz.m3server.protocol.UpnpProtocolAdapter;
+import org.jcoderz.m3server.protocol.upnp.UpnpProtocolAdapter;
 import org.jcoderz.m3server.util.Logging;
 
 /**
