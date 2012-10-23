@@ -56,7 +56,9 @@ public class FileSystemFolderItem extends FolderItem {
                     } else {
                         MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
                         AudioFileItem fi = new AudioFileItem(this, file, file);
+                        fi.setBitrate(mb.getBitrate() * 1024L / 8);
                         fi.setSize(f.length());
+                        fi.setGenre(mb.getGenre());
                         fi.setName(file);
                         fi.setDisplayName(file);
                         fi.setLengthString(mb.getLengthString());

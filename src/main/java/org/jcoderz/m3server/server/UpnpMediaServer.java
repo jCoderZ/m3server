@@ -1,5 +1,7 @@
 package org.jcoderz.m3server.server;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     private static long idCounter = 0;
     private static final Long ROOT_ID = 0L;
     private static final Long ROOT_PARENT_ID = -1L;
+    public static final SimpleDateFormat FILE_LENGTH_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
     public UpnpMediaServer() {
     }
@@ -122,7 +125,9 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                     // throw new Exception("Unknown ID");
                 }
             }
-            return new BrowseResult(new DIDLParser().generate(didl), 1L, 1L);
+            String xml = new DIDLParser().generate(didl);
+            System.out.println("" + xml);
+            return new BrowseResult(xml, didl.getContainers().size() + didl.getItems().size(), 1L);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "An exception occured during browsing of folder " + id, ex);
             throw new ContentDirectoryException(
@@ -154,16 +159,24 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     }
 
     private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, AudioFileItem item) {
-        MimeType mimeType = new MimeType("audio", "mpeg");
-        PersonWithRole artist = new PersonWithRole(item.getArtist(), "Performer");
-        org.teleal.cling.support.model.item.Item result = new MusicTrack(
+        //MimeType mimeType = new MimeType("audio", "mpeg");
+        String creator = item.getArtist();
+        PersonWithRole artist = new PersonWithRole(creator, "Performer");
+
+        Res res = new Res(new ProtocolInfo("http-get:*:audio/mpeg:DLNA.ORG_PN=MP3"), item.getSize(), convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), "http://10.0.0.1/files/101.mp3");
+        MusicTrack result = new MusicTrack(
                 "" + nextId, "" + parentId,
                 item.getTitle(),
-                item.getArtist(),
+                creator,
                 item.getAlbum(),
-                item.getArtist(),
-                new Res(mimeType, item.getSize(), "00:03:25", 8192l, "http://10.0.0.1/files/101.mp3"));
+                artist,
+                res);
+        result.setGenres(new String[]{item.getGenre()});
         return result;
+    }
+
+    private String convertMillis(long millis) {
+        return (FILE_LENGTH_FORMAT).format(new Date(millis));
     }
 
     @Override

@@ -11,8 +11,10 @@ public class AudioFileItem extends FileItem {
     private String artist;
     private String title;
     private String album;
+    private String genre;
     private String lengthString;
     private long length;
+    private long bitrate;
 
     public AudioFileItem(Item parent, String name, String displayName) {
         super(parent, name, displayName);
@@ -56,6 +58,22 @@ public class AudioFileItem extends FileItem {
 
     public void setAlbum(String album) {
         this.album = album;
+    }
+
+    public long getBitrate() {
+        return bitrate;
+    }
+
+    public void setBitrate(long bitrate) {
+        this.bitrate = bitrate;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 
     @Override
