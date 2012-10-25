@@ -43,6 +43,8 @@ public class HttpProtocolAdapter extends ProtocolAdapter {
             httpServer = GrizzlyServerFactory.createHttpServer(uri, rc);
             // bind static content to root folder
             httpServer.getServerConfiguration().addHttpHandler(new ClasspathHttpHandler(Main.class), "/");
+            httpServer.getServerConfiguration().addHttpHandler(new LibraryHttpHandler(),
+                    "/library");
         } catch (IOException ex) {
             throw new ProtocolAdapterException("Failed to start the HTTP server", ex);
         }

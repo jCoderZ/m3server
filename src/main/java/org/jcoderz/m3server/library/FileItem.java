@@ -1,5 +1,6 @@
 package org.jcoderz.m3server.library;
 
+import java.io.InputStream;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -11,8 +12,8 @@ public class FileItem extends AbstractItem {
     private long size;
     private String url;
 
-    public FileItem(Item parent, String name, String displayName) {
-        super(parent, name, displayName);
+    public FileItem(Item parent, String name) {
+        super(parent, name);
     }
 
     public long getSize() {
@@ -31,6 +32,7 @@ public class FileItem extends AbstractItem {
         this.url = url;
     }
 
+    //public abstract InputStream getInputStream();
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

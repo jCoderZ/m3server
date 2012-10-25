@@ -31,8 +31,8 @@ public class FileSystemFolderItem extends FolderItem {
         }
     };
 
-    public FileSystemFolderItem(Item parent, String name, String displayName) {
-        super(parent, name, displayName);
+    public FileSystemFolderItem(Item parent, String name) {
+        super(parent, name);
     }
 
     public List<Item> getChildren() {
@@ -51,16 +51,15 @@ public class FileSystemFolderItem extends FolderItem {
                 for (String file : files) {
                     File f = new File(key, file);
                     if (f.isDirectory()) {
-                        FileSystemFolderItem fi = new FileSystemFolderItem(this, file, file);
+                        FileSystemFolderItem fi = new FileSystemFolderItem(this, file);
                         children.add(fi);
                     } else {
                         MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
-                        AudioFileItem fi = new AudioFileItem(this, file, file);
+                        AudioFileItem fi = new AudioFileItem(this, file);
                         fi.setBitrate(mb.getBitrate() * 1024L / 8);
                         fi.setSize(f.length());
                         fi.setGenre(mb.getGenre());
                         fi.setName(file);
-                        fi.setDisplayName(file);
                         fi.setLengthString(mb.getLengthString());
                         fi.setLengthInMilliseconds(mb.getLengthInMilliSeconds());
                         fi.setAlbum(mb.getAlbum());
@@ -71,7 +70,7 @@ public class FileSystemFolderItem extends FolderItem {
                     }
                 }
             } else if (key.isFile()) {
-                FileItem fi = new FileItem(this, p, key.getName());
+                FileItem fi = new FileItem(this, p);
                 fi.setSize(key.length());
                 fi.setUrl(p + "/" + key.getName());
                 children.add(fi);
@@ -79,7 +78,6 @@ public class FileSystemFolderItem extends FolderItem {
                 // TODO: throw exception: unknown type
             }
         }
-
         return children;
     }
 }

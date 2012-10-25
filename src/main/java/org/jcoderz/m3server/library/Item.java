@@ -9,42 +9,6 @@ import java.util.List;
 public interface Item {
 
     /**
-     * Adds a child to the internal child list.
-     *
-     * @param child the child to add
-     */
-    void addChild(Item child);
-
-    /**
-     * Returns the number of children.
-     *
-     * @return the number of children
-     */
-    int getChildCount();
-
-    /**
-     * Returns the children list.
-     *
-     * @return the children list
-     */
-    List<Item> getChildren();
-
-    /**
-     * Returns the child at the given list position.
-     *
-     * @param index the index
-     * @return the child from the index position
-     */
-    Item getChild(int index);
-
-    /**
-     * Removes the specified child from the list.
-     *
-     * @param child the child to remove
-     */
-    void removeChild(Item child);
-
-    /**
      * Returns the parent of this item.
      *
      * @return the parent or null if this item is the root node
@@ -81,13 +45,9 @@ public interface Item {
 
     String getCreator();
 
-    String getDisplayName();
-
     String getName();
 
     void setCreator(String creator);
-
-    void setDisplayName(String name);
 
     void setName(String path);
 

@@ -1,17 +1,11 @@
 package org.jcoderz.m3server.library;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  *
  * @author mrumpf
  */
 public abstract class AbstractItem implements Item {
 
-    protected List<Item> children = new ArrayList<>();
     protected Item parent;
     protected boolean isRoot = false;
     protected String name;
@@ -23,9 +17,8 @@ public abstract class AbstractItem implements Item {
     public AbstractItem() {
     }
 
-    public AbstractItem(Item parent, String name, String displayName) {
+    public AbstractItem(Item parent, String name) {
         this.name = name;
-        this.displayName = displayName;
         this.parent = parent;
     }
 
@@ -37,31 +30,6 @@ public abstract class AbstractItem implements Item {
     @Override
     public void setSubtreeRoot(boolean isRoot) {
         this.isRoot = isRoot;
-    }
-
-    @Override
-    public void addChild(Item child) {
-        children.add(child);
-    }
-
-    @Override
-    public void removeChild(Item child) {
-        children.remove(child);
-    }
-
-    @Override
-    public List<Item> getChildren() {
-        return Collections.unmodifiableList(children);
-    }
-
-    @Override
-    public int getChildCount() {
-        return children.size();
-    }
-
-    @Override
-    public Item getChild(int index) {
-        return children.get(0);
     }
 
     @Override
@@ -112,16 +80,6 @@ public abstract class AbstractItem implements Item {
     @Override
     public void setName(String path) {
         this.name = path;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    @Override
-    public void setDisplayName(String name) {
-        this.displayName = name;
     }
 
     @Override

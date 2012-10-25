@@ -16,8 +16,8 @@ public class AudioFileItem extends FileItem {
     private long length;
     private long bitrate;
 
-    public AudioFileItem(Item parent, String name, String displayName) {
-        super(parent, name, displayName);
+    public AudioFileItem(Item parent, String name) {
+        super(parent, name);
     }
 
     public long getLengthInMilliseconds() {

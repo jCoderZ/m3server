@@ -1,10 +1,9 @@
 package org.jcoderz.m3server.server;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.library.AudioFileItem;
@@ -41,7 +40,6 @@ import org.teleal.cling.support.model.Res;
 import org.teleal.cling.support.model.SortCriterion;
 import org.teleal.cling.support.model.container.Container;
 import org.teleal.cling.support.model.item.MusicTrack;
-import org.teleal.common.util.MimeType;
 
 /**
  *
@@ -57,7 +55,6 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     private static long idCounter = 0;
     private static final Long ROOT_ID = 0L;
     private static final Long ROOT_PARENT_ID = -1L;
-    public static final SimpleDateFormat FILE_LENGTH_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
     public UpnpMediaServer() {
     }
@@ -87,11 +84,15 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                     Container c = createDidlContainer(id, ROOT_PARENT_ID, Library.getRoot());
                     didl.addContainer(c);
                 } else if (BrowseFlag.DIRECT_CHILDREN.equals(browseFlag)) {
-                    for (Item i : Library.getRoot().getChildren()) {
-                        Long nextId = getNextId();
-                        Container didlContainer = createDidlContainer(nextId, ROOT_ID, i);
-                        idUpnpObjectMap.put(nextId, new UpnpContainer(nextId, didlContainer, i));
-                        didl.addContainer(didlContainer);
+                    Item root = Library.getRoot();
+                    if (FolderItem.class.isAssignableFrom(root.getClass())) {
+                        FolderItem fi = (FolderItem) root;
+                        for (Item i : fi.getChildren()) {
+                            Long nextId = getNextId();
+                            Container didlContainer = createDidlContainer(nextId, ROOT_ID, i);
+                            idUpnpObjectMap.put(nextId, new UpnpContainer(nextId, didlContainer, i));
+                            didl.addContainer(didlContainer);
+                        }
                     }
                 }
             } else if (id > ROOT_ID) {
@@ -152,7 +153,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         c.setParentID("" + parentId);
         c.setChildCount(0 /*item.getChildCount()*/);
         c.setRestricted(true);
-        c.setTitle(item.getDisplayName());
+        c.setTitle(item.getName());
         c.setCreator(MEDIA_SERVER_NAME);
         c.setClazz(DIDL_CLASS_OBJECT_CONTAINER);
         return c;
@@ -175,8 +176,19 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         return result;
     }
 
-    private String convertMillis(long millis) {
-        return (FILE_LENGTH_FORMAT).format(new Date(millis));
+    private static String convertMillis(long millis) {
+        String result;
+        if (TimeUnit.MILLISECONDS.toHours(millis) != 0L) {
+            result = String.format("%d:%02d:%02d",
+                    TimeUnit.MILLISECONDS.toHours(millis),
+                    TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                    TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+        } else {
+            result = String.format("%d:%02d",
+                    TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                    TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+        }
+        return result;
     }
 
     @Override

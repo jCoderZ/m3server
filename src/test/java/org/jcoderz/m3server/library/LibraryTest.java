@@ -47,9 +47,11 @@ public class LibraryTest {
     @Test
     public void testGetChildren() {
         Item root = Library.getRoot();
-        List<Item> children = root.getChildren();
+        assertEquals("Library root is not of Type FolderItem", root.getClass(), FolderItem.class);
+        FolderItem fi = (FolderItem) root;
+        List<Item> children = fi.getChildren();
         assertNotNull(children);
-        assertEquals(root.getChildCount(), children.size());
+        assertEquals(fi.getChildCount(), children.size());
     }
 
     @Test
