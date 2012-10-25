@@ -11,7 +11,6 @@ import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.model.meta.RemoteDevice;
-import org.teleal.cling.model.meta.Service;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
 
@@ -29,10 +28,11 @@ public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryList
 
     @Override
     public void startup() {
+
         // UPnP discovery is asynchronous, we need a callback
         upnpService = new UpnpServiceImpl(this);
 
-        mediaServerDevice = UpnpMediaServer.createDevice();
+        mediaServerDevice = UpnpMediaServer.createDevice(getConfiguration());
         upnpService.getRegistry().addDevice(mediaServerDevice);
 
         // broadcast an immediate search message for all devices

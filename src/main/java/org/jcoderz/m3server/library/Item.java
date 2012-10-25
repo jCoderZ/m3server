@@ -1,6 +1,6 @@
 package org.jcoderz.m3server.library;
 
-import java.util.List;
+import java.net.URL;
 
 /**
  *
@@ -28,6 +28,22 @@ public interface Item {
      * @return the path to the next subtree root
      */
     String getFullSubtreePath();
+
+    /**
+     * Returns the url for the item.
+     *
+     * @return the url for the item
+     */
+    URL getUrl();
+
+    /**
+     * Sets the base url of the item.
+     *
+     * @param url the base URL of the item
+     */
+    void setUrl(URL url);
+
+    URL getFullSubtreeUrl();
 
     /**
      * Returns whether the item is the root of a subtree.

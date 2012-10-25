@@ -1,6 +1,12 @@
 package org.jcoderz.m3server.library;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jcoderz.m3util.intern.util.Environment;
 
 /**
  * The library class implements the media hierarchy in a protocol-neutral way.
@@ -11,28 +17,35 @@ import java.util.List;
  */
 public class Library {
 
-    private static final FolderItem treeRoot;
+    private static final FolderItem TREE_ROOT;
 
     static {
         // create the root node
-        treeRoot = new FolderItem(null, "Root");
+        TREE_ROOT = new FolderItem(null, "Root");
+        try {
 
-        // Create the sub-folders
+            // Create the sub-folders
 
-        // audio
-        FolderItem audio = new FolderItem(treeRoot, "audio");
-        treeRoot.addChild(audio);
-        FolderItem filesystem = new FileSystemFolderItem(audio, "filesystem");
-        filesystem.setSubtreeRoot(true);
-        audio.addChild(filesystem);
+            // Create the sub-folders
+            FolderItem audio = new FolderItem(TREE_ROOT, "audio");
+            TREE_ROOT.addChild(audio);
 
-        // video
-        FolderItem video = new FolderItem(treeRoot, "video");
-        treeRoot.addChild(video);
+            FolderItem filesystem = new FileSystemFolderItem(audio, "filesystem");
+            filesystem.setUrl(Environment.getAudioFolder().toURI().toURL());
+            filesystem.setSubtreeRoot(true);
+            audio.addChild(filesystem);
 
-        // photos
-        FolderItem photos = new FolderItem(treeRoot, "photos");
-        treeRoot.addChild(photos);
+            // video
+            FolderItem video = new FolderItem(TREE_ROOT, "video");
+            TREE_ROOT.addChild(video);
+
+            // photos
+            FolderItem photos = new FolderItem(TREE_ROOT, "photos");
+            TREE_ROOT.addChild(photos);
+        } catch (MalformedURLException ex) {
+            // TODO: Throw runtime exception
+            Logger.getLogger(Library.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private Library() {
@@ -45,7 +58,7 @@ public class Library {
      * @return the library root item
      */
     public static Item getRoot() {
-        return treeRoot;
+        return TREE_ROOT;
     }
 
     /**
@@ -56,7 +69,7 @@ public class Library {
      */
     public static Item getPath(String path) throws LibraryException {
         String[] token = path.split("/");
-        Item node = treeRoot;
+        Item node = TREE_ROOT;
         for (String tok : token) {
             if (!tok.isEmpty()) {
                 if (node instanceof FolderItem) {

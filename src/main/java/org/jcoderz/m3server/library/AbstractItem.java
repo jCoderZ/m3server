@@ -1,5 +1,10 @@
 package org.jcoderz.m3server.library;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author mrumpf
@@ -13,6 +18,7 @@ public abstract class AbstractItem implements Item {
     protected String icon;
     protected String creator;
     protected Object data;
+    protected URL url;
 
     public AbstractItem() {
     }
@@ -30,6 +36,49 @@ public abstract class AbstractItem implements Item {
     @Override
     public void setSubtreeRoot(boolean isRoot) {
         this.isRoot = isRoot;
+    }
+
+    @Override
+    public URL getUrl() {
+        return url;
+    }
+
+    @Override
+    public void setUrl(URL u) {
+        this.url = u;
+        System.err.println("item.setUrl(" + url + ") (" + getName() + ")");
+    }
+
+    @Override
+    public URL getFullSubtreeUrl() {
+        try {
+            String u = createUrl(this);
+            return new URL(u);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(AbstractItem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // TODO: throw exception
+        return null;
+    }
+
+    private String createUrl(Item item) {
+        String result = null;
+        if (item.getParent() != null && !item.isSubtreeRoot()) {
+            String p = createUrl(item.getParent());
+            if (p.endsWith("/")) {
+                result = p + item.getName();
+            } else {
+                result = p + "/" + item.getName();
+            }
+        } else {
+            if (item.getUrl() != null) {
+                result = item.getUrl().toString();
+            } else {
+                System.err.println("item.getUrl()=" + url + " (" + getName() + ")");
+                new Exception().printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override

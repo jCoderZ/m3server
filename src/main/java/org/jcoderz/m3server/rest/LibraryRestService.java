@@ -10,6 +10,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.MediaLibrary;
 import org.jcoderz.m3server.library.Playlist;
 
@@ -33,7 +34,7 @@ public class LibraryRestService {
     @GET
     @Path("/browse{path:.*}")
     public Response browse(@PathParam("path") String path) {
-        Object result = MediaLibrary.getMediaLibrary().browse(path);
+        Object result = null; //TODO: Library.browse(path);
         String mt = "application/json";
         if (result instanceof File) {
             mt = "audio/mpeg";

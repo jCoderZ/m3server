@@ -1,16 +1,18 @@
 package org.jcoderz.m3server.server;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.configuration.Configuration;
 import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
-import org.jcoderz.m3server.library.MediaLibrary;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.teleal.cling.model.DefaultServiceManager;
 import org.teleal.cling.model.ValidationException;
@@ -47,7 +49,7 @@ import org.teleal.cling.support.model.item.MusicTrack;
  */
 public class UpnpMediaServer extends AbstractContentDirectoryService {
 
-    public static final String MEDIA_SERVER_TYPE = "MediaServer";
+    public static final String MEDIA_SERVERx_TYPE = "MediaServer";
     public static final String MEDIA_SERVER_NAME = "m3server";
     private static final Logger logger = Logger.getLogger(UpnpMediaServer.class.getName());
     private static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
@@ -55,8 +57,16 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     private static long idCounter = 0;
     private static final Long ROOT_ID = 0L;
     private static final Long ROOT_PARENT_ID = -1L;
+    private Configuration config;
+    private String staticBaseUrl;
 
-    public UpnpMediaServer() {
+    public UpnpMediaServer(Configuration config) {
+        this.config = config;
+        staticBaseUrl = config.getString("http.protocol") + "://"
+                + config.getString("http.hostname") + ":"
+                + config.getString("http.port") + "/"
+                + config.getString("http.static.content.root.context");
+
     }
 
     public static long getNextId() {
@@ -70,7 +80,6 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             SortCriterion[] orderby) throws ContentDirectoryException {
         long id = Long.valueOf(objectID).longValue();
         try {
-            MediaLibrary ml = MediaLibrary.getMediaLibrary();
             logger.info("### objectID=" + objectID);
             logger.info("browseFlag=" + browseFlag.toString());
             logger.info("filter=" + filter);
@@ -159,12 +168,13 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         return c;
     }
 
-    private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, AudioFileItem item) {
-        //MimeType mimeType = new MimeType("audio", "mpeg");
+    private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, AudioFileItem item) throws UnsupportedEncodingException {
         String creator = item.getArtist();
         PersonWithRole artist = new PersonWithRole(creator, "Performer");
+        String url = URLEncoder.encode(staticBaseUrl + item.getFullSubtreePath(), config.getString("upnp.url.encoding"));
+        System.out.println("url=" + url);
 
-        Res res = new Res(new ProtocolInfo("http-get:*:audio/mpeg:DLNA.ORG_PN=MP3"), item.getSize(), convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), "http://10.0.0.1/files/101.mp3");
+        Res res = new Res(new ProtocolInfo("http-get:*:audio/mpeg:DLNA.ORG_PN=MP3"), item.getSize(), convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), url);
         MusicTrack result = new MusicTrack(
                 "" + nextId, "" + parentId,
                 item.getTitle(),
@@ -172,6 +182,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 item.getAlbum(),
                 artist,
                 res);
+        // Add cover image result.addResource(res)
         result.setGenres(new String[]{item.getGenre()});
         return result;
     }
@@ -204,14 +215,14 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         return super.search(containerId, searchCriteria, filter, firstResult, maxResults, orderBy);
     }
 
-    public static LocalDevice createDevice() {
+    public static LocalDevice createDevice(final Configuration config) {
         LocalService<AbstractContentDirectoryService> contentDirectoryService =
                 new AnnotationLocalServiceBinder().read(AbstractContentDirectoryService.class);
         contentDirectoryService.setManager(
                 new DefaultServiceManager<AbstractContentDirectoryService>(contentDirectoryService, null) {
                     @Override
                     protected AbstractContentDirectoryService createServiceInstance() throws Exception {
-                        return new UpnpMediaServer();
+                        return new UpnpMediaServer(config);
                     }
                 });
         LocalService<ConnectionManagerService> connectionManagerService =
@@ -237,12 +248,13 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
 
         try {
+            String name = config.getString("upnp.server.name");
             device = new LocalDevice(
-                    new DeviceIdentity(UDN.uniqueSystemIdentifier(MEDIA_SERVER_NAME)),
-                    new UDADeviceType(MEDIA_SERVER_TYPE),
-                    new DeviceDetails(MEDIA_SERVER_NAME,
+                    new DeviceIdentity(UDN.uniqueSystemIdentifier(name)),
+                    new UDADeviceType(config.getString("upnp.server.type.name")),
+                    new DeviceDetails(name,
                     new ManufacturerDetails("jCoderZ.org", "http://www.jcoderz.org"),
-                    new ModelDetails(MEDIA_SERVER_NAME, "A UPnP/DLNA Media Server", "0.0.1", ""),
+                    new ModelDetails(name, "A UPnP/DLNA Media Server", "0.0.1", ""),
                     new DLNADoc[]{new DLNADoc("DMS-1.50", "M-DMS-1.50")}, null),
                     new LocalService[]{contentDirectoryService, connectionManagerService});
         } catch (ValidationException ex) {

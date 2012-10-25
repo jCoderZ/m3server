@@ -1,31 +1,50 @@
 package org.jcoderz.m3server.protocol;
 
-import java.util.Properties;
+import org.apache.commons.configuration.Configuration;
 
 /**
- * The common interface of all protocol adapters.
+ * The base class for all protocol adapters.
  *
  * @author mrumpf
  */
 public abstract class ProtocolAdapter {
 
-    private Properties properties = null;
+    private Configuration config;
 
-    public void init(Properties p) {
-        properties = p;
+    /**
+     * Initialize the protocol adapter instance.
+     *
+     * @param config the configuration instance
+     */
+    public void init(Configuration config) {
+        this.config = config;
     }
 
-    public String getString(String key) {
-        return (String) properties.get(key);
+    /**
+     * Returns the configuration.
+     *
+     * @return the configuration
+     */
+    public Configuration getConfiguration() {
+        return config;
     }
 
-    public Integer getInteger(String key) {
-        return (Integer) properties.get(key);
+    /**
+     * Returns the name of the protocol adapter.
+     *
+     * @return the name of the protocol adapter
+     */
+    public String getName() {
+        return this.getClass().getSimpleName();
     }
 
-    public abstract String getName();
-
+    /**
+     * Start the protocol adapter.
+     */
     public abstract void startup();
 
+    /**
+     * Shutdown the protocol adapter.
+     */
     public abstract void shutdown();
 }

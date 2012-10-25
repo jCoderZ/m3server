@@ -2,9 +2,9 @@ package org.jcoderz.m3server.protocol;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.configuration.Configuration;
 
 /**
  * The protocol adapter registry manages all available protocol adapters, like
@@ -55,12 +55,12 @@ public final class ProtocolAdapterRegistry {
      * Registers a protocol adapter by instantiating and initializing it.
      *
      * @param adapter the protocol adapter class
-     * @param properties the initialization properties of the protocol adapter
+     * @param config the configuration instance
      */
-    public static void register(Class adapter, Properties properties) {
+    public static void register(Class adapter, Configuration config) {
         try {
             ProtocolAdapter pa = (ProtocolAdapter) adapter.newInstance();
-            pa.init(properties);
+            pa.init(config);
             adapters.put(adapter, pa);
         } catch (InstantiationException | IllegalAccessException ex) {
             logger.log(Level.SEVERE, "Could not instantiate protocol adapter: " + adapter, ex);

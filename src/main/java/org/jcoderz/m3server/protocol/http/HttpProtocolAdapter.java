@@ -33,18 +33,18 @@ public class HttpProtocolAdapter extends ProtocolAdapter {
     @Override
     public void startup() {
         try {
-            ResourceConfig rc = new PackagesResourceConfig(getString(HTTP_PACKAGE_RESOURCE_KEY));
+            ResourceConfig rc = new PackagesResourceConfig(getConfiguration().getString(HTTP_PACKAGE_RESOURCE_KEY));
             rc.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
             URI uri = UriBuilder.fromUri(
-                    getString(HTTP_PROTOCOL_KEY) + "://"
-                    + getString(HTTP_HOSTNAME_KEY) + "/"
-                    + getString(HTTP_REST_SERVICES_ROOT_CONTEXT_KEY)).port(getInteger(HTTP_PORT_KEY)).build();
+                    getConfiguration().getString(HTTP_PROTOCOL_KEY) + "://"
+                    + getConfiguration().getString(HTTP_HOSTNAME_KEY) + "/"
+                    + getConfiguration().getString(HTTP_REST_SERVICES_ROOT_CONTEXT_KEY)).port(getConfiguration().getInt(HTTP_PORT_KEY)).build();
             logger.log(Level.INFO, "HTTP server REST services: {0}", uri);
             httpServer = GrizzlyServerFactory.createHttpServer(uri, rc);
             // bind static content to root folder
             httpServer.getServerConfiguration().addHttpHandler(new ClasspathHttpHandler(Main.class), "/");
             httpServer.getServerConfiguration().addHttpHandler(new LibraryHttpHandler(),
-                    "/library");
+                    "/" + getConfiguration().getString(HTTP_STATIC_CONTENT_ROOT_CONTEXT_KEY));
         } catch (IOException ex) {
             throw new ProtocolAdapterException("Failed to start the HTTP server", ex);
         }
@@ -53,10 +53,5 @@ public class HttpProtocolAdapter extends ProtocolAdapter {
     @Override
     public void shutdown() {
         httpServer.stop();
-    }
-
-    @Override
-    public String getName() {
-        return HttpProtocolAdapter.class.getSimpleName();
     }
 }

@@ -1,7 +1,11 @@
 package org.jcoderz.m3server.protocol.http;
 
 import java.io.CharConversionException;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.grizzly.Grizzly;
@@ -10,8 +14,8 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.http.server.io.OutputBuffer;
+import org.glassfish.grizzly.http.server.util.MimeType;
 import org.glassfish.grizzly.http.util.HttpStatus;
-import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 
@@ -86,22 +90,51 @@ public class LibraryHttpHandler extends HttpHandler {
         Item item = Library.getPath(path);
         if (item == null) {
             res.setStatus(HttpStatus.NOT_FOUND_404);
-        } else if (FileItem.class.isAssignableFrom(item.getClass())) {
-            FileItem fi = (FileItem) item;
-            try (InputStream is = null) {
-                res.setStatus(HttpStatus.OK_200);
-                System.err.println("item=" + item);
-
-                final OutputBuffer outputBuffer = res.getOutputBuffer();
-
-                byte b[] = new byte[8192];
-                int rd;
-                while ((rd = is.read(b)) > 0) {
-                    outputBuffer.write(b, 0, rd);
-                }
-                result = true;
-            }
+        } else {
+            URL url = item.getFullSubtreeUrl();
+            sendFile(res, url);
         }
         return result;
+    }
+
+    public static void sendFile(final Response response, URL u)
+            throws IOException {
+
+        try (InputStream fis = u.openStream()) {
+            File file = new File(u.getPath());
+            String path = file.getAbsolutePath();
+            response.setStatus(HttpStatus.OK_200);
+            String substr;
+            int dot = path.lastIndexOf('.');
+            if (dot < 0) {
+                substr = file.toString();
+                dot = substr.lastIndexOf('.');
+            } else {
+                substr = path;
+            }
+            if (dot > 0) {
+                String ext = substr.substring(dot + 1);
+                String ct = MimeType.get(ext);
+                if (ct != null) {
+                    response.setContentType(ct);
+                }
+            } else {
+                response.setContentType(MimeType.get("html"));
+            }
+
+            final long length = file.length();
+            response.setContentLengthLong(length);
+
+            final OutputBuffer outputBuffer = response.getOutputBuffer();
+
+            byte b[] = new byte[8192];
+            int rd;
+            while ((rd = fis.read(b)) > 0) {
+                //chunk.setBytes(b, 0, rd);
+                outputBuffer.write(b, 0, rd);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(LibraryHttpHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

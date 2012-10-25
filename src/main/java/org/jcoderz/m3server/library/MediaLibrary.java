@@ -125,14 +125,6 @@ public class MediaLibrary {
         return pl;
     }
 
-    public Playlist search(Query query) {
-        return null;
-    }
-
-    public List<Item> browse(String path) {
-        return null;//FileSystemFolderItem.createItemList(path);
-    }
-
     public Artwork coverImage(String file) {
         File root = new File(Environment.getLibraryHome(), MediaLibrary.M3_AUDIO_ROOT);
         if (file == null || file.isEmpty()) {

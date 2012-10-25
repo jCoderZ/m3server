@@ -18,9 +18,4 @@ public class AirplayProtocolAdapter extends ProtocolAdapter {
     public void shutdown() {
         // do nothing
     }
-
-    @Override
-    public String getName() {
-        return AirplayProtocolAdapter.class.getSimpleName();
-    }
 }

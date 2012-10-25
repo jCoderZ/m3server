@@ -2,6 +2,7 @@ package org.jcoderz.m3server.library;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,14 +66,12 @@ public class FileSystemFolderItem extends FolderItem {
                         fi.setAlbum(mb.getAlbum());
                         fi.setArtist(mb.getArtist());
                         fi.setTitle(mb.getTitle());
-                        fi.setUrl(p + "/" + file);
                         children.add(fi);
                     }
                 }
             } else if (key.isFile()) {
                 FileItem fi = new FileItem(this, p);
                 fi.setSize(key.length());
-                fi.setUrl(p + "/" + key.getName());
                 children.add(fi);
             } else {
                 // TODO: throw exception: unknown type
