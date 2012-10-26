@@ -1,7 +1,5 @@
 package org.jcoderz.m3server.protocol;
 
-import java.io.IOException;
-
 /**
  * The protocol adapter exception wraps all internal exceptions which cannot be
  * handled.
@@ -16,7 +14,7 @@ public class ProtocolAdapterException extends RuntimeException {
      * @param msg the exception message
      * @param ex the parent exception
      */
-    public ProtocolAdapterException(String msg, IOException ex) {
+    public ProtocolAdapterException(String msg, Exception ex) {
         super(msg, ex);
     }
 }

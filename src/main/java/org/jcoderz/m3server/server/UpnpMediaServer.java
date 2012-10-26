@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -171,9 +172,8 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, AudioFileItem item) throws UnsupportedEncodingException {
         String creator = item.getArtist();
         PersonWithRole artist = new PersonWithRole(creator, "Performer");
-        String url = URLEncoder.encode(staticBaseUrl + item.getFullSubtreePath(), config.getString("upnp.url.encoding"));
-        System.out.println("url=" + url);
-
+        String url = staticBaseUrl + encodeUrl(item.getFullPath());
+        System.err.println("url=" + url);
         Res res = new Res(new ProtocolInfo("http-get:*:audio/mpeg:DLNA.ORG_PN=MP3"), item.getSize(), convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), url);
         MusicTrack result = new MusicTrack(
                 "" + nextId, "" + parentId,
@@ -200,6 +200,17 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                     TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
         }
         return result;
+    }
+
+    private String encodeUrl(String url) {
+        StringBuilder strbuf = new StringBuilder();
+        StringTokenizer strtok = new StringTokenizer(url, "/");
+        while (strtok.hasMoreTokens()) {
+            String tok = strtok.nextToken();
+            strbuf.append('/');
+            strbuf.append(URLEncoder.encode(tok));
+        }
+        return strbuf.toString();
     }
 
     @Override

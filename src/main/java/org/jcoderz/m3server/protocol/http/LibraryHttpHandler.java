@@ -4,7 +4,6 @@ import java.io.CharConversionException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +28,8 @@ public class LibraryHttpHandler extends HttpHandler {
 
     @Override
     public void service(final Request request, final Response response) throws Exception {
+        System.err.println("RequestURI=" + request.getRequestURI());
+        System.err.println("Method=" + request.getMethod());
         final String uri = getRelativeURI(request);
 
         if (uri == null || !handle(uri, request, response)) {
