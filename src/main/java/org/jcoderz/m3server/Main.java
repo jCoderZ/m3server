@@ -7,8 +7,8 @@ import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
-import org.jcoderz.m3server.protocol.http.HttpProtocolAdapter;
 import org.jcoderz.m3server.protocol.ProtocolAdapterRegistry;
+import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
 import org.jcoderz.m3server.protocol.upnp.UpnpProtocolAdapter;
 import org.jcoderz.m3server.util.Logging;
 
@@ -33,7 +33,7 @@ public class Main {
             // TODO: Throw runtime exception
         }
 
-        ProtocolAdapterRegistry.register(HttpProtocolAdapter.class, config);
+        ProtocolAdapterRegistry.register(JettyHttpProtocolAdapter.class, config);
 
 //        not yet supported
 //        Properties airplayProps = new Properties();
