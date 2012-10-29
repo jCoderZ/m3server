@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.jcoderz.m3server.util;
 
 import java.net.URLDecoder;
@@ -9,14 +5,25 @@ import java.net.URLEncoder;
 import java.util.StringTokenizer;
 
 /**
+ * Utility class with URL related helper methods.
  *
- * @author micha
+ * @author mrumpf
  */
 public class UrlUtil {
 
-    public static String encodePath(String url) {
+    private UrlUtil() {
+        // do not allow instances
+    }
+
+    /**
+     * URL encodes the path.
+     *
+     * @param path the path to encode
+     * @return the encoded path
+     */
+    public static String encodePath(String path) {
         StringBuilder strbuf = new StringBuilder();
-        StringTokenizer strtok = new StringTokenizer(url, "/");
+        StringTokenizer strtok = new StringTokenizer(path, "/");
         while (strtok.hasMoreTokens()) {
             String tok = strtok.nextToken();
             strbuf.append('/');
@@ -25,6 +32,12 @@ public class UrlUtil {
         return strbuf.toString();
     }
 
+    /**
+     * URL decodes the path.
+     *
+     * @param path the path to decode
+     * @return the decoded path
+     */
     public static String decodePath(String url) {
         StringBuilder strbuf = new StringBuilder();
         StringTokenizer strtok = new StringTokenizer(url, "/");
