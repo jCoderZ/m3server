@@ -1,11 +1,9 @@
 package org.jcoderz.m3server.server;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +12,7 @@ import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
+import org.jcoderz.m3server.util.UrlUtil;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.teleal.cling.model.DefaultServiceManager;
 import org.teleal.cling.model.ValidationException;
@@ -172,7 +171,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, AudioFileItem item) throws UnsupportedEncodingException {
         String creator = item.getArtist();
         PersonWithRole artist = new PersonWithRole(creator, "Performer");
-        String url = staticBaseUrl + encodeUrl(item.getFullPath());
+        String url = staticBaseUrl + UrlUtil.encodePath(item.getFullPath());
         System.err.println("url=" + url);
         Res res = new Res(new ProtocolInfo("http-get:*:audio/mpeg:DLNA.ORG_PN=MP3"), item.getSize(), convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), url);
         MusicTrack result = new MusicTrack(
@@ -200,17 +199,6 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                     TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
         }
         return result;
-    }
-
-    private String encodeUrl(String url) {
-        StringBuilder strbuf = new StringBuilder();
-        StringTokenizer strtok = new StringTokenizer(url, "/");
-        while (strtok.hasMoreTokens()) {
-            String tok = strtok.nextToken();
-            strbuf.append('/');
-            strbuf.append(URLEncoder.encode(tok));
-        }
-        return strbuf.toString();
     }
 
     @Override

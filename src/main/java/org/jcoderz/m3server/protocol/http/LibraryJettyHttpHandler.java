@@ -15,6 +15,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
+import org.jcoderz.m3server.util.UrlUtil;
 
 /**
  *
@@ -25,27 +26,28 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
     public static void sendFile(final HttpServletResponse response, URL u)
             throws IOException {
 
+        int bytesRead = -2;
         try (InputStream fis = u.openStream()) {
+            response.setStatus(HttpStatus.OK_200);
             File file = new File(u.getPath());
             String path = file.getAbsolutePath();
-            response.setStatus(HttpStatus.OK_200);
             int dot = path.lastIndexOf('.');
             if (path.endsWith(".mp3")) {
                 response.setContentType("audio/mpeg");
             } else {
+                throw new RuntimeException("Unknown extension");
             }
 
             final int length = (int) file.length();
             response.setContentLength(length);
-            response.setBufferSize(8192);
 
             final OutputStream outputBuffer = response.getOutputStream();
 
-            byte b[] = new byte[8192];
-            int rd;
-            while ((rd = fis.read(b)) > 0) {
-                //chunk.setBytes(b, 0, rd);
-                outputBuffer.write(b, 0, rd);
+            long size = 0L;
+            byte[] buffer = new byte[8192];
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                size += bytesRead;
+                outputBuffer.write(buffer, 0, bytesRead);
             }
         } catch (Exception ex) {
             Logger.getLogger(LibraryJettyHttpHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -58,7 +60,9 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
             System.err.println("RequestURI=" + request.getRequestURI());
             System.err.println("Method=" + request.getMethod());
             System.err.println("path=" + target);
-            Item item = Library.getPath(target);
+            String path = UrlUtil.decodePath(target);
+            System.err.println("RequestURI(decoded)=" + path);
+            Item item = Library.getPath(path);
             if (item == null) {
                 response.setStatus(HttpStatus.NOT_FOUND_404);
             } else {
