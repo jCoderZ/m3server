@@ -1,6 +1,5 @@
 package org.jcoderz.m3server.library;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +39,7 @@ public class Library {
             // photos
             FolderItem photos = new FolderItem(TREE_ROOT, "photos");
             TREE_ROOT.addChild(photos);
-        } catch (MalformedURLException ex) {
+        } catch (Exception ex) {
             // TODO: Throw runtime exception
             Logger.getLogger(Library.class.getName()).log(Level.SEVERE, null, ex);
         }

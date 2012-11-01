@@ -66,10 +66,10 @@ public class MediaLibrary {
     }
 
     static {
-        if (!Environment.M3_LIBRARY_HOME.exists()
-                || !Environment.M3_LIBRARY_HOME.isDirectory()) {
+        if (!Environment.getLibraryHome().exists()
+                || !Environment.getLibraryHome().isDirectory()) {
             throw new RuntimeException("M3_LIBRARY_HOME="
-                    + Environment.M3_LIBRARY_HOME
+                    + Environment.getLibraryHome()
                     + " does not exist or is not a directory");
         }
         ml = new MediaLibrary();
