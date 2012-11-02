@@ -37,6 +37,7 @@ public final class Config {
 
     private static final String M3SERVER_PROPERTIES = "m3server.properties";
     private static CompositeConfiguration CONFIG;
+    public static final String LIBRARY_ROOTS = "library.roots";
 
     private Config() {
     }

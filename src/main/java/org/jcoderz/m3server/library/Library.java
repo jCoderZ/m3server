@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3util.intern.MusicBrainzMetadata;
 import org.jcoderz.m3util.intern.util.Environment;
@@ -23,7 +24,6 @@ import org.jcoderz.m3util.intern.util.Environment;
 public class Library {
 
     private static final Logger logger = Logging.getLogger(Library.class);
-
     private static final FolderItem TREE_ROOT;
     public static final byte[] FOLDER_ICON_DEFAULT;
     public static final byte[] FILE_ICON_DEFAULT;
@@ -43,26 +43,32 @@ public class Library {
         try {
 
             // Create the sub-folders
+            List<Object> l = Config.getConfig().getList(Config.LIBRARY_ROOTS);
+            for (Object o : l) {
+                String path = (String) o;
+                logger.info("Adding virtual folder " + path);
+                addFolder(path);
+                /*
+                 FolderItem audio = new FolderItem(TREE_ROOT, "audio");
+                 TREE_ROOT.addChild(audio);
 
-            // Create the sub-folders
-            FolderItem audio = new FolderItem(TREE_ROOT, "audio");
-            TREE_ROOT.addChild(audio);
+                 FolderItem filesystem = new FileSystemFolderItem(audio, "filesystem");
+                 filesystem.setUrl(Environment.getAudioFolder().toURI().toURL());
+                 filesystem.setSubtreeRoot(true);
+                 audio.addChild(filesystem);
 
-            FolderItem filesystem = new FileSystemFolderItem(audio, "filesystem");
-            filesystem.setUrl(Environment.getAudioFolder().toURI().toURL());
-            filesystem.setSubtreeRoot(true);
-            audio.addChild(filesystem);
+                 // video
+                 FolderItem video = new FolderItem(TREE_ROOT, "video");
+                 TREE_ROOT.addChild(video);
 
-            // video
-            FolderItem video = new FolderItem(TREE_ROOT, "video");
-            TREE_ROOT.addChild(video);
-
-            // photos
-            FolderItem photos = new FolderItem(TREE_ROOT, "photos");
-            TREE_ROOT.addChild(photos);
-        } catch (Exception ex) {
+                 // photos
+                 FolderItem photos = new FolderItem(TREE_ROOT, "photos");
+                 TREE_ROOT.addChild(photos);
+                 */
+            }
+        } catch (LibraryException ex) {
             // TODO: Throw runtime exception
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "TODO", ex);
         }
     }
 
@@ -77,6 +83,29 @@ public class Library {
      */
     public static Item getRoot() {
         return TREE_ROOT;
+    }
+
+    /**
+     * Adds a path to the library.
+     *
+     * @param path the path to add
+     * @throws LibraryException when the path cannot be added
+     */
+    public static Item addFolder(String p) throws LibraryException {
+        FolderItem newItem = null;
+        // TODO: Handle / at the end
+        int idx = p.lastIndexOf('/');
+        String newElement = p.substring(idx + 1);
+        String oldPath = (idx >= 1 ? p.substring(0, idx) : "");
+        Item item = (oldPath.isEmpty() ? TREE_ROOT : browse(oldPath));
+        if (FolderItem.class.isAssignableFrom(item.getClass())) {
+            FolderItem fi = (FolderItem) item;
+            newItem = new FolderItem(item, newElement);
+            fi.addChild(newItem);
+        } else {
+            // TODO: throw Exception("path does not denote a folder item")
+        }
+        return newItem;
     }
 
     /**
@@ -189,5 +218,4 @@ public class Library {
 
         return out.toByteArray();
     }
-
 }

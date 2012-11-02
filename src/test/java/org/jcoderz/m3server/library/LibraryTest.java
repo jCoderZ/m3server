@@ -45,6 +45,17 @@ public class LibraryTest {
     }
 
     @Test
+    public void testAddFolder() throws Exception {
+        Item root = Library.getRoot();
+        Item xxx = Library.addFolder("/xxx");
+        Item yyy = Library.addFolder("/xxx/yyy");
+        assertNotNull("The xxx item must not be null", xxx);        
+        assertNull("The parent of the root element must be null", root.getParent());
+        assertEquals("Root must be the parent of the xxx folder item", root, xxx.getParent());
+        assertEquals("xxx must be the parent of the yyy folder item", xxx, yyy.getParent());
+    }
+
+    @Test
     public void testGetChildren() {
         Item root = Library.getRoot();
         assertEquals("Library root is not of Type FolderItem", root.getClass(), FolderItem.class);
