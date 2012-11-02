@@ -4,6 +4,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  *
@@ -11,6 +13,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractItem implements Item {
 
+    private static final Logger logger = Logging.getLogger(AbstractItem.class);
     protected Item parent;
     protected boolean isRoot = false;
     protected String name;
@@ -55,7 +58,7 @@ public abstract class AbstractItem implements Item {
             String u = createUrl(this);
             return new URL(u);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(AbstractItem.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
         // TODO: throw exception
         return null;

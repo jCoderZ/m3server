@@ -3,9 +3,11 @@ package org.jcoderz.m3server.protocol.upnp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.protocol.ProtocolAdapter;
+import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
 import org.jcoderz.m3server.renderer.UpnpRenderer;
+import org.jcoderz.m3server.util.Logging;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.model.meta.LocalDevice;
@@ -20,7 +22,7 @@ import org.teleal.cling.registry.RegistryListener;
  */
 public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryListener {
 
-    private static final Logger logger = Logger.getLogger(UpnpProtocolAdapter.class.getName());
+    private static final Logger logger = Logging.getLogger(UpnpProtocolAdapter.class);
     private static final String MEDIA_RENDERER = "MediaRenderer";
     private UpnpService upnpService;
     private LocalDevice mediaServerDevice;

@@ -15,6 +15,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
+import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3server.util.UrlUtil;
 
 /**
@@ -23,6 +24,7 @@ import org.jcoderz.m3server.util.UrlUtil;
  */
 public class LibraryJettyHttpHandler extends AbstractHandler {
 
+    private static final Logger logger = Logging.getLogger(LibraryJettyHttpHandler.class);
     public static void sendFile(final HttpServletResponse response, URL u)
             throws IOException {
 
@@ -50,7 +52,7 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
                 outputBuffer.write(buffer, 0, bytesRead);
             }
         } catch (Exception ex) {
-            Logger.getLogger(LibraryJettyHttpHandler.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "TODO", ex);
         }
     }
 
@@ -62,7 +64,7 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
             System.err.println("path=" + target);
             String path = UrlUtil.decodePath(target);
             System.err.println("RequestURI(decoded)=" + path);
-            Item item = Library.getPath(path);
+            Item item = Library.browse(path);
             if (item == null) {
                 response.setStatus(HttpStatus.NOT_FOUND_404);
             } else {
@@ -70,7 +72,7 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
                 sendFile(response, url);
             }
         } catch (LibraryException ex) {
-            Logger.getLogger(LibraryJettyHttpHandler.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "TODO", ex);
         }
     }
 }

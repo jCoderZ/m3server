@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
@@ -12,6 +11,10 @@ import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
+import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
+import org.jcoderz.m3server.util.Config;
+import org.jcoderz.m3server.util.Logging;
+import org.jcoderz.m3server.util.TimeUtil;
 import org.jcoderz.m3server.util.UrlUtil;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.teleal.cling.model.DefaultServiceManager;
@@ -44,28 +47,37 @@ import org.teleal.cling.support.model.container.Container;
 import org.teleal.cling.support.model.item.MusicTrack;
 
 /**
+ * The UPnP MediaServer implementation.
  *
  * @author mrumpf
  */
 public class UpnpMediaServer extends AbstractContentDirectoryService {
 
-    public static final String MEDIA_SERVERx_TYPE = "MediaServer";
-    public static final String MEDIA_SERVER_NAME = "m3server";
-    private static final Logger logger = Logger.getLogger(UpnpMediaServer.class.getName());
+    private static final Logger logger = Logging.getLogger(UpnpMediaServer.class);
     private static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
     private static final Map<Long, UpnpContainer> idUpnpObjectMap = new HashMap<>();
     private static long idCounter = 0;
     private static final Long ROOT_ID = 0L;
     private static final Long ROOT_PARENT_ID = -1L;
+    public static final String MIMETYPE_AUDIO_MPEG = "audio/mpeg";
+    public static final String MANUFACTURER_NAME = "jCoderZ.org";
+    public static final String MANUFACTURER_URL = "http://www.jcoderz.org";
+    public static final String MODEL_DESCRIPTION = "A UPnP/DLNA Media Server";
+    public static final String MODEL_NUMBER = "0.0.1";
+    public static final String MODEL_URI = "";
+    public static final String DLNA_DEVICE_CLASS = "DMS-1.50";
+    public static final String DLNA_DEVICE_VERSION = "M-DMS-1.50";
+    public static final String DLNA_ORG_PN = "DLNA.ORG_PN=MP3;DLNA.ORG_OP=01";
+
     private Configuration config;
     private String staticBaseUrl;
 
     public UpnpMediaServer(Configuration config) {
         this.config = config;
-        staticBaseUrl = config.getString("http.protocol") + "://"
-                + config.getString("http.hostname") + ":"
-                + config.getString("http.port") + "/"
-                + config.getString("http.static.content.root.context");
+        staticBaseUrl = config.getString(Config.HTTP_PROTOCOL_KEY) + "://"
+                + config.getString(Config.HTTP_HOSTNAME_KEY) + ":"
+                + config.getString(Config.HTTP_PORT_KEY) + "/";
+                //TODO: + config.getString(Config.HTTP_STATIC_CONTENT_ROOT_CONTEXT_KEY);
 
     }
 
@@ -163,7 +175,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         c.setChildCount(0 /*item.getChildCount()*/);
         c.setRestricted(true);
         c.setTitle(item.getName());
-        c.setCreator(MEDIA_SERVER_NAME);
+        c.setCreator(Config.getConfig().getString(Config.UPNP_SERVER_NAME_KEY));
         c.setClazz(DIDL_CLASS_OBJECT_CONTAINER);
         return c;
     }
@@ -173,7 +185,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         PersonWithRole artist = new PersonWithRole(creator, "Performer");
         String url = staticBaseUrl + UrlUtil.encodePath(item.getFullPath());
         System.err.println("url=" + url);
-        Res res = new Res(new ProtocolInfo("http-get:*:audio/mpeg:DLNA.ORG_PN=MP3"), item.getSize(), convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), url);
+        Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DLNA_ORG_PN), item.getSize(), TimeUtil.convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), url);
         MusicTrack result = new MusicTrack(
                 "" + nextId, "" + parentId,
                 item.getTitle(),
@@ -183,21 +195,6 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 res);
         // Add cover image result.addResource(res)
         result.setGenres(new String[]{item.getGenre()});
-        return result;
-    }
-
-    private static String convertMillis(long millis) {
-        String result;
-        if (TimeUnit.MILLISECONDS.toHours(millis) != 0L) {
-            result = String.format("%d:%02d:%02d",
-                    TimeUnit.MILLISECONDS.toHours(millis),
-                    TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
-                    TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-        } else {
-            result = String.format("%d:%02d",
-                    TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
-                    TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-        }
         return result;
     }
 
@@ -230,9 +227,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 new ProtocolInfos(
                 new ProtocolInfo(
                 Protocol.HTTP_GET,
-                ProtocolInfo.WILDCARD,
-                "audio/mpeg",
-                "DLNA.ORG_PN=MP3;DLNA.ORG_OP=01"));
+                ProtocolInfo.WILDCARD, MIMETYPE_AUDIO_MPEG, DLNA_ORG_PN));
 
         connectionManagerService.setManager(
                 new DefaultServiceManager<ConnectionManagerService>(connectionManagerService, null) {
@@ -247,17 +242,17 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
 
         try {
-            String name = config.getString("upnp.server.name");
+            String name = config.getString(Config.UPNP_SERVER_NAME_KEY);
             device = new LocalDevice(
                     new DeviceIdentity(UDN.uniqueSystemIdentifier(name)),
-                    new UDADeviceType(config.getString("upnp.server.type.name")),
+                    new UDADeviceType(config.getString(Config.UPNP_SERVER_TYPE_NAME_KEY)),
                     new DeviceDetails(name,
-                    new ManufacturerDetails("jCoderZ.org", "http://www.jcoderz.org"),
-                    new ModelDetails(name, "A UPnP/DLNA Media Server", "0.0.1", ""),
-                    new DLNADoc[]{new DLNADoc("DMS-1.50", "M-DMS-1.50")}, null),
+                    new ManufacturerDetails(MANUFACTURER_NAME, MANUFACTURER_URL),
+                    new ModelDetails(name, MODEL_DESCRIPTION, MODEL_NUMBER, MODEL_URI),
+                    new DLNADoc[]{new DLNADoc(DLNA_DEVICE_CLASS, DLNA_DEVICE_VERSION)}, null),
                     new LocalService[]{contentDirectoryService, connectionManagerService});
         } catch (ValidationException ex) {
-            Logger.getLogger(UpnpMediaServer.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
         return device;
     }

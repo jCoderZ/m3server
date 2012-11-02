@@ -3,13 +3,11 @@ package org.jcoderz.m3server;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.apache.commons.configuration.CompositeConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.SystemConfiguration;
+import org.apache.commons.configuration.Configuration;
 import org.jcoderz.m3server.protocol.ProtocolAdapterRegistry;
 import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
 import org.jcoderz.m3server.protocol.upnp.UpnpProtocolAdapter;
+import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.Logging;
 
 /**
@@ -24,14 +22,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         logger.info("Starting m3server...");
 
-        CompositeConfiguration config = new CompositeConfiguration();
-        try {
-            config.addConfiguration(new SystemConfiguration());
-            config.addConfiguration(new PropertiesConfiguration("m3server.properties"));
-        } catch (ConfigurationException ex) {
-            ex.printStackTrace();
-            // TODO: Throw runtime exception
-        }
+        Configuration config = Config.getConfig();
 
         ProtocolAdapterRegistry.register(JettyHttpProtocolAdapter.class, config);
 

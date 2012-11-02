@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  * The protocol adapter registry manages all available protocol adapters, like
@@ -15,7 +16,7 @@ import org.apache.commons.configuration.Configuration;
  */
 public final class ProtocolAdapterRegistry {
 
-    private static final Logger logger = Logger.getLogger(ProtocolAdapterRegistry.class.getName());
+    private static final Logger logger = Logging.getLogger(ProtocolAdapterRegistry.class);
     private static Map<Class, ProtocolAdapter> adapters = new HashMap<>();
     private static boolean keepOn = true;
 

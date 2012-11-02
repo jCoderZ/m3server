@@ -1,8 +1,17 @@
 package org.jcoderz.m3server.library;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jaudiotagger.tag.datatype.Artwork;
+import org.jcoderz.m3server.Main;
+import org.jcoderz.m3server.util.Logging;
+import org.jcoderz.m3util.intern.MusicBrainzMetadata;
 import org.jcoderz.m3util.intern.util.Environment;
 
 /**
@@ -14,9 +23,22 @@ import org.jcoderz.m3util.intern.util.Environment;
  */
 public class Library {
 
+    private static final Logger logger = Logging.getLogger(Library.class);
+
     private static final FolderItem TREE_ROOT;
+    public static final byte[] FOLDER_ICON_DEFAULT;
+    public static final byte[] FILE_ICON_DEFAULT;
 
     static {
+        InputStream folderInputStream = Thread.currentThread()
+                .getContextClassLoader().getResourceAsStream("org/jcoderz/m3server/ui/resources/images/folder.png");
+
+        FOLDER_ICON_DEFAULT = readFromStream(folderInputStream);
+        InputStream fileInputStream = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream("org/jcoderz/m3server/ui/resources/images/audio-x-generic.png");
+        FILE_ICON_DEFAULT = readFromStream(fileInputStream);
+
         // create the root node
         TREE_ROOT = new FolderItem(null, "Root");
         try {
@@ -41,7 +63,7 @@ public class Library {
             TREE_ROOT.addChild(photos);
         } catch (Exception ex) {
             // TODO: Throw runtime exception
-            Logger.getLogger(Library.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -64,7 +86,7 @@ public class Library {
      * @param path the path to look for
      * @return the item that matches the path
      */
-    public static Item getPath(String path) throws LibraryException {
+    public static Item browse(String path) throws LibraryException {
         String[] token = path.split("/");
         Item node = TREE_ROOT;
         for (String tok : token) {
@@ -78,6 +100,18 @@ public class Library {
             }
         }
         return node;
+    }
+
+    /**
+     * Returns the item that matches the path.
+     *
+     * @param query the query string
+     * @return the item that matches the path
+     */
+    public static List<Item> search(String query) throws LibraryException {
+        List<Item> result = new ArrayList<>();
+        // TODO
+        return result;
     }
 
     /**
@@ -98,4 +132,63 @@ public class Library {
             // node is not a FolderItem and thus there are no more children
         }
     }
+
+    public Artwork coverImage(String file) {
+        File root = Environment.getAudioFolder();
+        if (file == null || file.isEmpty()) {
+            // TODO throw Exception
+        }
+
+        Artwork result = null;
+        File f = new File(root, file);
+        if (!f.exists()) {
+            // TODO throw Exception
+            throw new RuntimeException("File " + file + " does not exist!");
+        }
+        if (f.isDirectory()) {
+            String[] files = f.list();
+            for (String ff : files) {
+                File folderFile = new File(f, ff);
+                if (folderFile.isFile()) {
+                    MusicBrainzMetadata mb = new MusicBrainzMetadata(folderFile);
+                    result = mb.getCoverImage();
+                }
+            }
+            if (result == null) {
+                result = new Artwork();
+                result.setBinaryData(FOLDER_ICON_DEFAULT);
+                result.setMimeType("image/png");
+            }
+        } else if (f.isFile()) {
+            MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
+            result = mb.getCoverImage();
+            // when no image has been found inside the file
+            if (result == null || result.getBinaryData() == null) {
+                result = new Artwork();
+                result.setBinaryData(FILE_ICON_DEFAULT);
+                result.setMimeType("image/png");
+            }
+        } else {
+            // TODO throw Exception
+            throw new RuntimeException("Unknown file type " + file);
+        }
+
+        return result;
+    }
+
+    private static byte[] readFromStream(InputStream in) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[1024];
+        try {
+            while (in.read(buffer) != -1) {
+                out.write(buffer);
+            }
+        } catch (IOException ex) {
+            // TODO: throw exception
+        }
+
+        return out.toByteArray();
+    }
+
 }

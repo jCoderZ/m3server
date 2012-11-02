@@ -1,6 +1,9 @@
 package org.jcoderz.m3server.renderer;
 
 import java.net.URL;
+import java.util.logging.Logger;
+import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  * http://mpd.wikia.com/wiki/Protocol_Reference
@@ -11,7 +14,8 @@ import java.net.URL;
  */
 public class MpdRenderer extends AbstractRenderer {
 
-    /**
+     private static final Logger logger = Logging.getLogger(JettyHttpProtocolAdapter.class);
+   /**
      * Constructor.
      *
      * @param name the name of the renderer

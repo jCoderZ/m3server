@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import java.util.Map;
 import java.util.logging.Logger;
+import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  * The registry that keeps track of all available renderer on the network.
@@ -13,7 +15,7 @@ import java.util.logging.Logger;
  */
 public final class RendererRegistry {
 
-    private static final Logger logger = Logger.getLogger(RendererRegistry.class.getName());
+    private static final Logger logger = Logging.getLogger(RendererRegistry.class);
 
     RendererRegistry() {
         // do not allow instances of this class

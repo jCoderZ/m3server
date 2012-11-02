@@ -1,5 +1,8 @@
 package org.jcoderz.m3server.renderer;
 
+import java.util.logging.Logger;
+import org.jcoderz.m3server.util.Logging;
+
 /**
  * This is the abstract base class of all renderers.
  *
@@ -7,6 +10,7 @@ package org.jcoderz.m3server.renderer;
  */
 public abstract class AbstractRenderer implements Renderer {
 
+    private static final Logger logger = Logging.getLogger(AbstractRenderer.class);
     private String name;
     private RendererType type;
 

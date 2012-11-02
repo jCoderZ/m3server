@@ -1,6 +1,9 @@
 package org.jcoderz.m3server.renderer;
 
 import java.net.URL;
+import java.util.logging.Logger;
+import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  * This class represents Airplay rendering devices.
@@ -9,6 +12,7 @@ import java.net.URL;
  */
 public class AirplayRenderer extends AbstractRenderer {
 
+    private static final Logger logger = Logging.getLogger(JettyHttpProtocolAdapter.class);
     /**
      * Constructor.
      *

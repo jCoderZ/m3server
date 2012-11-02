@@ -2,6 +2,8 @@ package org.jcoderz.m3server.renderer;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
+import org.jcoderz.m3server.util.Logging;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.controlpoint.ActionCallback;
 import org.teleal.cling.model.action.ActionInvocation;
@@ -15,7 +17,7 @@ import org.teleal.cling.support.avtransport.callback.SetAVTransportURI;
 
 public class UpnpRenderer extends AbstractRenderer {
 
-    private static final Logger logger = Logger.getLogger(UpnpRenderer.class.getName());
+    private static final Logger logger = Logging.getLogger(UpnpRenderer.class);
     private Device device;
     private UpnpService upnpService;
 
@@ -60,7 +62,7 @@ public class UpnpRenderer extends AbstractRenderer {
          try {
          u = new URL(url);
          } catch (MalformedURLException ex) {
-         Logger.getLogger(UpnpRenderer.class.getName()).log(Level.SEVERE, null, ex);
+         logger.log(Level.SEVERE, null, ex);
          }
          StringBuilder sb = new StringBuilder();
          sb.append("<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">");
