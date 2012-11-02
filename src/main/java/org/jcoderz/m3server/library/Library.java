@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.jcoderz.m3server.library.search.Searchable;
 import org.jcoderz.m3server.util.Config;
+import org.jcoderz.m3server.util.ImageUtil;
 import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3util.intern.MusicBrainzMetadata;
 import org.jcoderz.m3util.intern.util.Environment;
@@ -25,51 +27,31 @@ public class Library {
 
     private static final Logger logger = Logging.getLogger(Library.class);
     private static final FolderItem TREE_ROOT;
-    public static final byte[] FOLDER_ICON_DEFAULT;
-    public static final byte[] FILE_ICON_DEFAULT;
+    private static final List<FolderItem> rootFolderItems = new ArrayList<>();
 
     static {
-        // TODO: Move to static image service (not yet implemented)
-        InputStream folderInputStream = Thread.currentThread()
-                .getContextClassLoader().getResourceAsStream("org/jcoderz/m3server/ui/resources/images/folder.png");
-
-        FOLDER_ICON_DEFAULT = readFromStream(folderInputStream);
-        InputStream fileInputStream = Thread.currentThread()
-                .getContextClassLoader()
-                .getResourceAsStream("org/jcoderz/m3server/ui/resources/images/audio-x-generic.png");
-        FILE_ICON_DEFAULT = readFromStream(fileInputStream);
-
         // create the root node
         TREE_ROOT = new FolderItem(null, "Root");
         try {
-
             // Create the sub-folders
             List<Object> l = Config.getConfig().getList(Config.LIBRARY_ROOTS);
             for (Object o : l) {
                 String path = (String) o;
-                logger.info("Adding virtual folder " + path);
-                addFolder(path);
+                logger.log(Level.CONFIG, "Adding virtual folder {0}", path);
+                Item i = addFolder(path);
+                if (FolderItem.class.isAssignableFrom(i.getClass())) {
+                    rootFolderItems.add((FolderItem) i);
+                }
                 /*
-                 FolderItem audio = new FolderItem(TREE_ROOT, "audio");
-                 TREE_ROOT.addChild(audio);
-
-                 FolderItem filesystem = new FileSystemFolderItem(audio, "filesystem");
                  filesystem.setUrl(Environment.getAudioFolder().toURI().toURL());
                  filesystem.setSubtreeRoot(true);
-                 audio.addChild(filesystem);
-
-                 // video
-                 FolderItem video = new FolderItem(TREE_ROOT, "video");
-                 TREE_ROOT.addChild(video);
-
-                 // photos
-                 FolderItem photos = new FolderItem(TREE_ROOT, "photos");
-                 TREE_ROOT.addChild(photos);
                  */
             }
         } catch (LibraryException ex) {
-            // TODO: Throw runtime exception
-            logger.log(Level.SEVERE, "TODO", ex);
+            // TODO: Move init away from static initializer
+            final String msg = "An exception occured while configuring the top-level folder structure";
+            logger.log(Level.SEVERE, msg, ex);
+            throw new LibraryRuntimeException(msg, ex);
         }
     }
 
@@ -122,9 +104,11 @@ public class Library {
             if (!tok.isEmpty()) {
                 if (node instanceof FolderItem) {
                     FolderItem fi = (FolderItem) node;
+                    logger.fine("Browsing folder " + fi);
                     node = fi.getChild(tok);
                 } else {
                     // TODO: ...
+                    logger.fine("Browsing " + node);
                 }
             }
         }
@@ -139,7 +123,16 @@ public class Library {
      */
     public static List<Item> search(String query) throws LibraryException {
         List<Item> result = new ArrayList<>();
-        // TODO
+        for (FolderItem fi : rootFolderItems) {
+            if (Searchable.class.isAssignableFrom(fi.getClass())) {
+                Searchable s = (Searchable) fi;
+                logger.fine("Searching '" + query + "' in " + fi);
+                List<Item> items = s.search(query);
+                if (!items.isEmpty()) {
+                    result.addAll(items);
+                }
+            }
+        }
         return result;
     }
 
@@ -185,7 +178,7 @@ public class Library {
             }
             if (result == null) {
                 result = new Artwork();
-                result.setBinaryData(FOLDER_ICON_DEFAULT);
+                result.setBinaryData(ImageUtil.FOLDER_ICON_DEFAULT);
                 result.setMimeType("image/png");
             }
         } else if (f.isFile()) {
@@ -194,7 +187,7 @@ public class Library {
             // when no image has been found inside the file
             if (result == null || result.getBinaryData() == null) {
                 result = new Artwork();
-                result.setBinaryData(FILE_ICON_DEFAULT);
+                result.setBinaryData(ImageUtil.FILE_ICON_DEFAULT);
                 result.setMimeType("image/png");
             }
         } else {
@@ -203,20 +196,5 @@ public class Library {
         }
 
         return result;
-    }
-
-    private static byte[] readFromStream(InputStream in) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        byte[] buffer = new byte[1024];
-        try {
-            while (in.read(buffer) != -1) {
-                out.write(buffer);
-            }
-        } catch (IOException ex) {
-            // TODO: throw exception
-        }
-
-        return out.toByteArray();
     }
 }
