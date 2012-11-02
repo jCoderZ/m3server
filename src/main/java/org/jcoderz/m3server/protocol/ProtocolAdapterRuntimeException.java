@@ -6,7 +6,7 @@ package org.jcoderz.m3server.protocol;
  *
  * @author mrumpf
  */
-public class ProtocolAdapterException extends RuntimeException {
+public class ProtocolAdapterRuntimeException extends RuntimeException {
 
     /**
      * Constructor.
@@ -14,7 +14,7 @@ public class ProtocolAdapterException extends RuntimeException {
      * @param msg the exception message
      * @param ex the parent exception
      */
-    public ProtocolAdapterException(String msg, Exception ex) {
+    public ProtocolAdapterRuntimeException(String msg, Exception ex) {
         super(msg, ex);
     }
 }
