@@ -1,26 +1,33 @@
-package org.jcoderz.m3server.rest;
+package org.jcoderz.m3server.protocol.http.rest;
 
-import java.io.File;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.jcoderz.m3server.library.FileItem;
+import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
+import org.jcoderz.m3server.library.LibraryException;
 import org.jcoderz.m3server.library.MediaLibrary;
 import org.jcoderz.m3server.library.Playlist;
 
 /**
- * This class provides a RESTful service to the MediaLibrary functionality.
+ * This class provides a RESTful service to the Library functionality.
  *
  * @mrumpf
  */
 @Path("/library")
-public class LibraryRestService {
+public class LibraryService {
+
+    private static final Logger logger = Logger.getLogger(LibraryService.class.getName());
 
     @GET
     @Path("/search")
@@ -34,15 +41,19 @@ public class LibraryRestService {
     @GET
     @Path("/browse{path:.*}")
     public Response browse(@PathParam("path") String path) {
-        Object result = null; //TODO: Library.browse(path);
-        String mt = "application/json";
-        if (result instanceof File) {
-            mt = "audio/mpeg";
+        try {
+            Item result = Library.getPath(path);
+            String mt = "application/json";
+            if (result instanceof FileItem && result.getName().toLowerCase().endsWith(".mp3")) {
+                mt = "audio/mpeg";
+            }
+            System.err.println("path: " + path + ", mt: " + mt);
+            Response resp = Response.ok(result, mt).build();
+            System.err.println("r: " + resp);
+            return resp;
+        } catch (LibraryException ex) {
+            throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
         }
-        System.err.println("path: " + path + ", mt: " + mt);
-        Response resp = Response.ok(result, mt).build();
-        System.err.println("r: " + resp);
-        return resp;
     }
 
     @GET

@@ -1,4 +1,4 @@
-package org.jcoderz.m3server.server;
+package org.jcoderz.m3server.protocol.upnp;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;

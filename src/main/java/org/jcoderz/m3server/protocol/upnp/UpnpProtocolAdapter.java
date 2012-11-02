@@ -6,7 +6,6 @@ import org.jcoderz.m3server.protocol.ProtocolAdapter;
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
 import org.jcoderz.m3server.renderer.UpnpRenderer;
-import org.jcoderz.m3server.server.UpnpMediaServer;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
 import org.teleal.cling.model.meta.LocalDevice;

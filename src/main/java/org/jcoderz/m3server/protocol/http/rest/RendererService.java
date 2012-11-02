@@ -1,4 +1,4 @@
-package org.jcoderz.m3server.rest;
+package org.jcoderz.m3server.protocol.http.rest;
 
 import java.util.Map;
 
