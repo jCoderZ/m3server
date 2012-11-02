@@ -25,19 +25,21 @@ import org.jcoderz.m3server.util.UrlUtil;
 public class LibraryJettyHttpHandler extends AbstractHandler {
 
     private static final Logger logger = Logging.getLogger(LibraryJettyHttpHandler.class);
+    public static final String MIMETYPE_AUDIO_MPEG = "audio/mpeg";
+    public static final String FILE_EXTENSION_MP3 = ".mp3";
+
     public static void sendFile(final HttpServletResponse response, URL u)
             throws IOException {
 
-        int bytesRead = -2;
         try (InputStream fis = u.openStream()) {
             response.setStatus(HttpStatus.OK_200);
             File file = new File(u.getPath());
             String path = file.getAbsolutePath();
             int dot = path.lastIndexOf('.');
-            if (path.endsWith(".mp3")) {
-                response.setContentType("audio/mpeg");
+            if (path.toLowerCase().endsWith(FILE_EXTENSION_MP3)) {
+                response.setContentType(MIMETYPE_AUDIO_MPEG);
             } else {
-                throw new RuntimeException("Unknown extension");
+                throw new RuntimeException("TODO: Unknown extension");
             }
 
             final int length = (int) file.length();
@@ -47,6 +49,7 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
 
             long size = 0L;
             byte[] buffer = new byte[8192];
+            int bytesRead;
             while ((bytesRead = fis.read(buffer)) != -1) {
                 size += bytesRead;
                 outputBuffer.write(buffer, 0, bytesRead);
@@ -58,12 +61,11 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
 
     @Override
     public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // TODO: Use logging filter
+        logger.entering(LibraryJettyHttpHandler.class.getSimpleName(), "handle", new Object[]{target, baseRequest, request, response});
         try {
-            System.err.println("RequestURI=" + request.getRequestURI());
-            System.err.println("Method=" + request.getMethod());
-            System.err.println("path=" + target);
             String path = UrlUtil.decodePath(target);
-            System.err.println("RequestURI(decoded)=" + path);
+            logger.fine("RequestURI=" + request.getRequestURI() + ", Method=" + request.getMethod() + ", Target=" + target + ", Target(decoded)=" + path);
             Item item = Library.browse(path);
             if (item == null) {
                 response.setStatus(HttpStatus.NOT_FOUND_404);
@@ -74,5 +76,7 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
         } catch (LibraryException ex) {
             logger.log(Level.SEVERE, "TODO", ex);
         }
+        // TODO: Use logging filter
+        logger.exiting(LibraryJettyHttpHandler.class.getSimpleName(), "handle");
     }
 }
