@@ -1,11 +1,14 @@
 package org.jcoderz.m3server.protocol.http;
 
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.jcoderz.m3server.protocol.ProtocolAdapter;
 
@@ -32,7 +35,7 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
 
         // library
         ContextHandler libraryContext = new ContextHandler();
-        libraryContext.setContextPath("/library");
+        libraryContext.setContextPath("/m3server/library");
         libraryContext.setResourceBase(".");
         libraryContext.setClassLoader(Thread.currentThread().getContextClassLoader());
         libraryContext.setHandler(new LibraryJettyHttpHandler());
@@ -40,11 +43,19 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
 
         // webapp
         final String WEBAPPDIR = "/org/jcoderz/m3server/ui";
-        final String CONTEXTPATH = "/ui";
+        final String CONTEXTPATH = "/m3server/ui";
         final URL warUrl = this.getClass().getResource(WEBAPPDIR);
         final String warUrlString = warUrl.toExternalForm();
         WebAppContext webappContext = new WebAppContext(warUrlString, CONTEXTPATH);
         hl.addHandler(webappContext);
+
+        // rest
+        ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
+        servletHolder.setInitParameter("com.sun.jersey.config.property.packages", "org.jcoderz.m3server");
+        servletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
+        ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/m3server");
+        servletContextHandler.addServlet(servletHolder, "/rest/*");
+        hl.addHandler(servletContextHandler);
 
         server.setHandler(hl);
         try {
