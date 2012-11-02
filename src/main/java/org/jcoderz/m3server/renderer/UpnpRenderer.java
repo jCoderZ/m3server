@@ -2,7 +2,6 @@ package org.jcoderz.m3server.renderer;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
 import org.jcoderz.m3server.util.Logging;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.controlpoint.ActionCallback;

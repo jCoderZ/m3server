@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import java.util.Map;
 import java.util.logging.Logger;
-import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
 import org.jcoderz.m3server.util.Logging;
 
 /**

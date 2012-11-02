@@ -7,7 +7,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import org.jcoderz.m3server.protocol.http.LibraryJettyHttpHandler;
 
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;

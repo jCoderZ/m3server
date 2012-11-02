@@ -5,6 +5,8 @@ import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import org.jcoderz.m3server.util.Logging;
 
 import org.jcoderz.m3util.intern.MusicBrainzMetadata;
 import org.jcoderz.m3util.intern.util.Environment;
@@ -16,6 +18,7 @@ import org.jcoderz.m3util.intern.util.Environment;
  */
 public class FileSystemFolderItem extends FolderItem {
 
+    private static final Logger logger = Logging.getLogger(FileSystemFolderItem.class);
     private static final FilenameFilter MP3_FILTER = new FilenameFilter() {
         @Override
         public boolean accept(File dir, String name) {

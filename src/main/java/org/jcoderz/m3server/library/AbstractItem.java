@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
 import org.jcoderz.m3server.util.Logging;
 
 /**

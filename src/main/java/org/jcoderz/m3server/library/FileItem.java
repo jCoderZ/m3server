@@ -1,6 +1,8 @@
 package org.jcoderz.m3server.library;
 
+import java.util.logging.Logger;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  *
@@ -8,6 +10,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class FileItem extends AbstractItem {
 
+    private static final Logger logger = Logging.getLogger(FileItem.class);
     private long size;
 
     public FileItem(Item parent, String name) {

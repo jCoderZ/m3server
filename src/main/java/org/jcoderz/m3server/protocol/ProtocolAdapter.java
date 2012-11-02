@@ -1,6 +1,9 @@
 package org.jcoderz.m3server.protocol;
 
+import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
+import org.jcoderz.m3server.library.FolderItem;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  * The base class for all protocol adapters.
@@ -9,6 +12,7 @@ import org.apache.commons.configuration.Configuration;
  */
 public abstract class ProtocolAdapter {
 
+    private static final Logger logger = Logging.getLogger(ProtocolAdapter.class);
     private Configuration config;
 
     /**

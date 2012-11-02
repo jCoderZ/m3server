@@ -1,6 +1,8 @@
 package org.jcoderz.m3server.library;
 
+import java.util.logging.Logger;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  *
@@ -8,6 +10,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class AudioFileItem extends FileItem {
 
+    private static final Logger logger = Logging.getLogger(AudioFileItem.class);
     private String artist;
     private String title;
     private String album;

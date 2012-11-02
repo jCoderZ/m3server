@@ -17,7 +17,6 @@ import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
-import org.jcoderz.m3server.protocol.http.LibraryJettyHttpHandler;
 import org.jcoderz.m3server.util.Logging;
 
 /**

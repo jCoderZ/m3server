@@ -3,6 +3,8 @@ package org.jcoderz.m3server.library;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  *
@@ -10,6 +12,7 @@ import java.util.List;
  */
 public class FolderItem extends AbstractItem {
 
+    private static final Logger logger = Logging.getLogger(FolderItem.class);
     protected List<Item> children = new ArrayList<>();
 
     public FolderItem(Item parent, String name) {
