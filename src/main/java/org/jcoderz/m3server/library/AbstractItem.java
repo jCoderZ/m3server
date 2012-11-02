@@ -48,7 +48,6 @@ public abstract class AbstractItem implements Item {
     @Override
     public void setUrl(URL u) {
         this.url = u;
-        System.err.println("item.setUrl(" + url + ") (" + getName() + ")");
     }
 
     @Override
@@ -76,7 +75,6 @@ public abstract class AbstractItem implements Item {
             if (item.getUrl() != null) {
                 result = item.getUrl().toString();
             } else {
-                System.err.println("item.getUrl()=" + url + " (" + getName() + ")");
                 new Exception().printStackTrace();
             }
         }
