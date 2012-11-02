@@ -37,9 +37,7 @@ public class LibraryService {
     @Produces("application/json")
     public List<Item> search(@QueryParam("term") String term) {
         try {
-            List<Item> l = Library.search(term);
-            System.out.println("term=" + term + " -> " + l);
-            return l;
+            return Library.search(term);
         } catch (LibraryException ex) {
             throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
         }
@@ -56,9 +54,7 @@ public class LibraryService {
             if (result instanceof FileItem && result.getName().toLowerCase().endsWith(".mp3")) {
                 mt = "audio/mpeg";
             }
-            System.err.println("path: " + path + ", mt: " + mt);
             Response resp = Response.ok(result, mt).build();
-            System.err.println("r: " + resp);
             return resp;
         } catch (LibraryException ex) {
             throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
@@ -81,7 +77,6 @@ public class LibraryService {
     @GET
     @Path("/browse{path:.*}/info")
     public Response info(@PathParam("path") String path, @QueryParam("tag") String tag) {
-        System.err.println("info: " + path + ", tag: " + tag);
         // TODO: tag=all -> return MusicBrainzMetaData
         return null;
     }
