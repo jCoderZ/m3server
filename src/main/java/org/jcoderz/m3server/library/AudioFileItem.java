@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jcoderz.m3server.util.Logging;
 
 /**
+ * This class represents an audio file.
  *
  * @author mrumpf
  */

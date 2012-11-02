@@ -1,6 +1,7 @@
 package org.jcoderz.m3server.library;
 
 /**
+ * The base class for library exceptions.
  *
  * @author mrumpf
  */

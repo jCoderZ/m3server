@@ -4,8 +4,11 @@ import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Logging;
 
 /**
- * http://mpd.wikia.com/wiki/Protocol_Reference
- * http://mpd.wikia.com/wiki/Built-in_HTTP_streaming_part_2
+ * This class represents MPD rendering devices.
+ * <ul>
+ *   <li><a href="http://mpd.wikia.com/wiki/Protocol_Reference">Protocol Reference</a></li>
+ *   <li><a href="http://mpd.wikia.com/wiki/Built-in_HTTP_streaming_part_2">Built-in HTTP streaming part 2</a></li>
+ * </ul>
  *
  * @author mrumpf
  *

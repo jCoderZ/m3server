@@ -11,6 +11,7 @@ import org.jcoderz.m3util.intern.MusicBrainzMetadata;
 import org.jcoderz.m3util.intern.util.Environment;
 
 /**
+ * This class represents a file-system folder.
  *
  * @author mrumpf
  *

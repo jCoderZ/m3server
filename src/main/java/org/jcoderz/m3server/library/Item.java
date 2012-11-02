@@ -3,6 +3,7 @@ package org.jcoderz.m3server.library;
 import java.net.URL;
 
 /**
+ * This is the common base interface for all item types.
  *
  * @author mrumpf
  */

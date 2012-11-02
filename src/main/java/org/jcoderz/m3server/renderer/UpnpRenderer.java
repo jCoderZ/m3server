@@ -14,6 +14,11 @@ import org.teleal.cling.model.types.UDAServiceId;
 import org.teleal.cling.support.avtransport.callback.Play;
 import org.teleal.cling.support.avtransport.callback.SetAVTransportURI;
 
+/**
+ * This class represents UPnP/DLNA rendering devices.
+ * 
+ * @author mrumpf
+ */
 public class UpnpRenderer extends AbstractRenderer {
 
     private static final Logger logger = Logging.getLogger(UpnpRenderer.class);

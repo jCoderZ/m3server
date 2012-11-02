@@ -1,7 +1,5 @@
 package org.jcoderz.m3server.renderer;
 
-import java.net.URL;
-
 /**
  * The Renderer interface.
  *

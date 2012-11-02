@@ -1,12 +1,12 @@
 package org.jcoderz.m3server.library;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Logging;
 
 /**
+ * This is the base class for all folder items.
  *
  * @author mrumpf
  */

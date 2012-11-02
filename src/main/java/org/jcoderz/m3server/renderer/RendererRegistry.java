@@ -15,11 +15,11 @@ import org.jcoderz.m3server.util.Logging;
 public final class RendererRegistry {
 
     private static final Logger logger = Logging.getLogger(RendererRegistry.class);
+    private static final Map<String, Renderer> renderers = Collections.synchronizedMap(new HashMap<String, Renderer>());
 
-    RendererRegistry() {
+    private RendererRegistry() {
         // do not allow instances of this class
     }
-    private static final Map<String, Renderer> renderers = Collections.synchronizedMap(new HashMap<String, Renderer>());
 
     /**
      * Returns all currently known renderers on the network which can be used

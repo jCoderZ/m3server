@@ -13,6 +13,7 @@ import org.jcoderz.m3server.renderer.RendererRegistry;
 import org.jcoderz.m3server.util.Logging;
 
 /**
+ * This class provides a RESTful service to the renderer functionality.
  * 
  * @author mrumpf
  */

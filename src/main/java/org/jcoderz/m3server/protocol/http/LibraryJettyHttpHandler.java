@@ -19,6 +19,8 @@ import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3server.util.UrlUtil;
 
 /**
+ * This class handles file downloads out of the library.
+ * <p>TODO: This will probably be substituted by REST APIs.</p>
  *
  * @author mrumpf
  */

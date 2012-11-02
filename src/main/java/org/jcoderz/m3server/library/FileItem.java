@@ -5,6 +5,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jcoderz.m3server.util.Logging;
 
 /**
+ * This class represents a common file.
  *
  * @author mrumpf
  */

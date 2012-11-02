@@ -29,6 +29,7 @@ public class Library {
     public static final byte[] FILE_ICON_DEFAULT;
 
     static {
+        // TODO: Move to static image service (not yet implemented)
         InputStream folderInputStream = Thread.currentThread()
                 .getContextClassLoader().getResourceAsStream("org/jcoderz/m3server/ui/resources/images/folder.png");
 

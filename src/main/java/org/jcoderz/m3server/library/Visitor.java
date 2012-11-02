@@ -1,7 +1,7 @@
 package org.jcoderz.m3server.library;
 
 /**
- * This is the visitor marker interface.
+ * This is the marker interface for the visitor pattern.
  *
  * @author mrumpf
  */

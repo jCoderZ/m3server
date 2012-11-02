@@ -17,6 +17,7 @@ public class Logging {
             try {
                 LogManager.getLogManager().readConfiguration(Logging.class.getResourceAsStream("logging.properties"));
             } catch (Exception ex) {
+                // TODO
                 ex.printStackTrace();
             }
         }

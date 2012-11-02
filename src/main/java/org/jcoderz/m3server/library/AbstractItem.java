@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Logging;
 
 /**
+ * This class provides the common implementation for all item types.
  *
  * @author mrumpf
  */
