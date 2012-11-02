@@ -81,7 +81,9 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     }
 
     public static long getNextId() {
-        return ++idCounter;
+        ++idCounter;
+        logger.fine("New id: " + idCounter);
+        return idCounter;
     }
 
     @Override
@@ -89,13 +91,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             String filter,
             long firstResult, long maxResults,
             SortCriterion[] orderby) throws ContentDirectoryException {
+        logger.entering(UpnpMediaServer.class.getSimpleName(), "browse", new Object[] {objectID, browseFlag, filter, firstResult, maxResults, orderby});
+
+        BrowseResult result = null;
         long id = Long.valueOf(objectID).longValue();
         try {
-            logger.info("### objectID=" + objectID);
-            logger.info("browseFlag=" + browseFlag.toString());
-            logger.info("filter=" + filter);
-            logger.info("first=" + firstResult + ", max=" + maxResults);
-            logger.info("sortCriterion=" + orderby.toString());
             DIDLContent didl = new DIDLContent();
 
             if (id == ROOT_ID) {
@@ -147,14 +147,16 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 }
             }
             String xml = new DIDLParser().generate(didl);
-            System.out.println("" + xml);
-            return new BrowseResult(xml, didl.getContainers().size() + didl.getItems().size(), 1L);
+            logger.finest("DIDL response xml: " + xml);
+            result = new BrowseResult(xml, didl.getContainers().size() + didl.getItems().size(), 1L);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "An exception occured during browsing of folder " + id, ex);
             throw new ContentDirectoryException(
                     ContentDirectoryErrorCode.CANNOT_PROCESS,
                     ex.toString());
         }
+        logger.exiting(UpnpMediaServer.class.getSimpleName(), "browse", result);
+        return result;
     }
 
     /**
@@ -183,7 +185,6 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         String creator = item.getArtist();
         PersonWithRole artist = new PersonWithRole(creator, "Performer");
         String url = staticBaseUrl + UrlUtil.encodePath(item.getFullPath());
-        System.err.println("url=" + url);
         Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DLNA_ORG_PN), item.getSize(), TimeUtil.convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), url);
         MusicTrack result = new MusicTrack(
                 "" + nextId, "" + parentId,
@@ -202,12 +203,14 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             String searchCriteria, String filter,
             long firstResult, long maxResults,
             SortCriterion[] orderBy) throws ContentDirectoryException {
-        logger.log(Level.INFO, "searchCriteria={0}", searchCriteria);
-        logger.log(Level.INFO, "filter={0}", filter);
-        logger.log(Level.INFO, "first={0}, max={1}", new Object[]{firstResult, maxResults});
-        logger.log(Level.INFO, "sortCriterion={0}", orderBy);
+        logger.entering(UpnpMediaServer.class.getSimpleName(), "search", new Object[] {searchCriteria, filter, firstResult, maxResults, orderBy});
+        BrowseResult result = null;
+
         // You can override this method to implement searching!
-        return super.search(containerId, searchCriteria, filter, firstResult, maxResults, orderBy);
+        result = super.search(containerId, searchCriteria, filter, firstResult, maxResults, orderBy);
+
+        logger.entering(UpnpMediaServer.class.getSimpleName(), "search", new Object[] {searchCriteria, filter, firstResult, maxResults, orderBy});
+        return result;
     }
 
     public static LocalDevice createDevice(final Configuration config) {
