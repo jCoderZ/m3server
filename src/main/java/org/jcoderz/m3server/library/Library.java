@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jaudiotagger.tag.datatype.Artwork;
-import org.jcoderz.m3server.Main;
 import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3util.intern.MusicBrainzMetadata;
 import org.jcoderz.m3util.intern.util.Environment;

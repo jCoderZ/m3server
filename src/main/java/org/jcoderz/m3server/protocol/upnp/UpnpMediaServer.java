@@ -11,7 +11,6 @@ import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
-import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3server.util.TimeUtil;

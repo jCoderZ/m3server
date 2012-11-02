@@ -2,7 +2,6 @@ package org.jcoderz.m3server.protocol;
 
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
-import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.util.Logging;
 
 /**
