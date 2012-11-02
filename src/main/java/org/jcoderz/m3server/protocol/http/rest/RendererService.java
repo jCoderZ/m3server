@@ -24,7 +24,6 @@ public class RendererService {
     @Path("/list")
     @Produces("application/json")
     public Response renderers() {
-        System.err.println("renderers called!!!!!!!!!!");
         Map<String, Renderer> r = RendererRegistry.getRenderers();
         
         return Response.ok(r).build();
