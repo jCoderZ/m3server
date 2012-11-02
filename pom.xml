@@ -91,13 +91,6 @@
             <artifactId>cling-support</artifactId>
             <version>1.0.5</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>1.14</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-servlet</artifactId>
