@@ -28,6 +28,8 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
     private static final String PROPERTY_PACKAGES = "com.sun.jersey.config.property.packages";
     private static final String PROPERTY_RESOURCE_CONFIG_CLASS_KEY = "com.sun.jersey.config.property.resourceConfigClass";
     private static final String PROPERTY_RESOURCE_CONFIG_CLASS = "com.sun.jersey.api.core.PackagesResourceConfig";
+    public static final String PROPERTY_RESPONSE_FILTER_CLASS_KEY = "com.sun.jersey.spi.container.ContainerResponseFilters";
+    public static final String PROPERTY_RESPONSE_FILTER_CLASS = "com.sun.jersey.api.container.filter.LoggingFilter";
     private Server server;
 
     @Override
@@ -37,31 +39,45 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
 
         // library
         ContextHandler libraryContext = new ContextHandler();
-        libraryContext.setContextPath(Config.getConfig().getString(Config.HTTP_STATIC_CONTEXT_ROOT_KEY));
-        libraryContext.setResourceBase(Config.getConfig().getString(Config.HTTP_STATIC_PACKAGE_DIR_KEY));
+        final String libraryContextPath = Config.getConfig().getString(Config.HTTP_STATIC_CONTEXT_ROOT_KEY);
+        logger.log(Level.CONFIG, "library context path: {0}", libraryContextPath);
+        libraryContext.setContextPath(libraryContextPath);
+        final String libraryResourcePackage = Config.getConfig().getString(Config.HTTP_STATIC_PACKAGE_DIR_KEY);
+        logger.log(Level.CONFIG, "library resource package: {0}", libraryResourcePackage);
+        libraryContext.setResourceBase(libraryResourcePackage);
         libraryContext.setClassLoader(Thread.currentThread().getContextClassLoader());
         libraryContext.setHandler(new LibraryJettyHttpHandler());
         hl.addHandler(libraryContext);
 
         // webapp
-        final URL warUrl = this.getClass().getResource(Config.getConfig().getString(Config.HTTP_WEBAPP_PACKAGE_DIR_KEY));
+        final String webappResourcePackage = Config.getConfig().getString(Config.HTTP_WEBAPP_PACKAGE_DIR_KEY);
+        logger.log(Level.CONFIG, "webapp resource package: {0}", webappResourcePackage);
+        final URL warUrl = this.getClass().getResource(webappResourcePackage);
         final String warUrlString = warUrl.toExternalForm();
-        WebAppContext webappContext = new WebAppContext(warUrlString, Config.getConfig().getString(Config.HTTP_WEBAPP_CONTEXT_ROOT_KEY));
+        final String webappContextPath = Config.getConfig().getString(Config.HTTP_WEBAPP_CONTEXT_ROOT_KEY);
+        logger.log(Level.CONFIG, "webapp context path: {0}", webappContextPath);
+        WebAppContext webappContext = new WebAppContext(warUrlString, webappContextPath);
         hl.addHandler(webappContext);
 
         // rest
         ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
-        servletHolder.setInitParameter(PROPERTY_PACKAGES, Config.getConfig().getString(Config.HTTP_REST_PACKAGE_RESOURCES_KEY));
+        final String restResourcePackage = Config.getConfig().getString(Config.HTTP_REST_PACKAGE_RESOURCES_KEY);
+        logger.log(Level.CONFIG, "rest resource package: {0}", restResourcePackage);
+        servletHolder.setInitParameter(PROPERTY_PACKAGES, restResourcePackage);
         servletHolder.setInitParameter(PROPERTY_RESOURCE_CONFIG_CLASS_KEY, PROPERTY_RESOURCE_CONFIG_CLASS);
-        ServletContextHandler servletContextHandler = new ServletContextHandler(server, Config.getConfig().getString(Config.HTTP_REST_SERVLET_ROOT_CONTEXT_KEY));
-        servletContextHandler.addServlet(servletHolder, Config.getConfig().getString(Config.HTTP_REST_ROOT_CONTEXT_KEY));
+        servletHolder.setInitParameter(PROPERTY_RESPONSE_FILTER_CLASS_KEY, PROPERTY_RESPONSE_FILTER_CLASS);
+        final String restRootContextPath = Config.getConfig().getString(Config.HTTP_REST_SERVLET_ROOT_CONTEXT_KEY);
+        final String restContextPath = Config.getConfig().getString(Config.HTTP_REST_ROOT_CONTEXT_KEY);
+        logger.log(Level.CONFIG, "rest context path: {0}{1}", new Object[] {restRootContextPath, restContextPath});
+        ServletContextHandler servletContextHandler = new ServletContextHandler(server, restRootContextPath);
+        servletContextHandler.addServlet(servletHolder, restContextPath);
         hl.addHandler(servletContextHandler);
 
         server.setHandler(hl);
         try {
             server.start();
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "TODO", ex);
             // TODO: throw RuntimeException
         }
     }
@@ -72,7 +88,7 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
             server.stop();
             server.join();
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "TODO", ex);
             // TODO: throw RuntimeException
         }
     }
