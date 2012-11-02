@@ -44,7 +44,7 @@ public class FolderItem extends AbstractItem {
      * @return the children list
      */
     public List<Item> getChildren() {
-        return Collections.unmodifiableList(children);
+        return children;
     }
 
     /**
