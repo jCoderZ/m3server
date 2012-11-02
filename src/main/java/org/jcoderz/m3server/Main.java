@@ -20,7 +20,6 @@ public class Main {
     private static final Logger logger = Logging.getLogger(Main.class);
 
     public static void main(String[] args) throws IOException {
-        logger.info("Starting m3server...");
 
         Configuration config = Config.getConfig();
 
@@ -33,8 +32,13 @@ public class Main {
         Properties upnpProps = new Properties();
         ProtocolAdapterRegistry.register(UpnpProtocolAdapter.class, config);
 
+        logger.info("Starting m3server...");
         ProtocolAdapterRegistry.startupAdapters();
+        logger.info("Startup of m3server done!");
         ProtocolAdapterRegistry.waitForTermination();
+        
+        logger.info("Shutting down m3server...");
         ProtocolAdapterRegistry.shutdownAdapters();
+        logger.info("Shutdown of m3server done! Exiting...");
     }
 }
