@@ -82,7 +82,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
     public static long getNextId() {
         ++idCounter;
-        logger.fine("New id: " + idCounter);
+        logger.log(Level.FINE, "New id: {0}", idCounter);
         return idCounter;
     }
 
@@ -147,7 +147,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 }
             }
             String xml = new DIDLParser().generate(didl);
-            logger.finest("DIDL response xml: " + xml);
+            logger.log(Level.FINEST, "DIDL response xml: {0}", xml);
             result = new BrowseResult(xml, didl.getContainers().size() + didl.getItems().size(), 1L);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "An exception occured during browsing of folder " + id, ex);
