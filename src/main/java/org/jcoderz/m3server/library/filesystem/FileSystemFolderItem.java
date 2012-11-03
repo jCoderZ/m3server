@@ -1,14 +1,19 @@
-package org.jcoderz.m3server.library;
+package org.jcoderz.m3server.library.filesystem;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jcoderz.m3server.library.AudioFileItem;
+import org.jcoderz.m3server.library.FileItem;
+import org.jcoderz.m3server.library.FolderItem;
+import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.util.Logging;
 
 import org.jcoderz.m3util.intern.MusicBrainzMetadata;
-import org.jcoderz.m3util.intern.util.Environment;
 
 /**
  * This class represents a file-system folder.
@@ -34,15 +39,42 @@ public class FileSystemFolderItem extends FolderItem {
             return result;
         }
     };
+    private File root = null;
 
+    /**
+     * Standard constructor.
+     *
+     * @param parent the parent item
+     * @param name the name of the item
+     */
     public FileSystemFolderItem(Item parent, String name) {
         super(parent, name);
     }
 
+    /**
+     * Constructor for sub-tree root elements.
+     *
+     * @param parent the parent item
+     * @param name the name of the item
+     * @param properties a list of initialization properties
+     */
+    public FileSystemFolderItem(Item parent, String name, Properties properties) {
+        super(parent, name);
+        this.properties = properties;
+        isRoot = true;
+        String rootStr = (String) properties.get("root");
+        if (rootStr != null && !rootStr.isEmpty()) {
+            root = new File(rootStr);
+            logger.log(Level.CONFIG, "File system '" + name + "' root folder: {0}", root);
+        }
+    }
+
+    @Override
     public List<Item> getChildren() {
-        children = new ArrayList<Item>();
+        children = new ArrayList<>();
         File key = null;
-        File root = Environment.getAudioFolder();
+        // TODO: read folder from properties
+
         String p = getFullSubtreePath();
         if ("/".equals(p)) {
             key = root;

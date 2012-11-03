@@ -1,7 +1,11 @@
 package org.jcoderz.m3server.library;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Logging;
 
@@ -14,9 +18,38 @@ public class FolderItem extends AbstractItem {
 
     private static final Logger logger = Logging.getLogger(FolderItem.class);
     protected List<Item> children = new ArrayList<>();
+    protected Properties properties = new Properties();
 
+    /**
+     * Standard constructor.
+     *
+     * @param parent the parent item
+     * @param name the name of the folder
+     */
     public FolderItem(Item parent, String name) {
         super(parent, name);
+    }
+
+    /**
+     * Constructor for sub-tree root items.
+     *
+     * @param parent the parent item
+     * @param name the name of the folder
+     * @param properties initialization properties for the root item
+     */
+    public FolderItem(Item parent, String name, Properties properties) {
+        super(parent, name);
+        isRoot = true;
+        this.properties = properties;
+    }
+
+    /**
+     * Returns the properties for this instance.
+     *
+     * @return the properties for this instance
+     */
+    public Properties getProperties() {
+        return properties;
     }
 
     /**

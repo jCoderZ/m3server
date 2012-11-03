@@ -1,11 +1,11 @@
 package org.jcoderz.m3server.library;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jaudiotagger.tag.datatype.Artwork;
@@ -38,14 +38,11 @@ public class Library {
             for (Object o : l) {
                 String path = (String) o;
                 logger.log(Level.CONFIG, "Adding virtual folder {0}", path);
-                Item i = addFolder(path);
-                if (FolderItem.class.isAssignableFrom(i.getClass())) {
-                    rootFolderItems.add((FolderItem) i);
-                }
-                /*
-                 filesystem.setUrl(Environment.getAudioFolder().toURI().toURL());
-                 filesystem.setSubtreeRoot(true);
-                 */
+                String clazz = Config.getConfig().getString(Config.LIBRARY_ROOTS + path.replace('/', '.') + ".clazz", FolderItem.class.getName());
+                Properties props = Config.getConfig().getProperties(Config.LIBRARY_ROOTS + path.replace('/', '.') + ".properties");
+                logger.log(Level.CONFIG, "Properties for folder {0}: {1}", new Object[]{path, props});
+                FolderItem i = addFolder(path, clazz, props);
+                rootFolderItems.add((FolderItem) i);
             }
         } catch (LibraryException ex) {
             // TODO: Move init away from static initializer
@@ -72,23 +69,70 @@ public class Library {
      * Adds a path to the library.
      *
      * @param path the path to add
+     * @param clazz the class to instantiate
      * @throws LibraryException when the path cannot be added
      */
-    public static Item addFolder(String p) throws LibraryException {
+    public static FolderItem addFolder(String path, String clazz) throws LibraryException {
+        return addFolder(path, clazz, null);
+    }
+
+    /**
+     * Adds a path to the library.
+     *
+     * @param path the path to add
+     * @param clazz the class to instantiate
+     * @param properties initialization properties
+     * @throws LibraryException when the path cannot be added
+     */
+    public static FolderItem addFolder(String path, String clazz, Properties properties) throws LibraryException {
         FolderItem newItem = null;
         // TODO: Handle / at the end
-        int idx = p.lastIndexOf('/');
-        String newElement = p.substring(idx + 1);
-        String oldPath = (idx >= 1 ? p.substring(0, idx) : "");
-        Item item = (oldPath.isEmpty() ? TREE_ROOT : browse(oldPath));
-        if (FolderItem.class.isAssignableFrom(item.getClass())) {
+        int idx = path.lastIndexOf('/');
+        String newElement = path.substring(idx + 1);
+        Item item = getParent(path);
+
+        if (FolderItem.class
+                .isAssignableFrom(item.getClass())) {
             FolderItem fi = (FolderItem) item;
-            newItem = new FolderItem(item, newElement);
-            fi.addChild(newItem);
+            try {
+                Class clz = Thread.currentThread().getContextClassLoader().loadClass(clazz);
+                if (properties != null) {
+                    Constructor c = clz.getConstructor(new Class[]{Item.class, String.class, Properties.class});
+                    newItem = (FolderItem) c.newInstance(new Object[]{item, newElement, properties});
+                } else {
+                    Constructor c = clz.getConstructor(new Class[]{Item.class, String.class});
+                    newItem = (FolderItem) c.newInstance(new Object[]{item, newElement});
+                }
+                    fi.addChild(newItem);
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                logger.log(Level.SEVERE, "TODO", ex);
+            }
         } else {
             // TODO: throw Exception("path does not denote a folder item")
         }
         return newItem;
+    }
+
+    /**
+     * Returns the parent item for the specified path.
+     *
+     * @param path the path to get the parent item for
+     * @return the parent item for the specified path
+     * @throws LibraryException when the parent item could not be found
+     */
+    public static Item getParent(String path) throws LibraryException {
+        String p = path;
+        if (path.endsWith("/") && path.length() >= 2) {
+            p = path.substring(0, path.length() - 2);
+        }
+        Item result = TREE_ROOT;
+        // TODO: Handle / at the end
+        int idx = p.lastIndexOf('/');
+        String oldPath = (idx >= 1 ? p.substring(0, idx) : "");
+        if (!oldPath.isEmpty()) {
+            result = browse(oldPath);
+        }
+        return result;
     }
 
     /**
@@ -104,11 +148,11 @@ public class Library {
             if (!tok.isEmpty()) {
                 if (node instanceof FolderItem) {
                     FolderItem fi = (FolderItem) node;
-                    logger.fine("Browsing folder " + fi);
+                    logger.log(Level.FINE, "Browsing folder {0}", fi);
                     node = fi.getChild(tok);
                 } else {
                     // TODO: ...
-                    logger.fine("Browsing " + node);
+                    logger.log(Level.FINE, "Browsing {0}", node);
                 }
             }
         }
@@ -123,11 +167,17 @@ public class Library {
      */
     public static List<Item> search(String query) throws LibraryException {
         List<Item> result = new ArrayList<>();
+
+
         for (FolderItem fi : rootFolderItems) {
-            if (Searchable.class.isAssignableFrom(fi.getClass())) {
+            if (Searchable.class
+                    .isAssignableFrom(fi.getClass())) {
                 Searchable s = (Searchable) fi;
-                logger.fine("Searching '" + query + "' in " + fi);
+
+                logger.log(
+                        Level.FINE, "Searching ''{0}'' in {1}", new Object[]{query, fi});
                 List<Item> items = s.search(query);
+
                 if (!items.isEmpty()) {
                     result.addAll(items);
                 }
@@ -144,7 +194,10 @@ public class Library {
      */
     public static void visitTree(Item node, Visitor visitor) {
         node.accept(visitor);
-        if (FolderItem.class.isAssignableFrom(node.getClass())) {
+
+
+        if (FolderItem.class
+                .isAssignableFrom(node.getClass())) {
             FolderItem fi = (FolderItem) node;
             List<Item> c = fi.getChildren();
             for (Item i : c) {

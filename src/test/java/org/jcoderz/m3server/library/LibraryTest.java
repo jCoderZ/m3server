@@ -1,6 +1,7 @@
 package org.jcoderz.m3server.library;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Logging;
 import org.junit.After;
@@ -47,12 +48,18 @@ public class LibraryTest {
     @Test
     public void testAddFolder() throws Exception {
         Item root = Library.getRoot();
-        Item xxx = Library.addFolder("/xxx");
-        Item yyy = Library.addFolder("/xxx/yyy");
+        Item xxx = Library.addFolder("/xxx", FolderItem.class.getName(), null);
+        Item yyy = Library.addFolder("/xxx/yyy", FolderItem.class.getName(), new Properties());
+        Item zzz = Library.addFolder("/xxx/yyy/zzz", FolderItem.class.getName(), null);
         assertNotNull("The xxx item must not be null", xxx);        
+        assertTrue("The xxx is not a root folder", !xxx.isSubtreeRoot());        
+        assertTrue("The zzz is not a root folder", !zzz.isSubtreeRoot());        
+        assertTrue("The yyy is a root folder", yyy.isSubtreeRoot());        
         assertNull("The parent of the root element must be null", root.getParent());
         assertEquals("Root must be the parent of the xxx folder item", root, xxx.getParent());
         assertEquals("xxx must be the parent of the yyy folder item", xxx, yyy.getParent());
+        assertEquals("Root must be the parent of the parent of the parent of the zzz folder item", root, zzz.getParent().getParent().getParent());
+        assertEquals("yyy must be the parent of the zzz folder item", yyy, zzz.getParent());
     }
 
     @Test
