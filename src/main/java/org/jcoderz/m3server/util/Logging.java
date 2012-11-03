@@ -1,5 +1,6 @@
 package org.jcoderz.m3server.util;
 
+import java.io.IOException;
 import java.util.logging.LogManager;
 
 /**
@@ -15,9 +16,9 @@ public class Logging {
     public static synchronized java.util.logging.Logger getLogger(Class clazz) {
         if (!initialized) {
             try {
-                LogManager.getLogManager().readConfiguration(Logging.class.getResourceAsStream("logging.properties"));
-            } catch (Exception ex) {
-                // TODO
+                LogManager.getLogManager().readConfiguration(Logging.class.getResourceAsStream("/logging.properties"));
+            } catch (IOException | SecurityException ex) {
+                // TODO: throw exception
                 ex.printStackTrace();
             }
         }
