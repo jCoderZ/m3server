@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jcoderz.m3server.util.Logging;
 
 /**
@@ -15,6 +16,7 @@ public class FolderItem extends AbstractItem {
 
     private static final Logger logger = Logging.getLogger(FolderItem.class);
     protected List<Item> children = new ArrayList<>();
+    protected List<String> childrenNames = new ArrayList<>();
     protected Properties properties = new Properties();
 
     /**
@@ -45,6 +47,7 @@ public class FolderItem extends AbstractItem {
      *
      * @return the properties for this instance
      */
+    @JsonIgnore
     public Properties getProperties() {
         return properties;
     }
@@ -57,6 +60,7 @@ public class FolderItem extends AbstractItem {
     public void addChild(Item child) {
         // TODO: check whether name is unique
         children.add(child);
+        childrenNames.add(child.getName());
     }
 
     /**
@@ -66,6 +70,7 @@ public class FolderItem extends AbstractItem {
      */
     public void removeChild(Item child) {
         children.remove(child);
+        childrenNames.remove(child.getName());
     }
 
     /**
@@ -73,8 +78,18 @@ public class FolderItem extends AbstractItem {
      *
      * @return the children list
      */
+    @JsonIgnore
     public List<Item> getChildren() {
         return children;
+    }
+
+    /**
+     * Returns the children list.
+     *
+     * @return the children list
+     */
+    public List<String> getChildrenNames() {
+        return childrenNames;
     }
 
     /**

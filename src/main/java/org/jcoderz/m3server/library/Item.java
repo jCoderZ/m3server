@@ -1,6 +1,7 @@
 package org.jcoderz.m3server.library;
 
 import java.net.URL;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * This is the common base interface for all item types.
@@ -14,6 +15,7 @@ public interface Item {
      *
      * @return the parent or null if this item is the root node
      */
+    @JsonIgnore
     Item getParent();
 
     /**
@@ -31,19 +33,25 @@ public interface Item {
     String getFullSubtreePath();
 
     /**
-     * Returns the url for the item.
+     * Returns the URL for the item.
      *
-     * @return the url for the item
+     * @return the URL for the item
      */
     URL getUrl();
 
     /**
-     * Sets the base url of the item.
+     * Sets the base URL of the item.
      *
      * @param url the base URL of the item
      */
     void setUrl(URL url);
 
+    /**
+     * Returns the full URL of the item.
+     *
+     * @return the full URL of the item
+     */
+    @JsonIgnore
     URL getFullSubtreeUrl();
 
     /**

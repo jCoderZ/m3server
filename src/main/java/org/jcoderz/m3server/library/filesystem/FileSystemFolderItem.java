@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.FolderItem;
@@ -70,6 +71,12 @@ public class FileSystemFolderItem extends FolderItem {
         }
     }
 
+    /**
+     * Returns the file-system root.
+     *
+     * @return the file-system root
+     */
+    @JsonIgnore
     public File getRoot() {
         File result = root;
         if (result == null) {
@@ -82,15 +89,10 @@ public class FileSystemFolderItem extends FolderItem {
     @Override
     public List<Item> getChildren() {
         children = new ArrayList<>();
-        File key = null;
-        // TODO: read folder from properties
-
+        File key = getRoot();
         String p = getFullSubtreePath();
-        File r = getRoot();
-        if ("/".equals(p)) {
-            key = r;
-        } else {
-            key = new File(r, p);
+        if (!"/".equals(p)) {
+            key = new File(key, p);
         }
         if (key.exists()) {
             if (key.isDirectory()) {
@@ -100,9 +102,9 @@ public class FileSystemFolderItem extends FolderItem {
                     if (f.isDirectory()) {
                         FileSystemFolderItem fi = new FileSystemFolderItem(this, file);
                         if (logger.isLoggable(Level.FINEST)) {
-                            logger.finest("Adding folder child '" + fi + "' to folder: " + this);
+                            logger.log(Level.FINEST, "Adding folder child ''{0}'' to folder: {1}", new Object[]{fi, this});
                         }
-                        children.add(fi);
+                        addChild(fi);
                     } else {
                         MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
                         AudioFileItem fi = new AudioFileItem(this, file);
@@ -116,18 +118,18 @@ public class FileSystemFolderItem extends FolderItem {
                         fi.setArtist(mb.getArtist());
                         fi.setTitle(mb.getTitle());
                         if (logger.isLoggable(Level.FINEST)) {
-                            logger.finest("Adding audio file child '" + fi + "' to folder: " + this);
+                            logger.log(Level.FINEST, "Adding audio file child ''{0}'' to folder: {1}", new Object[]{fi, this});
                         }
-                        children.add(fi);
+                        addChild(fi);
                     }
                 }
             } else if (key.isFile()) {
                 FileItem fi = new FileItem(this, p);
                 fi.setSize(key.length());
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("Adding non-audio file child '" + fi + "' to folder: " + this);
+                    logger.log(Level.FINEST, "Adding non-audio file child ''{0}'' to folder: {1}", new Object[]{fi, this});
                 }
-                children.add(fi);
+                addChild(fi);
             } else {
                 final String msg = "Don't know what to do, path '" + p + "' is neither a folder nor a file: " + key;
                 logger.severe(msg);

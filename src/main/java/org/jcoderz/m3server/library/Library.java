@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.jcoderz.m3server.library.filesystem.FileSystemFolderItem;
 import org.jcoderz.m3server.library.search.Searchable;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.ImageUtil;
@@ -171,6 +172,11 @@ public class Library {
                     logger.log(Level.FINE, "Browsing {0}", node);
                 }
             }
+        }
+        // just call getChildren to populate the next level
+        if (node instanceof FileSystemFolderItem) {
+            FileSystemFolderItem fi = (FileSystemFolderItem) node;
+            List<Item> ignore = fi.getChildren();
         }
         return node;
     }
