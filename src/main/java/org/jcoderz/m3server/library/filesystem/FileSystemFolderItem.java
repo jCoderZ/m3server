@@ -11,6 +11,7 @@ import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
+import org.jcoderz.m3server.library.LibraryRuntimeException;
 import org.jcoderz.m3server.util.Logging;
 
 import org.jcoderz.m3util.intern.MusicBrainzMetadata;
@@ -98,6 +99,9 @@ public class FileSystemFolderItem extends FolderItem {
                     File f = new File(key, file);
                     if (f.isDirectory()) {
                         FileSystemFolderItem fi = new FileSystemFolderItem(this, file);
+                        if (logger.isLoggable(Level.FINEST)) {
+                            logger.finest("Adding folder child '" + fi + "' to folder: " + this);
+                        }
                         children.add(fi);
                     } else {
                         MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
@@ -111,16 +115,26 @@ public class FileSystemFolderItem extends FolderItem {
                         fi.setAlbum(mb.getAlbum());
                         fi.setArtist(mb.getArtist());
                         fi.setTitle(mb.getTitle());
+                        if (logger.isLoggable(Level.FINEST)) {
+                            logger.finest("Adding audio file child '" + fi + "' to folder: " + this);
+                        }
                         children.add(fi);
                     }
                 }
             } else if (key.isFile()) {
                 FileItem fi = new FileItem(this, p);
                 fi.setSize(key.length());
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest("Adding non-audio file child '" + fi + "' to folder: " + this);
+                }
                 children.add(fi);
             } else {
-                // TODO: throw exception: unknown type
+                final String msg = "Don't know what to do, path '" + p + "' is neither a folder nor a file: " + key;
+                logger.severe(msg);
+                throw new LibraryRuntimeException(msg);
             }
+        } else {
+            // TODO: throw exception: file not found
         }
         return children;
     }

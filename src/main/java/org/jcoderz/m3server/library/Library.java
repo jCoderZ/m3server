@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.configuration.Configuration;
 import org.jaudiotagger.tag.datatype.Artwork;
 import org.jcoderz.m3server.library.search.Searchable;
 import org.jcoderz.m3server.util.Config;
@@ -35,12 +36,13 @@ public class Library {
         try {
             // Create the sub-folders
             List<Object> l = Config.getConfig().getList(Config.LIBRARY_ROOTS);
+            logger.log(Level.CONFIG, "Virtual folders {0}", l);
             for (Object o : l) {
                 String path = (String) o;
                 logger.log(Level.CONFIG, "Adding virtual folder {0}", path);
                 String clazz = Config.getConfig().getString(Config.LIBRARY_ROOTS + path.replace('/', '.') + ".clazz", FolderItem.class.getName());
                 Properties props = Config.getConfig().getProperties(Config.LIBRARY_ROOTS + path.replace('/', '.') + ".properties");
-                logger.log(Level.CONFIG, "Properties for folder {0}: {1}", new Object[]{path, props});
+                logger.log(Level.CONFIG, "Properties for folder {0}: {1} ({2})", new Object[]{path, props, clazz});
                 FolderItem i = addFolder(path, clazz, props);
                 rootFolderItems.add((FolderItem) i);
             }
@@ -50,6 +52,10 @@ public class Library {
             logger.log(Level.SEVERE, msg, ex);
             throw new LibraryRuntimeException(msg, ex);
         }
+    }
+
+    public static void init(Configuration config) {
+        logger.info("Library initializing...");
     }
 
     private Library() {
@@ -89,27 +95,31 @@ public class Library {
         // TODO: Handle / at the end
         int idx = path.lastIndexOf('/');
         String newElement = path.substring(idx + 1);
-        Item item = getParent(path);
+        Item parentItem = getParent(path);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "Adding folder ''{0}'' (clazz={1}, props={2}, parent={3})", new Object[]{path, clazz, properties, parentItem});
+        }
 
         if (FolderItem.class
-                .isAssignableFrom(item.getClass())) {
-            FolderItem fi = (FolderItem) item;
+                .isAssignableFrom(parentItem.getClass())) {
+            FolderItem fi = (FolderItem) parentItem;
             try {
                 Class clz = Thread.currentThread().getContextClassLoader().loadClass(clazz);
                 if (properties != null) {
                     Constructor c = clz.getConstructor(new Class[]{Item.class, String.class, Properties.class});
-                    newItem = (FolderItem) c.newInstance(new Object[]{item, newElement, properties});
+                    newItem = (FolderItem) c.newInstance(new Object[]{parentItem, newElement, properties});
                 } else {
                     Constructor c = clz.getConstructor(new Class[]{Item.class, String.class});
-                    newItem = (FolderItem) c.newInstance(new Object[]{item, newElement});
+                    newItem = (FolderItem) c.newInstance(new Object[]{parentItem, newElement});
                 }
                 fi.addChild(newItem);
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 logger.log(Level.SEVERE, "TODO", ex);
             }
         } else {
-            throw new LibraryRuntimeException("Unknown class " + clazz);
-            // TODO: throw Exception("path does not denote a folder item")
+            final String msg = "Cannot add child to item type " + parentItem.getClass() + ". Must be of type FolderItem!";
+            logger.severe(msg);
+            throw new LibraryRuntimeException(msg);
         }
         return newItem;
     }

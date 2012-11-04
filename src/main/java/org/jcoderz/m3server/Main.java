@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
+import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.protocol.ProtocolAdapterRegistry;
 import org.jcoderz.m3server.protocol.http.JettyHttpProtocolAdapter;
 import org.jcoderz.m3server.protocol.upnp.UpnpProtocolAdapter;
@@ -22,6 +23,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Configuration config = Config.getConfig();
+        Library.init(config);
 
         ProtocolAdapterRegistry.register(JettyHttpProtocolAdapter.class, config);
 
