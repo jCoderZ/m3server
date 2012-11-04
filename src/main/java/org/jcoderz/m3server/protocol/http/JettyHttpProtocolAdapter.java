@@ -75,7 +75,8 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
         logger.log(Level.CONFIG, "rest resource package: {0}", restResourcePackage);
         servletHolder.setInitParameter(PROPERTY_PACKAGES, restResourcePackage);
         servletHolder.setInitParameter(PROPERTY_RESOURCE_CONFIG_CLASS_KEY, PROPERTY_RESOURCE_CONFIG_CLASS);
-        servletHolder.setInitParameter(PROPERTY_RESPONSE_FILTER_CLASS_KEY, PROPERTY_RESPONSE_FILTER_CLASS);
+        // TODO: This does not work for binary data
+        //servletHolder.setInitParameter(PROPERTY_RESPONSE_FILTER_CLASS_KEY, PROPERTY_RESPONSE_FILTER_CLASS);
         servletHolder.setInitParameter(PROPERTY_JSON_POJO_MAPPING_FEATURE, "" + true);
         logger.log(Level.CONFIG, "rest servlet init parameters: {0}", servletHolder.getInitParameters());
         final String restRootContextPath = Config.getConfig().getString(Config.HTTP_REST_SERVLET_ROOT_CONTEXT_KEY);
