@@ -69,6 +69,15 @@ public class FileSystemFolderItem extends FolderItem {
         }
     }
 
+    public File getRoot() {
+        File result = root;
+        if (result == null) {
+            FileSystemFolderItem i = (FileSystemFolderItem) getParent();
+            result = i.getRoot();
+        }
+        return result;
+    }
+
     @Override
     public List<Item> getChildren() {
         children = new ArrayList<>();
@@ -76,10 +85,11 @@ public class FileSystemFolderItem extends FolderItem {
         // TODO: read folder from properties
 
         String p = getFullSubtreePath();
+        File r = getRoot();
         if ("/".equals(p)) {
-            key = root;
+            key = r;
         } else {
-            key = new File(root, p);
+            key = new File(r, p);
         }
         if (key.exists()) {
             if (key.isDirectory()) {
