@@ -11,7 +11,6 @@ import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.LibraryRuntimeException;
 import org.jcoderz.m3server.util.Logging;
 
-
 /**
  * This class represents a freemusicarchive.org folder item.
  *
@@ -21,10 +20,12 @@ import org.jcoderz.m3server.util.Logging;
 public class FreeMusicArchiveFolderItem extends FolderItem {
 
     private static final Logger logger = Logging.getLogger(FileSystemFolderItem.class);
-
     private static final List<String> PROPERTY_KEYS = new ArrayList<>();
     private static final String PROPERTY_KEY_API_BASE_URL = "api.base.url";
     private static final String PROPERTY_KEY_API_KEY = "api.key";
+    private static final String CATEGORIES_CURATORS = "Curators";
+    private static final String CATEGORIES_GENRES = "Genres";
+    private static final String CATEGORIES_ARTISTS = "Artists";
 
     static {
         PROPERTY_KEYS.add(PROPERTY_KEY_API_BASE_URL);
@@ -53,16 +54,42 @@ public class FreeMusicArchiveFolderItem extends FolderItem {
         this.properties = properties;
         isRoot = true;
         checkPropertiesAvailable();
+
+        logger.log(Level.CONFIG, "FreeMusicArchive '" + name + "' properties: {0}", properties);
+        addChild(new FreeMusicArchiveFolderItem(this, CATEGORIES_CURATORS));
+        addChild(new FreeMusicArchiveFolderItem(this, CATEGORIES_GENRES));
+        addChild(new FreeMusicArchiveFolderItem(this, CATEGORIES_ARTISTS));
+
+        FreeMusicArchiveClient.init(properties.getProperty(PROPERTY_KEY_API_BASE_URL), properties.getProperty(PROPERTY_KEY_API_KEY));
         // TODO: check for base url and 
     }
 
     @Override
     public List<Item> getChildren() {
-        children = new ArrayList<>();
-
+        //children = new ArrayList<>();
+        switch (name) {
+            case CATEGORIES_CURATORS:
+                List<String> curators = FreeMusicArchiveClient.getCurators();
+                for (String curator : curators) {
+                    children.add(new FreeMusicArchiveFolderItem(this, curator));
+                }
+                break;
+            case CATEGORIES_GENRES:
+                List<String> genres = FreeMusicArchiveClient.getGenres();
+                for (String genre : genres) {
+                    children.add(new FreeMusicArchiveFolderItem(this, genre));
+                }
+                break;
+            case CATEGORIES_ARTISTS:
+                List<String> artists = FreeMusicArchiveClient.getArtists();
+                for (String artist : artists) {
+                    children.add(new FreeMusicArchiveFolderItem(this, artist));
+                }
+                break;
+        }
         return children;
     }
-    
+
     private void checkPropertiesAvailable() {
         for (String property : PROPERTY_KEYS) {
             if (!properties.containsKey(property)) {
