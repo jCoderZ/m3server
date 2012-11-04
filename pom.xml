@@ -94,17 +94,22 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-servlet</artifactId>
-            <version>1.14</version>
+            <version>1.15</version>
         </dependency>       
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-core</artifactId>
-            <version>1.14</version>
+            <version>1.15</version>
         </dependency>        
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
-            <version>1.14</version>
+            <version>1.15</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>1.15</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
