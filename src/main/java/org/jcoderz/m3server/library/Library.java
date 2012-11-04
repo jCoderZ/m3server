@@ -54,6 +54,11 @@ public class Library {
         }
     }
 
+    /**
+     * Initializes the Library.
+     *
+     * @param config the configuration instance
+     */
     public static void init(Configuration config) {
         logger.info("Library initializing...");
     }
