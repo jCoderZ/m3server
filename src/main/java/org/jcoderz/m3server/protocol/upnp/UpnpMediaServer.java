@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jcoderz.m3server.library.filesystem.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
@@ -71,6 +72,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     private Configuration config;
     private String staticBaseUrl;
 
+    /**
+     * Constructor.
+     *
+     * @param config the configuration instance
+     */
     public UpnpMediaServer(Configuration config) {
         this.config = config;
         staticBaseUrl = config.getString(Config.HTTP_PROTOCOL_KEY) + "://"
@@ -92,6 +98,10 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             long firstResult, long maxResults,
             SortCriterion[] orderby) throws ContentDirectoryException {
         logger.entering(UpnpMediaServer.class.getSimpleName(), "browse", new Object[]{objectID, browseFlag, filter, firstResult, maxResults, orderby});
+
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "idUpnpObjectMap: {0}", idUpnpObjectMap);
+        }
 
         BrowseResult result = null;
         String resultXml = null;
@@ -117,12 +127,14 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                         for (Item c : fi.getChildren()) {
                             Long nextId = getNextId();
                             if (logger.isLoggable(Level.FINER)) {
-                                logger.log(Level.FINER, "Creating child with new id ''{0}'': {1}", new Object[]{nextId, c});
+                                logger.log(Level.FINER, "Creating root child with new id ''{0}'': {1}", new Object[]{nextId, c});
                             }
                             Container didlContainer = createDidlContainer(nextId, ROOT_ID, c);
                             idUpnpObjectMap.put(nextId, new UpnpContainer(nextId, didlContainer, c));
                             didl.addContainer(didlContainer);
                         }
+                    } else {
+                        // TODO: throw unknown 
                     }
                 }
             } else if (id > ROOT_ID) {
@@ -130,9 +142,9 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 if (container2Browse != null) {
                     Item i = container2Browse.getItem();
                     if (logger.isLoggable(Level.FINER)) {
-                        logger.log(Level.FINER, "Browsing children item with id ''{0}'': {1}", new Object[]{id, i});
+                        logger.log(Level.FINER, "Browsing item with id ''{0}'': {1}", new Object[]{id, i});
                     }
-                    if (i instanceof FolderItem) {
+                    if (FolderItem.class.isAssignableFrom(i.getClass())) {
                         FolderItem fi = (FolderItem) i;
                         List<Item> children = fi.getChildren();
                         for (Item c : children) {
@@ -172,7 +184,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                     ContentDirectoryErrorCode.CANNOT_PROCESS,
                     ex.toString());
         }
-        logger.exiting(UpnpMediaServer.class.getSimpleName(), "browse", "DIDL response xml: "+ resultXml);
+        logger.exiting(UpnpMediaServer.class.getSimpleName(), "browse", "DIDL response xml: " + resultXml);
         return result;
     }
 
@@ -190,7 +202,12 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         Container c = new Container();
         c.setId("" + nextId);
         c.setParentID("" + parentId);
-        c.setChildCount(0 /*item.getChildCount()*/);
+        /*
+        if (FolderItem.class.isAssignableFrom(item.getClass())) {
+            FolderItem fi = (FolderItem) item;
+            c.setChildCount(fi.getChildren().size());
+        }
+        */
         c.setRestricted(true);
         c.setTitle(item.getName());
         c.setCreator(Config.getConfig().getString(Config.UPNP_SERVER_NAME_KEY));
@@ -298,6 +315,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
         Item getItem() {
             return item;
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
         }
     }
 }
