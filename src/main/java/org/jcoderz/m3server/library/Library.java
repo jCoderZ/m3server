@@ -163,7 +163,7 @@ public class Library {
         Item node = TREE_ROOT;
         for (String tok : token) {
             if (!tok.isEmpty()) {
-                if (node instanceof FolderItem) {
+                if (FolderItem.class.isAssignableFrom(node.getClass())) {
                     FolderItem fi = (FolderItem) node;
                     logger.log(Level.FINE, "Browsing folder {0}", fi);
                     node = fi.getChild(tok);
@@ -174,7 +174,7 @@ public class Library {
             }
         }
         // just call getChildren to populate the next level
-        if (node instanceof FileSystemFolderItem) {
+        if (FileSystemFolderItem.class.isAssignableFrom(node.getClass())) {
             FileSystemFolderItem fi = (FileSystemFolderItem) node;
             List<Item> ignore = fi.getChildren();
         }
