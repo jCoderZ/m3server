@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
-import org.jcoderz.m3server.library.AudioFileItem;
+import org.jcoderz.m3server.library.filesystem.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
@@ -75,9 +75,10 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         this.config = config;
         staticBaseUrl = config.getString(Config.HTTP_PROTOCOL_KEY) + "://"
                 + config.getString(Config.HTTP_HOSTNAME_KEY) + ":"
-                + config.getString(Config.HTTP_PORT_KEY) + "/";
-        //TODO: + config.getString(Config.HTTP_STATIC_CONTENT_ROOT_CONTEXT_KEY);
-
+                + config.getString(Config.HTTP_PORT_KEY) + "/"
+                + config.getString(Config.HTTP_REST_ROOT_CONTEXT_KEY) + "/"
+                + "library/browse";
+        // TODO: How to determine the "library/browse/" endpoint?
     }
 
     public static long getNextId() {

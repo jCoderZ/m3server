@@ -8,7 +8,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.jcoderz.m3server.library.AudioFileItem;
 import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
@@ -108,6 +107,7 @@ public class FileSystemFolderItem extends FolderItem {
                     } else {
                         MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
                         AudioFileItem fi = new AudioFileItem(this, file);
+                        fi.setFile(f);
                         fi.setBitrate(mb.getBitrate() * 1024L / 8);
                         fi.setSize(f.length());
                         fi.setGenre(mb.getGenre());
