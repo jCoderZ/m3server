@@ -1,5 +1,6 @@
 package org.jcoderz.m3server.protocol.http.rest;
 
+import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
@@ -10,13 +11,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.jcoderz.m3server.library.FileItem;
+import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
+import org.jcoderz.m3server.library.filesystem.AudioFileItem;
 import org.jcoderz.m3server.util.Logging;
 
 /**
@@ -46,19 +50,22 @@ public class LibraryService {
     @GET
     @Path("/browse{path:.*}")
     @Consumes("application/json")
-    @Produces("application/json")
     public Response browse(@PathParam("path") String path) {
+        Response resp = null;
         try {
-            Item result = Library.browse(path);
-            String mt = "application/json";
-            if (result instanceof FileItem && result.getName().toLowerCase().endsWith(".mp3")) {
-                mt = "audio/mpeg";
+            Item item = Library.browse(path);
+            if (item instanceof AudioFileItem) {/* && result.getName().toLowerCase().endsWith(".mp3")) {*/
+                AudioFileItem fi = (AudioFileItem) item;
+                File f = fi.getFile();
+                resp = Response.ok(f, "audio/mpeg").header("Content-Length", "" + f.length()).build();
+            } else if (item instanceof FolderItem) {
+                resp = Response.ok(item, MediaType.APPLICATION_JSON_TYPE).build();
+            } else {
             }
-            Response resp = Response.ok(result, mt).build();
-            return resp;
         } catch (LibraryException ex) {
             throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
         }
+        return resp;
     }
     /*
      @GET
