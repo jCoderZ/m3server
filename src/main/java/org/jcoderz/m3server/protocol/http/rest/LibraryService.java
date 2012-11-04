@@ -54,11 +54,11 @@ public class LibraryService {
         Response resp = null;
         try {
             Item item = Library.browse(path);
-            if (item instanceof AudioFileItem) {/* && result.getName().toLowerCase().endsWith(".mp3")) {*/
+            if (AudioFileItem.class.isAssignableFrom(item.getClass())) {/* && result.getName().toLowerCase().endsWith(".mp3")) {*/
                 AudioFileItem fi = (AudioFileItem) item;
                 File f = fi.getFile();
                 resp = Response.ok(f, "audio/mpeg").header("Content-Length", "" + f.length()).build();
-            } else if (item instanceof FolderItem) {
+            } else if (FolderItem.class.isAssignableFrom(item.getClass())) {
                 resp = Response.ok(item, MediaType.APPLICATION_JSON_TYPE).build();
             } else {
             }
