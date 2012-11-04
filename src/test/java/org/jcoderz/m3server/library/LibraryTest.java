@@ -75,21 +75,22 @@ public class LibraryTest {
     @Test
     public void testPrintTree() {
         Item root = Library.getRoot();
-        //Library.visitTree(root);
+        Visitor v = new FullSubtreePathVisitor();
+        Library.visitTree(root, v);
     }
 
     @Test
     public void testPrintSubtrees() {
         Item root = Library.getRoot();
         Visitor v = new FindSubtreeVisitor();
-        Library.visitTree(root, v);
+        //Library.visitTree(root, v);
     }
 
     public static final class FullPathVisitor implements Visitor {
 
         @Override
         public void visit(Item item) {
-            System.out.println(item.getFullPath());
+            System.out.println("---" + item.getFullPath());
         }
     }
 
@@ -97,7 +98,13 @@ public class LibraryTest {
 
         @Override
         public void visit(Item item) {
-            System.out.println(item.getFullSubtreePath());
+            if (FolderItem.class.isAssignableFrom(item.getClass())) {
+                FolderItem fi = (FolderItem) item;
+                System.out.println(item.getFullPath() + " " + fi.getChildren());
+            }
+            else {
+                System.out.println(item.getFullPath());
+            }
         }
     }
 
