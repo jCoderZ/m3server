@@ -103,11 +103,12 @@ public class Library {
                     Constructor c = clz.getConstructor(new Class[]{Item.class, String.class});
                     newItem = (FolderItem) c.newInstance(new Object[]{item, newElement});
                 }
-                    fi.addChild(newItem);
+                fi.addChild(newItem);
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 logger.log(Level.SEVERE, "TODO", ex);
             }
         } else {
+            throw new LibraryRuntimeException("Unknown class " + clazz);
             // TODO: throw Exception("path does not denote a folder item")
         }
         return newItem;
@@ -195,7 +196,6 @@ public class Library {
     public static void visitTree(Item node, Visitor visitor) {
         node.accept(visitor);
 
-
         if (FolderItem.class
                 .isAssignableFrom(node.getClass())) {
             FolderItem fi = (FolderItem) node;
@@ -203,8 +203,6 @@ public class Library {
             for (Item i : c) {
                 visitTree(i, visitor);
             }
-        } else {
-            // node is not a FolderItem and thus there are no more children
         }
     }
 
