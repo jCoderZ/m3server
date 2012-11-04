@@ -67,7 +67,7 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
         logger.entering(LibraryJettyHttpHandler.class.getSimpleName(), "handle", new Object[]{target, baseRequest, request, response});
         try {
             String path = UrlUtil.decodePath(target);
-            logger.fine("RequestURI=" + request.getRequestURI() + ", Method=" + request.getMethod() + ", Target=" + target + ", Target(decoded)=" + path);
+            logger.log(Level.FINE, "RequestURI={0}, Method={1}, Target={2}, Target(decoded)={3}", new Object[]{request.getRequestURI(), request.getMethod(), target, path});
             Item item = Library.browse(path);
             if (item == null) {
                 response.setStatus(HttpStatus.NOT_FOUND_404);
