@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
@@ -73,6 +74,7 @@ public class LibraryTest {
     }
 
     @Test
+    @Ignore
     public void testPrintTree() {
         Item root = Library.getRoot();
         Visitor v = new FullSubtreePathVisitor();
@@ -80,10 +82,11 @@ public class LibraryTest {
     }
 
     @Test
+    @Ignore
     public void testPrintSubtrees() {
         Item root = Library.getRoot();
         Visitor v = new FindSubtreeVisitor();
-        //Library.visitTree(root, v);
+        Library.visitTree(root, v);
     }
 
     public static final class FullPathVisitor implements Visitor {
