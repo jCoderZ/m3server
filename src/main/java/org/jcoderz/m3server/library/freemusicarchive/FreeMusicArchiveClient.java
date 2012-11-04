@@ -43,14 +43,13 @@ public class FreeMusicArchiveClient {
     public static void init(String url, String key) {
         apiUrl = url;
         apiKey = key;
-        /*
-        final String proxyHost = "www.de";
+
+        final String proxyHost = "www-le.dienste.telekom.de";
         final String proxyPort = "8080";
         System.setProperty("http.proxyHost", proxyHost); 
         System.setProperty("http.proxyPort", proxyPort); 
         System.setProperty("https.proxyHost", proxyHost); 
         System.setProperty("https.proxyPort", proxyPort); 
-        */
     }
 
     public static List<String> getCurators() {
