@@ -48,6 +48,7 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
         HandlerList hl = new HandlerList();
 
         // library
+        /*
         ContextHandler libraryContext = new ContextHandler();
         final String libraryContextPath = Config.getConfig().getString(Config.HTTP_STATIC_CONTEXT_ROOT_KEY);
         logger.log(Level.CONFIG, "library context path: {0}", libraryContextPath);
@@ -58,6 +59,7 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
         libraryContext.setClassLoader(Thread.currentThread().getContextClassLoader());
         libraryContext.setHandler(new LibraryJettyHttpHandler());
         hl.addHandler(libraryContext);
+        */
 
         // webapp
         final String webappResourcePackage = Config.getConfig().getString(Config.HTTP_WEBAPP_PACKAGE_DIR_KEY);
