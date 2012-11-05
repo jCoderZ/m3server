@@ -81,7 +81,8 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         this.config = config;
         staticBaseUrl = config.getString(Config.HTTP_PROTOCOL_KEY) + "://"
                 + config.getString(Config.HTTP_HOSTNAME_KEY) + ":"
-                + config.getString(Config.HTTP_PORT_KEY) + "/"
+                + config.getString(Config.HTTP_PORT_KEY)
+                + config.getString(Config.HTTP_REST_SERVLET_ROOT_CONTEXT_KEY)
                 + config.getString(Config.HTTP_REST_ROOT_CONTEXT_KEY) + "/"
                 + "library/browse";
         // TODO: How to determine the "library/browse/" endpoint?
@@ -134,7 +135,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                             didl.addContainer(didlContainer);
                         }
                     } else {
-                        // TODO: throw unknown 
+                        // TODO: throw unknown
                     }
                 }
             } else if (id > ROOT_ID) {
@@ -203,11 +204,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         c.setId("" + nextId);
         c.setParentID("" + parentId);
         /*
-        if (FolderItem.class.isAssignableFrom(item.getClass())) {
-            FolderItem fi = (FolderItem) item;
-            c.setChildCount(fi.getChildren().size());
-        }
-        */
+         if (FolderItem.class.isAssignableFrom(item.getClass())) {
+         FolderItem fi = (FolderItem) item;
+         c.setChildCount(fi.getChildren().size());
+         }
+         */
         c.setRestricted(true);
         c.setTitle(item.getName());
         c.setCreator(Config.getConfig().getString(Config.UPNP_SERVER_NAME_KEY));
