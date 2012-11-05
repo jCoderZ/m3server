@@ -3,6 +3,7 @@ package org.jcoderz.m3server.library.filesystem;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -138,6 +139,7 @@ public class FileSystemFolderItem extends FolderItem {
         } else {
             // TODO: throw exception: file not found
         }
+        Collections.sort(children);
         return children;
     }
 }

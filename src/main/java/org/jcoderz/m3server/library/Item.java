@@ -8,7 +8,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  *
  * @author mrumpf
  */
-public interface Item {
+public interface Item extends Comparable<Item> {
 
     /**
      * Returns the parent of this item.

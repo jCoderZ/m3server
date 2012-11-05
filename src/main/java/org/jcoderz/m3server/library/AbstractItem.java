@@ -141,4 +141,9 @@ public abstract class AbstractItem implements Item {
     public String toString() {
         return name;
     }
+
+    @Override
+    public int compareTo(Item o) {
+        return name.compareTo(o.getName());
+    }
 }
