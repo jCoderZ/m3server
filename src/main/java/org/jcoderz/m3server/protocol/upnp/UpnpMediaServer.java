@@ -38,7 +38,6 @@ import org.teleal.cling.support.model.BrowseFlag;
 import org.teleal.cling.support.model.BrowseResult;
 import org.teleal.cling.support.model.DIDLContent;
 import org.teleal.cling.support.model.DIDLObject;
-import org.teleal.cling.support.model.DIDLObject.Class;
 import org.teleal.cling.support.model.PersonWithRole;
 import org.teleal.cling.support.model.Protocol;
 import org.teleal.cling.support.model.ProtocolInfo;
@@ -55,13 +54,6 @@ import org.teleal.cling.support.model.item.MusicTrack;
  */
 public class UpnpMediaServer extends AbstractContentDirectoryService {
 
-    private static final Logger logger = Logging.getLogger(UpnpMediaServer.class);
-    private static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
-    private static final Map<Long, UpnpContainer> idUpnpObjectMap2 = new HashMap<>();
-    private static final Map<String, UpnpContainer> nameUpnpObjectMap = new HashMap<>();
-    private static long idCounter = 0;
-    private static final Long ROOT_ID = 0L;
-    private static final Long ROOT_PARENT_ID = -1L;
     public static final String MIMETYPE_AUDIO_MPEG = "audio/mpeg";
     public static final String MANUFACTURER_NAME = "jCoderZ.org";
     public static final String MANUFACTURER_URL = "http://www.jcoderz.org";
@@ -70,10 +62,16 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     public static final String MODEL_URI = "";
     public static final String DLNA_DEVICE_CLASS = "DMS-1.50";
     public static final String DLNA_DEVICE_VERSION = "M-DMS-1.50";
-    public static final String DLNA_ORG_PN = "DLNA.ORG_PN=MP3;DLNA.ORG_OP=01";
-    private static final long UPDATE_ID = 1L;
-    public static final Class DIDL_CLASS_OBJECT_CONTAINER_STORAGEFOLDER = new DIDLObject.Class("object.container.storageFolder");
-    public static final Class DIDL_CLASS_OBJECT_ITEM_AUDIOITEM = new DIDLObject.Class("object.item.audioItem");
+    public static final String DLNA_ORG_PN = "DLNA.ORG_PN=MP3";
+    // DLNA.ORG_OP=01 is necessary, if not set the PS3 will show "incompatible data"
+    public static final String DLNA_ORG_OP = "DLNA.ORG_OP=01";
+    private static final Logger logger = Logging.getLogger(UpnpMediaServer.class);
+    private static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
+    private static final Map<Long, UpnpContainer> idUpnpObjectMap = new HashMap<>();
+    private static final Long UPDATE_ID = 1L;
+    private static final Long ROOT_ID = 0L;
+    private static final Long ROOT_PARENT_ID = -1L;
+    private static long idCounter = 0;
     private Configuration config;
     private String staticBaseUrl;
 
@@ -91,7 +89,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 + config.getString(Config.HTTP_REST_ROOT_CONTEXT_KEY) + "/"
                 + "library/browse";
         // Populate the maps with the root entry
-        createDidlContainer(ROOT_ID, ROOT_PARENT_ID, Library.getRoot(), DIDL_CLASS_OBJECT_CONTAINER);
+        createDidlContainer(ROOT_ID, ROOT_PARENT_ID, Library.getRoot());
     }
 
     public static long getNextId() {
@@ -108,7 +106,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         logger.entering(UpnpMediaServer.class.getSimpleName(), "browse", new Object[]{objectID, browseFlag, filter, firstResult, maxResults, orderby});
 
         if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "idUpnpObjectMap: {0}", idUpnpObjectMap2);
+            logger.log(Level.FINEST, "idUpnpObjectMap: {0}", idUpnpObjectMap);
         }
 
         BrowseResult result = null;
@@ -116,7 +114,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         long id = Long.valueOf(objectID).longValue();
         try {
             DIDLContent didlContent = new DIDLContent();
-            UpnpContainer upnpContainer = idUpnpObjectMap2.get(id);
+            UpnpContainer upnpContainer = idUpnpObjectMap.get(id);
             if (upnpContainer != null) {
                 if (logger.isLoggable(Level.FINER)) {
                     logger.log(Level.FINER, "''{0}'' existing item with id ''{1}'': {2}", new Object[]{browseFlag, id, upnpContainer.getItem()});
@@ -131,7 +129,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                         List<Item> children = folderItem.getChildren();
                         for (Item childItem : children) {
                             if (FolderItem.class.isAssignableFrom(childItem.getClass())) {
-                                Container didlContainer = createDidlContainer(id, childItem, DIDL_CLASS_OBJECT_CONTAINER);
+                                Container didlContainer = createDidlContainer(id, childItem);
                                 didlContent.addContainer(didlContainer);
                             } else if (FileItem.class.isAssignableFrom(childItem.getClass())) {
                                 org.teleal.cling.support.model.item.Item didlItem = createDidlItem(id, childItem);
@@ -162,24 +160,14 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         return result;
     }
 
-    /**
-     * This method returns information on the top-level folder, containing all
-     * the different RootFolder instances.
-     *
-     * <DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"
-     * xmlns:dc="http://purl.org/dc/elements/1.1/"
-     * xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"> <container id="0"
-     * parentID="-1" restricted="1" childCount="3"> <dc:title>Root</dc:title>
-     * <upnp:class>object.container</upnp:class> </container> </DIDL-Lite>
-     */
-    private Container createDidlContainer(long parentId, Item item, DIDLObject.Class clazz) {
+    private Container createDidlContainer(long parentId, Item item) {
         Long nextId = getNextId();
-        return createDidlContainer(nextId, parentId, item, clazz);
+        return createDidlContainer(nextId, parentId, item);
     }
 
-    private Container createDidlContainer(long nextId, long parentId, Item item, DIDLObject.Class clazz) {
+    private Container createDidlContainer(long nextId, long parentId, Item item) {
         if (logger.isLoggable(Level.FINER)) {
-            logger.log(Level.FINER, "Creating DIDL container id ''{0}'' (parent: {1}): {2} ({3})", new Object[]{nextId, parentId, item, clazz});
+            logger.log(Level.FINER, "Creating DIDL container id ''{0}'' (parent: {1}): {2}", new Object[]{nextId, parentId, item});
         }
         Container c = new Container();
         c.setId("" + nextId);
@@ -193,11 +181,10 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         c.setRestricted(true);
         c.setTitle(item.getName());
         c.setCreator(Config.getConfig().getString(Config.UPNP_SERVER_NAME_KEY));
-        c.setClazz(clazz);
+        c.setClazz(DIDL_CLASS_OBJECT_CONTAINER);
 
         UpnpContainer uc = new UpnpContainer(nextId, c, item);
-        idUpnpObjectMap2.put(nextId, uc);
-        nameUpnpObjectMap.put(item.getName(), uc);
+        idUpnpObjectMap.put(nextId, uc);
 
         return c;
     }
@@ -215,7 +202,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         String creator = audioFileItem.getArtist();
         PersonWithRole artist = new PersonWithRole(creator, "Performer");
         String url = staticBaseUrl + UrlUtil.encodePath(item.getFullPath());
-        Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DLNA_ORG_PN), audioFileItem.getSize(), TimeUtil.convertMillis(audioFileItem.getLengthInMilliseconds()), audioFileItem.getBitrate(), url);
+        Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DLNA_ORG_PN + ";" + DLNA_ORG_OP), audioFileItem.getSize(), TimeUtil.convertMillis(audioFileItem.getLengthInMilliseconds()), audioFileItem.getBitrate(), url);
         MusicTrack result = new MusicTrack(
                 "" + nextId, "" + parentId,
                 audioFileItem.getTitle(),
@@ -227,8 +214,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         result.setGenres(new String[]{audioFileItem.getGenre()});
 
         UpnpContainer uc = new UpnpContainer(nextId, result, item);
-        idUpnpObjectMap2.put(nextId, uc);
-        nameUpnpObjectMap.put(item.getName(), uc);
+        idUpnpObjectMap.put(nextId, uc);
 
         return result;
     }
@@ -264,7 +250,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 new ProtocolInfos(
                 new ProtocolInfo(
                 Protocol.HTTP_GET,
-                ProtocolInfo.WILDCARD, MIMETYPE_AUDIO_MPEG, DLNA_ORG_PN));
+                ProtocolInfo.WILDCARD, MIMETYPE_AUDIO_MPEG, DLNA_ORG_PN + ";" + DLNA_ORG_OP));
 
         connectionManagerService.setManager(
                 new DefaultServiceManager<ConnectionManagerService>(connectionManagerService, null) {
