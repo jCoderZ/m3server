@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.filesystem.AudioFileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
@@ -37,6 +38,7 @@ import org.teleal.cling.support.model.BrowseFlag;
 import org.teleal.cling.support.model.BrowseResult;
 import org.teleal.cling.support.model.DIDLContent;
 import org.teleal.cling.support.model.DIDLObject;
+import org.teleal.cling.support.model.DIDLObject.Class;
 import org.teleal.cling.support.model.PersonWithRole;
 import org.teleal.cling.support.model.Protocol;
 import org.teleal.cling.support.model.ProtocolInfo;
@@ -70,6 +72,8 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     public static final String DLNA_DEVICE_VERSION = "M-DMS-1.50";
     public static final String DLNA_ORG_PN = "DLNA.ORG_PN=MP3;DLNA.ORG_OP=01";
     private static final long UPDATE_ID = 1L;
+    public static final Class DIDL_CLASS_OBJECT_CONTAINER_STORAGEFOLDER = new DIDLObject.Class("object.container.storageFolder");
+    public static final Class DIDL_CLASS_OBJECT_ITEM_AUDIOITEM = new DIDLObject.Class("object.item.audioItem");
     private Configuration config;
     private String staticBaseUrl;
 
@@ -86,7 +90,8 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 + config.getString(Config.HTTP_REST_SERVLET_ROOT_CONTEXT_KEY)
                 + config.getString(Config.HTTP_REST_ROOT_CONTEXT_KEY) + "/"
                 + "library/browse";
-        // TODO: How to determine the "library/browse/" endpoint?
+        // Populate the maps with the root entry
+        createDidlContainer(ROOT_ID, ROOT_PARENT_ID, Library.getRoot(), DIDL_CLASS_OBJECT_CONTAINER);
     }
 
     public static long getNextId() {
@@ -110,112 +115,41 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         String resultXml = null;
         long id = Long.valueOf(objectID).longValue();
         try {
-            DIDLContent didl = new DIDLContent();
-
-            if (id == ROOT_ID) {
-                didl = new DIDLContent();
-                if (BrowseFlag.METADATA.equals(browseFlag)) {
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.finer("Browsing meta-data of root folder...");
-                    }
-                    Container c = createDidlContainer(id, ROOT_PARENT_ID, Library.getRoot());
-                    didl.addContainer(c);
-                } else if (BrowseFlag.DIRECT_CHILDREN.equals(browseFlag)) {
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.finer("Browsing children of root folder...");
-                    }
-                    Item root = Library.getRoot();
-                    if (FolderItem.class.isAssignableFrom(root.getClass())) {
-                        FolderItem fi = (FolderItem) root;
-                        for (Item c : fi.getChildren()) {
-                            Long nextId = getNextId();
-                            if (logger.isLoggable(Level.FINER)) {
-                                logger.log(Level.FINER, "Creating root child with new id ''{0}'': {1}", new Object[]{nextId, c});
-                            }
-                            Container didlContainer = createDidlContainer(nextId, ROOT_ID, c);
-                            idUpnpObjectMap2.put(nextId, new UpnpContainer(nextId, didlContainer, c));
-                            nameUpnpObjectMap.put(c.getName(), new UpnpContainer(nextId, didlContainer, c));
-                            didl.addContainer(didlContainer);
-                        }
-                    } else {
-                        // TODO: throw unknown
-                    }
+            DIDLContent didlContent = new DIDLContent();
+            UpnpContainer upnpContainer = idUpnpObjectMap2.get(id);
+            if (upnpContainer != null) {
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.log(Level.FINER, "''{0}'' existing item with id ''{1}'': {2}", new Object[]{browseFlag, id, upnpContainer.getItem()});
                 }
-            } else if (id > ROOT_ID) {
-                UpnpContainer container2Browse = idUpnpObjectMap2.get(id);
-                if (container2Browse != null) {
-                    Item i = container2Browse.getItem();
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.log(Level.FINER, "Browsing item with id ''{0}'': {1}", new Object[]{id, i});
-                    }
-                    if (FolderItem.class.isAssignableFrom(i.getClass())) {
-                        FolderItem fi = (FolderItem) i;
-                        List<Item> children = fi.getChildren();
-                        for (Item c : children) {
-                            UpnpContainer uc = nameUpnpObjectMap.get(c.getName());
-                            if (uc == null) {
-                                Long nextId = getNextId();
-                                if (logger.isLoggable(Level.FINER)) {
-                                    logger.log(Level.FINER, "Creating child with new id ''{0}'': {1}", new Object[]{nextId, c});
-                                }
-                                if (BrowseFlag.DIRECT_CHILDREN.equals(browseFlag)) {
-                                    if (FolderItem.class.isAssignableFrom(c.getClass())) {
-                                        FolderItem f = (FolderItem) c;
-                                        Container didlContainer = createDidlContainer(nextId, id, f);
-                                        didl.addContainer(didlContainer);
-                                        uc = new UpnpContainer(nextId, didlContainer, c);
-                                        idUpnpObjectMap2.put(nextId, uc);
-                                        nameUpnpObjectMap.put(c.getName(), uc);
-                                    } else if (AudioFileItem.class.isAssignableFrom(c.getClass())) {
-                                        AudioFileItem af = (AudioFileItem) c;
-                                        org.teleal.cling.support.model.item.Item didlItem = createDidlItem(nextId, id, af);
-                                        didl.addItem(didlItem);
-                                        uc = new UpnpContainer(nextId, didlItem, c);
-                                        idUpnpObjectMap2.put(nextId, uc);
-                                        nameUpnpObjectMap.put(c.getName(), uc);
-                                    } else {
-                                        // TODO: ???
-                                    }
-                                } else {
-                                    if (FolderItem.class.isAssignableFrom(c.getClass())) {
-                                        FolderItem f = (FolderItem) c;
-                                        Container didlContainer = createDidlContainer(nextId, id, f, new DIDLObject.Class("object.container.storageFolder"));
-                                        didl.addContainer(didlContainer);
-                                        uc = new UpnpContainer(nextId, didlContainer, c);
-                                        idUpnpObjectMap2.put(nextId, uc);
-                                        nameUpnpObjectMap.put(c.getName(), uc);
-                                    } else if (AudioFileItem.class.isAssignableFrom(c.getClass())) {
-                                        AudioFileItem af = (AudioFileItem) c;
-                                        Container didlContainer = createDidlContainer(nextId, id, af, new DIDLObject.Class("object.item.audioItem"));
-                                        didl.addContainer(didlContainer);
-                                        uc = new UpnpContainer(nextId, didlContainer, c);
-                                        idUpnpObjectMap2.put(nextId, uc);
-                                        nameUpnpObjectMap.put(c.getName(), uc);
-                                    }
-                                }
-
+                if (BrowseFlag.METADATA.equals(browseFlag)) {
+                    // TODO: if upnpContainer.getObject() instanceof DIDLContainer...
+                    didlContent.addContainer((Container) upnpContainer.getDidlObject());
+                } else if (BrowseFlag.DIRECT_CHILDREN.equals(browseFlag)) {
+                    Item item = upnpContainer.getItem();
+                    if (FolderItem.class.isAssignableFrom(item.getClass())) {
+                        FolderItem folderItem = (FolderItem) item;
+                        List<Item> children = folderItem.getChildren();
+                        for (Item childItem : children) {
+                            if (FolderItem.class.isAssignableFrom(childItem.getClass())) {
+                                Container didlContainer = createDidlContainer(id, childItem, DIDL_CLASS_OBJECT_CONTAINER);
+                                didlContent.addContainer(didlContainer);
+                            } else if (FileItem.class.isAssignableFrom(childItem.getClass())) {
+                                org.teleal.cling.support.model.item.Item didlItem = createDidlItem(id, childItem);
+                                didlContent.addItem(didlItem);
                             } else {
-                                if (FolderItem.class.isAssignableFrom(c.getClass())) {
-                                    didl.addContainer((Container) uc.getContainer());
-                                } else if (AudioFileItem.class.isAssignableFrom(c.getClass())) {
-                                    didl.addItem((org.teleal.cling.support.model.item.Item) uc.getContainer());
-                                } else {
-                                    // TODO: ???
-                                }
+                                // TODO: ???
                             }
                         }
-                    } else {
-                        logger.log(Level.WARNING, "Browsing on unknown container item {0}", i);
-                        // TODO: handle browse on FileItem
-                        // is it poosible to get a "browse" request on a file? Maybe file details?
                     }
                 } else {
-                    logger.log(Level.WARNING, "Browsing unknown container with id {0}", id);
-                    // TODO: throw new Exception("Unknown ID");
+                    // TODO: throw unknown BrowseFlag
                 }
+            } else {
+                // TODO: throw unknown id
             }
-            resultXml = new DIDLParser().generate(didl);
-            result = new BrowseResult(resultXml, didl.getContainers().size() + didl.getItems().size(), UPDATE_ID);
+
+            resultXml = new DIDLParser().generate(didlContent);
+            result = new BrowseResult(resultXml, didlContent.getContainers().size() + didlContent.getItems().size(), UPDATE_ID);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "An exception occured during browsing of folder " + id, ex);
             throw new ContentDirectoryException(
@@ -238,11 +172,15 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
      * parentID="-1" restricted="1" childCount="3"> <dc:title>Root</dc:title>
      * <upnp:class>object.container</upnp:class> </container> </DIDL-Lite>
      */
-    private Container createDidlContainer(long nextId, long parentId, Item item) {
-        return createDidlContainer(nextId, parentId, item, DIDL_CLASS_OBJECT_CONTAINER);
+    private Container createDidlContainer(long parentId, Item item, DIDLObject.Class clazz) {
+        Long nextId = getNextId();
+        return createDidlContainer(nextId, parentId, item, clazz);
     }
 
     private Container createDidlContainer(long nextId, long parentId, Item item, DIDLObject.Class clazz) {
+        if (logger.isLoggable(Level.FINER)) {
+            logger.log(Level.FINER, "Creating DIDL container id ''{0}'' (parent: {1}): {2} ({3})", new Object[]{nextId, parentId, item, clazz});
+        }
         Container c = new Container();
         c.setId("" + nextId);
         c.setParentID("" + parentId);
@@ -256,23 +194,42 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         c.setTitle(item.getName());
         c.setCreator(Config.getConfig().getString(Config.UPNP_SERVER_NAME_KEY));
         c.setClazz(clazz);
+
+        UpnpContainer uc = new UpnpContainer(nextId, c, item);
+        idUpnpObjectMap2.put(nextId, uc);
+        nameUpnpObjectMap.put(item.getName(), uc);
+
         return c;
     }
 
-    private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, AudioFileItem item) throws UnsupportedEncodingException {
-        String creator = item.getArtist();
+    private org.teleal.cling.support.model.item.Item createDidlItem(long parentId, Item item) throws UnsupportedEncodingException {
+        Long nextId = getNextId();
+        return createDidlItem(nextId, parentId, item);
+    }
+
+    private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, Item item) throws UnsupportedEncodingException {
+
+        // TODO: support other types
+        AudioFileItem audioFileItem = (AudioFileItem) item;
+
+        String creator = audioFileItem.getArtist();
         PersonWithRole artist = new PersonWithRole(creator, "Performer");
         String url = staticBaseUrl + UrlUtil.encodePath(item.getFullPath());
-        Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DLNA_ORG_PN), item.getSize(), TimeUtil.convertMillis(item.getLengthInMilliseconds()), item.getBitrate(), url);
+        Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DLNA_ORG_PN), audioFileItem.getSize(), TimeUtil.convertMillis(audioFileItem.getLengthInMilliseconds()), audioFileItem.getBitrate(), url);
         MusicTrack result = new MusicTrack(
                 "" + nextId, "" + parentId,
-                item.getTitle(),
+                audioFileItem.getTitle(),
                 creator,
-                item.getAlbum(),
+                audioFileItem.getAlbum(),
                 artist,
                 res);
         // Add cover image result.addResource(res)
-        result.setGenres(new String[]{item.getGenre()});
+        result.setGenres(new String[]{audioFileItem.getGenre()});
+
+        UpnpContainer uc = new UpnpContainer(nextId, result, item);
+        idUpnpObjectMap2.put(nextId, uc);
+        nameUpnpObjectMap.put(item.getName(), uc);
+
         return result;
     }
 
@@ -353,7 +310,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             return id;
         }
 
-        DIDLObject getContainer() {
+        DIDLObject getDidlObject() {
             return object;
         }
 
