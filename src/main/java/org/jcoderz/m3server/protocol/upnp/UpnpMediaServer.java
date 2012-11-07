@@ -1,6 +1,8 @@
 package org.jcoderz.m3server.protocol.upnp;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     private static final Logger logger = Logging.getLogger(UpnpMediaServer.class);
     private static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
     private static final Map<Long, UpnpContainer> idUpnpObjectMap = new HashMap<>();
+    private static final Map<Long, List<UpnpContainer>> idChildUpnpObjectMap = new HashMap<>();
     private static final Long UPDATE_ID = 1L;
     private static final Long ROOT_ID = 0L;
     private static final Long ROOT_PARENT_ID = -1L;
@@ -103,10 +106,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             String filter,
             long firstResult, long maxResults,
             SortCriterion[] orderby) throws ContentDirectoryException {
-        logger.entering(UpnpMediaServer.class.getSimpleName(), "browse", new Object[]{objectID, browseFlag, filter, firstResult, maxResults, orderby});
+        logger.entering(UpnpMediaServer.class.getSimpleName(), "browse", new Object[]{objectID, browseFlag, filter, firstResult, maxResults, Arrays.asList(orderby)});
 
         if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "idUpnpObjectMap: {0}", idUpnpObjectMap);
+            logger.log(Level.FINEST, "idUpnpObjectMap: {0}", idUpnpObjectMap.keySet());
+            logger.log(Level.FINEST, "idChildUpnpObjectMap: {0}", idChildUpnpObjectMap.keySet());
         }
 
         BrowseResult result = null;
@@ -125,17 +129,36 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 } else if (BrowseFlag.DIRECT_CHILDREN.equals(browseFlag)) {
                     Item item = upnpContainer.getItem();
                     if (FolderItem.class.isAssignableFrom(item.getClass())) {
-                        FolderItem folderItem = (FolderItem) item;
-                        List<Item> children = folderItem.getChildren();
-                        for (Item childItem : children) {
-                            if (FolderItem.class.isAssignableFrom(childItem.getClass())) {
-                                Container didlContainer = createDidlContainer(id, childItem);
-                                didlContent.addContainer(didlContainer);
-                            } else if (FileItem.class.isAssignableFrom(childItem.getClass())) {
-                                org.teleal.cling.support.model.item.Item didlItem = createDidlItem(id, childItem);
-                                didlContent.addItem(didlItem);
-                            } else {
-                                // TODO: ???
+                        // check whether we already read the children
+                        List<UpnpContainer> ucChildren = idChildUpnpObjectMap.get(id);
+                        logger.log(Level.FINEST, "Children of id ''{0}'': {1}", new Object[]{id, ucChildren});
+                        if (ucChildren == null || ucChildren.isEmpty()) {
+                            FolderItem folderItem = (FolderItem) item;
+                            List<Item> children = folderItem.getChildren();
+                            for (Item childItem : children) {
+                                if (FolderItem.class.isAssignableFrom(childItem.getClass())) {
+                                    UpnpContainer uc = createDidlContainer(id, childItem);
+                                    didlContent.addContainer((Container) uc.getDidlObject());
+                                } else if (FileItem.class.isAssignableFrom(childItem.getClass())) {
+                                    UpnpContainer uc = createDidlItem(id, childItem);
+                                    didlContent.addItem((org.teleal.cling.support.model.item.Item) uc.getDidlObject());
+                                } else {
+                                    // TODO: ???
+                                }
+                            }
+                        } else /*if (firstResult < ucChildren.size())*/ {
+                            // do not return anything if the caller is requesting results that are not there
+                            for (UpnpContainer ucChild : ucChildren) {
+                                if (FolderItem.class.isAssignableFrom(ucChild.getItem().getClass())) {
+                                    logger.log(Level.FINER, "Returning existing DIDL container with id ''{0}'': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
+                                    didlContent.addContainer((Container) ucChild.getDidlObject());
+                                } else if (FileItem.class.isAssignableFrom(ucChild.getItem().getClass())) {
+                                    logger.log(Level.FINER, "Returning existing DIDL item with id '{0}': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
+                                    didlContent.addItem((org.teleal.cling.support.model.item.Item) ucChild.getDidlObject());
+                                } else {
+                                    // TODO: ???
+                                }
+
                             }
                         }
                     }
@@ -147,7 +170,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             }
 
             resultXml = new DIDLParser().generate(didlContent);
-            result = new BrowseResult(resultXml, didlContent.getContainers().size() + didlContent.getItems().size(), UPDATE_ID);
+            long count = didlContent.getContainers().size() + didlContent.getItems().size();
+            result = new BrowseResult(resultXml, count, count, UPDATE_ID);
+
+            logger.exiting(UpnpMediaServer.class
+                    .getSimpleName(), "browse", "DIDL response xml (" + count + "): " + resultXml);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "An exception occured during browsing of folder " + id, ex);
             throw new ContentDirectoryException(
@@ -155,17 +182,15 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                     ex.toString());
         }
 
-        logger.exiting(UpnpMediaServer.class
-                .getSimpleName(), "browse", "DIDL response xml: " + resultXml);
         return result;
     }
 
-    private Container createDidlContainer(long parentId, Item item) {
+    private UpnpContainer createDidlContainer(long parentId, Item item) {
         Long nextId = getNextId();
         return createDidlContainer(nextId, parentId, item);
     }
 
-    private Container createDidlContainer(long nextId, long parentId, Item item) {
+    private UpnpContainer createDidlContainer(long nextId, long parentId, Item item) {
         if (logger.isLoggable(Level.FINER)) {
             logger.log(Level.FINER, "Creating DIDL container id ''{0}'' (parent: {1}): {2}", new Object[]{nextId, parentId, item});
         }
@@ -185,16 +210,24 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
         UpnpContainer uc = new UpnpContainer(nextId, c, item);
         idUpnpObjectMap.put(nextId, uc);
+        if (parentId >= ROOT_ID) {
+            List<UpnpContainer> l = idChildUpnpObjectMap.get(parentId);
+            if (l == null) {
+                l = new ArrayList<>();
+                idChildUpnpObjectMap.put(parentId, l);
+            }
+            l.add(uc);
+        }
 
-        return c;
+        return uc;
     }
 
-    private org.teleal.cling.support.model.item.Item createDidlItem(long parentId, Item item) throws UnsupportedEncodingException {
+    private UpnpContainer createDidlItem(long parentId, Item item) throws UnsupportedEncodingException {
         Long nextId = getNextId();
         return createDidlItem(nextId, parentId, item);
     }
 
-    private org.teleal.cling.support.model.item.Item createDidlItem(long nextId, long parentId, Item item) throws UnsupportedEncodingException {
+    private UpnpContainer createDidlItem(long nextId, long parentId, Item item) throws UnsupportedEncodingException {
 
         // TODO: support other types
         AudioFileItem audioFileItem = (AudioFileItem) item;
@@ -216,7 +249,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         UpnpContainer uc = new UpnpContainer(nextId, result, item);
         idUpnpObjectMap.put(nextId, uc);
 
-        return result;
+        return uc;
     }
 
     @Override
