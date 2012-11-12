@@ -116,6 +116,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         BrowseResult result = null;
         String resultXml = null;
         long id = Long.valueOf(objectID).longValue();
+        int maxCount = 0;
         try {
             DIDLContent didlContent = new DIDLContent();
             UpnpContainer upnpContainer = idUpnpObjectMap.get(id);
@@ -137,28 +138,34 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                             List<Item> children = folderItem.getChildren();
                             for (Item childItem : children) {
                                 if (FolderItem.class.isAssignableFrom(childItem.getClass())) {
-                                    UpnpContainer uc = createDidlContainer(id, childItem);
-                                    didlContent.addContainer((Container) uc.getDidlObject());
+                                    createDidlContainer(id, childItem);
                                 } else if (FileItem.class.isAssignableFrom(childItem.getClass())) {
-                                    UpnpContainer uc = createDidlItem(id, childItem);
-                                    didlContent.addItem((org.teleal.cling.support.model.item.Item) uc.getDidlObject());
+                                    createDidlItem(id, childItem);
                                 } else {
                                     // TODO: ???
                                 }
                             }
-                        } else /*if (firstResult < ucChildren.size())*/ {
-                            // do not return anything if the caller is requesting results that are not there
-                            for (UpnpContainer ucChild : ucChildren) {
-                                if (FolderItem.class.isAssignableFrom(ucChild.getItem().getClass())) {
-                                    logger.log(Level.FINER, "Returning existing DIDL container with id ''{0}'': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
-                                    didlContent.addContainer((Container) ucChild.getDidlObject());
-                                } else if (FileItem.class.isAssignableFrom(ucChild.getItem().getClass())) {
-                                    logger.log(Level.FINER, "Returning existing DIDL item with id '{0}': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
-                                    didlContent.addItem((org.teleal.cling.support.model.item.Item) ucChild.getDidlObject());
-                                } else {
-                                    // TODO: ???
-                                }
+                            ucChildren = idChildUpnpObjectMap.get(id);
+                        }
 
+                        int pos = 0;
+                        maxCount = ucChildren.size();
+                        for (UpnpContainer ucChild : ucChildren) {
+                            pos++;
+                            if (pos <= firstResult) {
+                                continue;
+                            }
+                            if (FolderItem.class.isAssignableFrom(ucChild.getItem().getClass())) {
+                                logger.log(Level.FINER, "Returning existing DIDL container with id ''{0}'': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
+                                didlContent.addContainer((Container) ucChild.getDidlObject());
+                            } else if (FileItem.class.isAssignableFrom(ucChild.getItem().getClass())) {
+                                logger.log(Level.FINER, "Returning existing DIDL item with id '{0}': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
+                                didlContent.addItem((org.teleal.cling.support.model.item.Item) ucChild.getDidlObject());
+                            } else {
+                                // TODO: ???
+                            }
+                            if (didlContent.getItems().size() + didlContent.getContainers().size() >= maxResults) {
+                                break;
                             }
                         }
                     }
@@ -171,10 +178,10 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
             resultXml = new DIDLParser().generate(didlContent);
             long count = didlContent.getContainers().size() + didlContent.getItems().size();
-            result = new BrowseResult(resultXml, count, count, UPDATE_ID);
+            result = new BrowseResult(resultXml, count, maxCount, UPDATE_ID);
 
             logger.exiting(UpnpMediaServer.class
-                    .getSimpleName(), "browse", "DIDL response xml (" + count + "): " + resultXml);
+                    .getSimpleName(), "browse", "DIDL response xml (" + count + ", " + maxCount + "): " + resultXml);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "An exception occured during browsing of folder " + id, ex);
             throw new ContentDirectoryException(
