@@ -19,8 +19,9 @@ import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3server.util.UrlUtil;
 
 /**
- * This class handles file downloads out of the library.
- * <p>TODO: This will probably be substituted by REST APIs.</p>
+ * This class handles file downloads out of the library. The download is not
+ * handled by the Jersey REST end-points because JAX-RS cannot deal with HTTP
+ * range requests.
  *
  * @author mrumpf
  */
@@ -65,6 +66,7 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
     public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // TODO: Use logging filter
         logger.entering(LibraryJettyHttpHandler.class.getSimpleName(), "handle", new Object[]{target, baseRequest, request, response});
+        logger.log(Level.INFO, ">>>>>>>>>>", new Exception("EXCEPTION"));
         try {
             String path = UrlUtil.decodePath(target);
             logger.log(Level.FINE, "RequestURI={0}, Method={1}, Target={2}, Target(decoded)={3}", new Object[]{request.getRequestURI(), request.getMethod(), target, path});
@@ -77,8 +79,9 @@ public class LibraryJettyHttpHandler extends AbstractHandler {
             }
         } catch (LibraryException ex) {
             logger.log(Level.SEVERE, "TODO", ex);
+        } finally {
+            // TODO: Use logging filter
+            logger.exiting(LibraryJettyHttpHandler.class.getSimpleName(), "handle");
         }
-        // TODO: Use logging filter
-        logger.exiting(LibraryJettyHttpHandler.class.getSimpleName(), "handle");
     }
 }
