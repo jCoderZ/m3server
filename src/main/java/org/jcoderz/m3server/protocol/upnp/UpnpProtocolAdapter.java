@@ -60,7 +60,6 @@ public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryList
                 r = new UpnpRenderer(upnpService, device);
                 RendererRegistry.addRenderer(r);
             }
-            //r.play("");
         }
     }
 
