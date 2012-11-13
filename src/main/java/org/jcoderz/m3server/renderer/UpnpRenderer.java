@@ -1,7 +1,12 @@
 package org.jcoderz.m3server.renderer;
 
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jcoderz.m3server.library.Item;
+import org.jcoderz.m3server.library.Library;
+import org.jcoderz.m3server.library.filesystem.AudioFileItem;
+import org.jcoderz.m3server.util.DidlUtil;
 import org.jcoderz.m3server.util.Logging;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.controlpoint.ActionCallback;
@@ -13,10 +18,12 @@ import org.teleal.cling.model.types.InvalidValueException;
 import org.teleal.cling.model.types.UDAServiceId;
 import org.teleal.cling.support.avtransport.callback.Play;
 import org.teleal.cling.support.avtransport.callback.SetAVTransportURI;
+import org.teleal.cling.support.contentdirectory.DIDLParser;
+import org.teleal.cling.support.model.DIDLContent;
 
 /**
  * This class represents UPnP/DLNA rendering devices.
- * 
+ *
  * @author mrumpf
  */
 public class UpnpRenderer extends AbstractRenderer {
@@ -39,7 +46,7 @@ public class UpnpRenderer extends AbstractRenderer {
     @Override
     public void play(String url) {
         Service service = device.findService(new UDAServiceId("AVTransport"));
-        logger.log(Level.INFO, "Playing: ");
+        logger.log(Level.INFO, "Playing: " + url);
 
         upnpSetAvTransportUri(service, url);
         upnpPlay(service, url);
@@ -55,57 +62,33 @@ public class UpnpRenderer extends AbstractRenderer {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void upnpSetAvTransportUri(Service service, String url) throws InvalidValueException {
-        /*
-         Action setAVTransportURIAction = service.getAction("SetAVTransportURI");
+    private void upnpSetAvTransportUri(Service service, String path) throws InvalidValueException {
+        try {
+            DIDLContent didlContent = new DIDLContent();
+            Item item = Library.browse(path);
+            if (AudioFileItem.class.isAssignableFrom(item.getClass())) {
+                AudioFileItem audioFileItem = (AudioFileItem) item;
+                // TODO: remove dummy ids
+                didlContent.addItem(DidlUtil.createMusicTrack(audioFileItem, "http://localhost:8080/m3server/rest/library/browse" + path, 100, 99));
+            } else {
+                // TODO
+            }
 
-         ActionInvocation setAVTransportURIInvocation = new ActionInvocation(setAVTransportURIAction);
-         setAVTransportURIInvocation.setInput("InstanceID", "0");
-         setAVTransportURIInvocation.setInput("CurrentURI", url);
-         URL u = null;
-         try {
-         u = new URL(url);
-         } catch (MalformedURLException ex) {
-         logger.log(Level.SEVERE, null, ex);
-         }
-         StringBuilder sb = new StringBuilder();
-         sb.append("<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\">");
-         sb.append("<item id=\"" + u.getPath() + "\" parentID=\"" + u.getPath() + "\" restricted=\"1\">");
-         sb.append("<upnp:class>object.item.audioItem.musicTrack</upnp:class>");
-         sb.append("<dc:title>Blind Willie</dc:title>");
-         sb.append("<dc:creator>Rob Towns</dc:creator>");
-         sb.append("<upnp:artist>Rob Towns</upnp:artist>");
-         sb.append("<upnp:albumArtURI></upnp:albumArtURI>");
-         sb.append("<upnp:album>media</upnp:album><dc:date>2001-01-01</dc:date>");
-         sb.append("<res protocolInfo=\"http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0\" size=\"2703360\" duration=\"0:02:15.000\">" + url + "</res></item>");
-         sb.append("</DIDL-Lite>");
-         System.err.println(sb.toString());
-         setAVTransportURIInvocation.setInput("CurrentURIMetaData", sb.toString());
-
-         ActionCallback setAVTransportURICallback = new ActionCallback(setAVTransportURIInvocation) {
-         @Override
-         public void success(ActionInvocation invocation) {
-         System.err.println("success");
-
-         }
-
-         @Override
-         public void failure(ActionInvocation invocation,
-         UpnpResponse operation,
-         String defaultMsg) {
-         System.err.println(defaultMsg);
-         }
-         };
-         * */
-        ActionCallback setAVTransportURIAction =
-                new SetAVTransportURI(service, "http://planetshhh.com/blogmp3/David.mp3", "NO METADATA") {
-                    @Override
-                    public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-                        // Something was wrong
-                        System.err.println(defaultMsg);
-                    }
-                };
-        upnpService.getControlPoint().execute(setAVTransportURIAction);
+            String didlContentStr = new DIDLParser().generate(didlContent);
+            logger.info("didlContentStr=" + didlContentStr);
+            URL url = new URL("http://localhost:8080/m3server/rest/library/browse/audio/filesystem/01-gold/A/a-ha/Lifelines/01%20-%20Lifelines.mp3");//item.getUrl();
+            ActionCallback setAVTransportURIAction =
+                    new SetAVTransportURI(service, url.toString(), didlContentStr) {
+                        @Override
+                        public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
+                            // TODO
+                            System.err.println(defaultMsg);
+                        }
+                    };
+            upnpService.getControlPoint().execute(setAVTransportURIAction);
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "TODO", ex);
+        }
     }
 
     private void upnpPlay(Service service, String url) throws InvalidValueException {
