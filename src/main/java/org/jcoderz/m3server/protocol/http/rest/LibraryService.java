@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
@@ -46,18 +46,56 @@ public class LibraryService {
             throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
         }
     }
+    /*
+     @HEAD
+     @Path("/browse{path:.*}")
+     @Consumes("application/json")
+     public Response browseHead(@PathParam("path") String path) {
+     Response resp = null;
+     try {
+     Item item = Library.browse(path);
+     if (AudioFileItem.class.isAssignableFrom(item.getClass())) {// && result.getName().toLowerCase().endsWith(".mp3")) {
+     AudioFileItem fi = (AudioFileItem) item;
+     File f = fi.getFile();
+     // header("transferMode.dlna.org", "Streaming").
+     // Bit 24 - Streaming Mode Flag
+     // Bit 22 - Background Mode Flag
+     // Bit 21 - HTTP Connection Stalling Flag
+     // Bit 20 - DLNA v1.5 versioning flag
+     // 01700000 00000000 00000000 00000000
+     resp = Response.ok().header("Server", "Linux, UPnP/1.0 DLNADOC/1.50, Serviio/1.0.1").header("Content-Type", "audio/mpeg").header("transferMode.dlna.org", "Streaming").header("contentFeatures.dlna.org", "DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000").header("Cache-control", "no-cache").header("Date", "Sun, 11 Nov 2012 22:39:59 GMT").build();
+     //resp = Response.ok(f, "audio/mpeg").header("Content-Length", "" + f.length()).build();
+     } else if (FolderItem.class.isAssignableFrom(item.getClass())) {
+     resp = Response.ok().header("Content-Type", MediaType.APPLICATION_JSON).build();
+     } else {
+     }
+     } catch (LibraryException ex) {
+     throw new WebApplicationException(ex, Status.INTERNAL_SERVER_ERROR);
+     }
+     return resp;
+     }
+     */
 
     @GET
     @Path("/browse{path:.*}")
     @Consumes("application/json")
-    public Response browse(@PathParam("path") String path) {
+    public Response browseGet(@PathParam("path") String path) {
         Response resp = null;
         try {
             Item item = Library.browse(path);
             if (AudioFileItem.class.isAssignableFrom(item.getClass())) {/* && result.getName().toLowerCase().endsWith(".mp3")) {*/
                 AudioFileItem fi = (AudioFileItem) item;
                 File f = fi.getFile();
-                resp = Response.ok(f, "audio/mpeg").header("Content-Length", "" + f.length()).build();
+                // header("transferMode.dlna.org", "Streaming").
+                // Bit 24 - Streaming Mode Flag
+                // Bit 22 - Background Mode Flag
+                // Bit 21 - HTTP Connection Stalling Flag
+                // Bit 20 - DLNA v1.5 versioning flag
+                // 01700000 00000000 00000000 00000000
+                long len = f.length();
+                // header("Content-Length", "" + f.length())
+                resp = Response.ok(f, "audio/mpeg").status(206).header("Server", "Linux, UPnP/1.0 DLNADOC/1.50, Serviio/1.0.1").header("transferMode.dlna.org", "Streaming").header("contentFeatures.dlna.org", "DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000").header("Content-Range", "bytes 0-" + (len - 1) + "/" + len).header("Cache-control", "no-cache").header("Date", "Sun, 11 Nov 2012 22:39:59 GMT").build();
+                //resp = Response.ok(f, "audio/mpeg").header("Content-Length", "" + f.length()).build();
             } else if (FolderItem.class.isAssignableFrom(item.getClass())) {
                 resp = Response.ok(item, MediaType.APPLICATION_JSON_TYPE).build();
             } else {
