@@ -112,7 +112,7 @@ public class FolderItem extends AbstractItem {
         if (index >= children.size()) {
             throw new LibraryException("The child with index '" + index + "' could not be found");
         }
-        return children.get(0);
+        return children.get(index);
     }
 
     /**
