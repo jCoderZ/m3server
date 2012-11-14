@@ -142,6 +142,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                                     didlContent.addItem((org.teleal.cling.support.model.item.Item) uc.getDidlObject());
                                 } else {
                                     // TODO: ???
+                                    throw new RuntimeException("TODO");
                                 }
                             }
                             ucChildren = idChildUpnpObjectMap.get(id);
@@ -209,6 +210,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             if (l == null) {
                 l = new ArrayList<>();
                 idChildUpnpObjectMap.put(parentId, l);
+                idChildUpnpObjectMap.put(nextId, new ArrayList<UpnpContainer>());
             }
             l.add(uc);
         }
@@ -228,6 +230,12 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
         UpnpContainer uc = new UpnpContainer(nextId, didlObject, item);
         idUpnpObjectMap.put(nextId, uc);
+        List<UpnpContainer> l = idChildUpnpObjectMap.get(parentId);
+        if (l == null) {
+            l = new ArrayList<>();
+            idChildUpnpObjectMap.put(parentId, new ArrayList<UpnpContainer>());
+        }
+        l.add(uc);
 
         return uc;
     }
