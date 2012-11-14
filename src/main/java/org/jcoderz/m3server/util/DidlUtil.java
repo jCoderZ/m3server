@@ -41,8 +41,8 @@ public class DidlUtil {
     public static MusicTrack createMusicTrack(AudioFileItem audioFileItem, String url, long nextId, long parentId) throws InvalidValueException {
         String creator = audioFileItem.getArtist();
         Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DLNA_ORG_PN + ";" + DLNA_ORG_OP + ";" + DLNA_ORG_CI + ";" + DLNA_ORG_FLAGS),
-                audioFileItem.getSize(), "0:03:28.000"/*TimeUtil.convertMillis(audioFileItem.getLengthInMilliseconds())*/,
-                24000L/*audioFileItem.getBitrate()*/, url);
+                audioFileItem.getSize(), TimeUtil.convertMillis(audioFileItem.getLengthInMilliseconds()),
+                audioFileItem.getBitrate(), url);
         MusicTrack result = new MusicTrack(
                 "" + nextId, "" + parentId,
                 audioFileItem.getTitle(),
@@ -53,8 +53,8 @@ public class DidlUtil {
         // Missing:
         // nrAudioChannels="2"
         // sampleFrequency="44100"
-        result.setDate("2008-01-01");
-        result.setDescription("blabla");
+        result.setDate("TODO");
+        result.setDescription("TODO");
         result.setOriginalTrackNumber(2);
         // Add cover image result.addResource(res)
         result.setGenres(new String[]{audioFileItem.getGenre()});
