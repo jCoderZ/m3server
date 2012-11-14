@@ -81,8 +81,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 + config.getString(Config.HTTP_HOSTNAME_KEY) + ":"
                 + config.getString(Config.HTTP_PORT_KEY)
                 + config.getString(Config.HTTP_SERVLET_ROOT_CONTEXT_KEY)
-                + config.getString(Config.HTTP_SERVLET_REST_ROOT_CONTEXT_KEY) + "/"
-                + "library/browse";
+                + config.getString(Config.HTTP_SERVLET_DOWNLOAD_ROOT_CONTEXT_KEY);
         // Populate the maps with the root entry
         createDidlContainer(ROOT_ID, ROOT_PARENT_ID, Library.getRoot());
     }

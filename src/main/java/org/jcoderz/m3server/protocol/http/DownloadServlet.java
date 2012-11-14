@@ -39,13 +39,14 @@ public class DownloadServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
-        String requestedFile = request.getPathInfo();
+        // TODO: Temporary hack to make the servlet work
+        String requestedFile = request.getPathInfo().substring("/audio/filesystem".length());
         logger.log(Level.FINE, "pathInfo={0}", requestedFile);
         if (requestedFile == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        File root = Environment.getLibraryHome();
+        File root = Environment.getAudioFolder();
         logger.log(Level.FINE, "Library root: {0}", root);
         File file = new File(root, requestedFile);
         if (!file.exists()) {
