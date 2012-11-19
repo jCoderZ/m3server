@@ -9,7 +9,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.EofException;
 import org.jcoderz.m3server.protocol.http.RangeSet.Range;
 import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3util.intern.util.Environment;
@@ -36,12 +36,12 @@ public class DownloadServlet extends HttpServlet {
     public static final String FILE_EXTENSION_MP3 = ".mp3";
 
     @Override
-    protected void doGet(HttpServletRequest request,
+    protected void doHead(HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO: Temporary hack to make the servlet work
+
         String requestedFile = request.getPathInfo().substring("/audio/filesystem".length());
-        logger.log(Level.FINE, "pathInfo={0}", requestedFile);
+        logger.log(Level.FINE, "HEAD pathInfo={0}", requestedFile);
         if (requestedFile == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -54,6 +54,33 @@ public class DownloadServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+        setMimeType(response, file);
+        long length = file.length();
+        response.setContentLength((int) length);
+        response.setStatus(HttpStatus.OK_200);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+        // TODO: Temporary hack to make the servlet work
+        String requestedFile = request.getPathInfo().substring("/audio/filesystem".length());
+        logger.log(Level.FINE, "GET pathInfo={0}", requestedFile);
+        if (requestedFile == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        File root = Environment.getAudioFolder().getAbsoluteFile();
+        logger.log(Level.FINE, "Library root: {0}", root);
+        File file = new File(root, requestedFile);
+        if (!file.exists()) {
+            logger.log(Level.SEVERE, "File not found: {0}", file);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        // TODO: use a servlet filter and attach those information to the current thread
+        String clientHost = request.getRemoteHost();
         setMimeType(response, file);
         long length = file.length();
         String range = request.getHeader("Range");
@@ -72,7 +99,7 @@ public class DownloadServlet extends HttpServlet {
                     response.setContentLength((int) length);
                     response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                     // full file requested
-                    sendFile(response.getOutputStream(), file);
+                    sendFile(response.getOutputStream(), file, clientHost);
                 } else {
                     logger.log(Level.FINE, "Sending partial file as requested: {0}", re);
                     response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
@@ -83,21 +110,21 @@ public class DownloadServlet extends HttpServlet {
                         MappedByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, re.getFirstPos(), (re.getLastPos() - re.getFirstPos() + 1));
                         logger.log(Level.FINE, "buf: {0}", buf.toString());
                         ByteBufferBackedInputStream bais = new ByteBufferBackedInputStream(buf);
-                        sendFile(response.getOutputStream(), bais);
+                        sendFile(response.getOutputStream(), bais, clientHost);
                     }
                 }
             }
         } else {
             response.setStatus(HttpStatus.OK_200);
             response.setContentLength((int) length);
-            sendFile(response.getOutputStream(), file);
+            sendFile(response.getOutputStream(), file, clientHost);
         }
     }
 
-    public void sendFile(OutputStream os, File f)
+    public void sendFile(OutputStream os, File f, String clientHost)
             throws IOException {
         try (InputStream fis = new FileInputStream(f)) {
-            sendFile(os, fis);
+            sendFile(os, fis, clientHost);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "TODO: sendFile", ex);
         }
@@ -114,19 +141,20 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    public void sendFile(OutputStream os, InputStream is) {
+    public void sendFile(OutputStream os, InputStream is, String clientHost) {
         long count = 0L;
         try {
             byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = is.read(buffer)) != -1) {
                 count += bytesRead;
-                logger.log(Level.FINEST, "buffer={0}", Arrays.toString(buffer));
                 os.write(buffer, 0, bytesRead);
             }
             os.flush();
+        } catch (EofException ex) {
+            logger.log(Level.FINER, "Connection reset by peer: " + clientHost);
         } catch (IOException ex) {
-            logger.log(Level.FINER, "Exception occured: " + ex, ex);
+            logger.log(Level.FINER, "I/O Exception occured: " + ex, ex);
         }
         logger.log(Level.FINER, "Sent {0} bytes", count);
     }
