@@ -46,7 +46,7 @@ public class DownloadServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        File root = Environment.getAudioFolder();
+        File root = Environment.getAudioFolder().getAbsoluteFile();
         logger.log(Level.FINE, "Library root: {0}", root);
         File file = new File(root, requestedFile);
         if (!file.exists()) {
