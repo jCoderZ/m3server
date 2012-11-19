@@ -134,11 +134,9 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                             List<Item> children = folderItem.getChildren();
                             for (Item childItem : children) {
                                 if (FolderItem.class.isAssignableFrom(childItem.getClass())) {
-                                    UpnpContainer uc = createDidlContainer(id, childItem);
-                                    didlContent.addContainer((Container) uc.getDidlObject());
+                                    createDidlContainer(id, childItem);
                                 } else if (FileItem.class.isAssignableFrom(childItem.getClass())) {
-                                    UpnpContainer uc = createDidlItem(id, childItem);
-                                    didlContent.addItem((org.teleal.cling.support.model.item.Item) uc.getDidlObject());
+                                    createDidlItem(id, childItem);
                                 } else {
                                     // TODO: ???
                                     throw new RuntimeException("TODO");
@@ -177,7 +175,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
             resultXml = new DIDLParser().generate(didlContent);
             long count = didlContent.getContainers().size() + didlContent.getItems().size();
-            result = new BrowseResult(resultXml, count, count, UPDATE_ID);
+            result = new BrowseResult(resultXml, count, maxCount, UPDATE_ID);
 
             logger.exiting(UpnpMediaServer.class
                     .getSimpleName(), "browse", "DIDL response xml (" + count + "): " + resultXml);
