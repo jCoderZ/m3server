@@ -177,10 +177,31 @@ mark {background-color: #fcd700; color: #000; font-style: italic; font-weight: b
 
 /* http://limpid.nl/lab/css/fixed/left-sidebar-and-header */
 
+html { height: 100% }
+
+html {
+    overflow:hidden;
+}
+body {
+    background-color: #dddddd;
+    background-image: -webkit-gradient(radial, 50% 0%,100,50% 150%,100, from(#333333), to(#dddddd));
+    background-image: -webkit-radial-gradient(50% 100%, #dddddd, #333333);
+    background-image: -moz-radial-gradient(50% 100%, #dddddd, #333333);
+    background-image: -o-radial-gradient(50% 100%, #dddddd, #333333);
+    background-image: -ms-radial-gradient(50% 100%, #dddddd, #333333);
+    background-image: radial-gradient(50% 100%, #dddddd, #333333);
+    color: #fff;
+    overflow: hidden;
+    height: 100%;
+    -webkit-text-size-adjust: 100%; /* Stops Mobile Safari from auto-adjusting font-sizes */
+}
 
 body {
     margin:0;
     padding:100px 0 0 150px;
+    font-family: 'Titillium Web', sans-serif;
+    color: white;
+    font-size: 18px;
 }
 header {
     position:absolute;
@@ -188,7 +209,6 @@ header {
     left:0;
     width:100%;
     height:80px;
-    background: #ff0000;
     padding: 10px;
 }
 footer {
@@ -197,7 +217,6 @@ footer {
     left:0;
     width:100%;
     height:80px;
-    background: #0000ff;
     padding: 10px;
 }
 aside {
@@ -206,7 +225,6 @@ aside {
     bottom: 100px;
     left:0;
     width:130px;
-    background: #00ff00;
     padding: 10px;
 }
 article {
@@ -214,7 +232,7 @@ article {
     top: 100px;
     bottom: 100px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
 @media screen {
     body>div#header{
@@ -225,6 +243,4 @@ article {
     }
 }
 
-html {
-    overflow:hidden;
-}
+
