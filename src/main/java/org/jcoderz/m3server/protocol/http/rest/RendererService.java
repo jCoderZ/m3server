@@ -1,11 +1,13 @@
 package org.jcoderz.m3server.protocol.http.rest;
 
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -33,16 +35,18 @@ public class RendererService {
     }
 
     @GET
-    @Path("/play")
+    @Path("/play/{renderer}/{path:.*}")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response play(String path) {
+    public Response play(@PathParam("renderer") String renderer, @PathParam("path") String path) {
+        logger.log(Level.INFO, "renderer={0}, path={0}", new Object[]{renderer, path});
         Map<String, Renderer> renderers = RendererRegistry.getRenderers();
-        for (String renderer : renderers.keySet()) {
-            logger.info("renderer=" + renderer);
-            if (renderer.toLowerCase().indexOf("bravia") != -1) {
-                Renderer r = renderers.get(renderer);
-                r.play("/audio/filesystem/01-gold/A/a-ha/Lifelines/15 - Solace.mp3");
+        for (String rendererName : renderers.keySet()) {
+            logger.log(Level.INFO, "r={0}", rendererName);
+            if (rendererName.toLowerCase().equals(renderer.toLowerCase())) {
+                Renderer ren = renderers.get(renderer);
+                logger.log(Level.INFO, "Playing on {0}: {1}", new Object[]{ren, path});
+                ren.play("/" + path);
             }
         }
 

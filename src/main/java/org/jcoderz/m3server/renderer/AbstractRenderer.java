@@ -25,7 +25,7 @@ public abstract class AbstractRenderer implements Renderer {
      * @param type the type of the renderer
      */
     public AbstractRenderer(String name, RendererType type) {
-        this.name = name;
+        this.name = name.trim();
         this.type = type;
     }
 

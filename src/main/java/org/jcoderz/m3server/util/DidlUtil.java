@@ -53,10 +53,11 @@ public class DidlUtil {
         // Missing:
         // nrAudioChannels="2"
         // sampleFrequency="44100"
-        result.setDate("TODO");
-        result.setDescription("TODO");
+        //result.setDate("TODO");
+        //result.setDescription("TODO");
+        // cover image result.addResource(res)
+        // icon ??
         result.setOriginalTrackNumber(2);
-        // Add cover image result.addResource(res)
         result.setGenres(new String[]{audioFileItem.getGenre()});
         result.setRestricted(false);
         return result;

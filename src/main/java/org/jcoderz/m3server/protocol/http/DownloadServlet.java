@@ -54,9 +54,16 @@ public class DownloadServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        setMimeType(response, file);
         long length = file.length();
         response.setContentLength((int) length);
+        setMimeType(response, file);
+        // TODO: set headers on GET reponse also
+        // TODO: assemble DLNA String -> DlnaUtil
+        // TODO: Cache-Control: public
+        // TODO: Connection: keep-alive
+        response.setHeader("transferMode.dlna.org", "Streaming");
+        response.setHeader("contentFeatures.dlna.org", "DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=21500000000000000000000000000000");
+        response.setHeader("Accept-Ranges", "bytes");
         response.setStatus(HttpStatus.OK_200);
     }
 

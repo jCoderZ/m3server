@@ -6,6 +6,7 @@ import org.jcoderz.m3server.protocol.ProtocolAdapter;
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
 import org.jcoderz.m3server.renderer.UpnpRenderer;
+import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.Logging;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.UpnpServiceImpl;
@@ -57,7 +58,7 @@ public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryList
         if (MEDIA_RENDERER.equals(device.getType().getType())) {
             Renderer r = RendererRegistry.findRenderer(device.getDetails().getFriendlyName());
             if (r == null) {
-                r = new UpnpRenderer(upnpService, device);
+                r = new UpnpRenderer(Config.getConfig(), upnpService, device);
                 RendererRegistry.addRenderer(r);
             }
         }
