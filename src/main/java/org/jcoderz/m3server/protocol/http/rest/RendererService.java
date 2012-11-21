@@ -35,7 +35,7 @@ public class RendererService {
     }
 
     @GET
-    @Path("/play/{renderer}/{path:.*}")
+    @Path("/{renderer}/play/{path:.*}")
     @Consumes("application/json")
     @Produces("application/json")
     public Response play(@PathParam("renderer") String renderer, @PathParam("path") String path) {
