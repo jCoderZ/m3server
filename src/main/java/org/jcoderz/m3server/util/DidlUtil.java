@@ -15,22 +15,6 @@ import org.teleal.cling.support.model.item.MusicTrack;
  */
 public class DidlUtil {
 
-    /**
-     * Media format profile: MP3.
-     */
-    public static final String DLNA_ORG_PN = "DLNA.ORG_PN=MP3";
-    /**
-     * Operations Parameter for HTTP: 01 - Support of the range HTTP header.
-     * DLNA.ORG_OP=01 is necessary, if not set the PS3 will show "incompatible
-     * data"
-     */
-    public static final String DLNA_ORG_OP = "DLNA.ORG_OP=01";
-    /**
-     * Conversion Indicator Flag: 0 - no conversion. The CI parameter is not
-     * mandatory.
-     */
-    public static final String DLNA_ORG_CI = "DLNA.ORG_CI=0";
-    public static final String DLNA_ORG_FLAGS = "DLNA.ORG_FLAGS=01500000000000000000000000000000";
     public static final String MIMETYPE_AUDIO_MPEG = "audio/mpeg";
     public static final DIDLObject.Class DIDL_CLASS_OBJECT_CONTAINER = new DIDLObject.Class("object.container");
 
@@ -40,7 +24,7 @@ public class DidlUtil {
 
     public static MusicTrack createMusicTrack(AudioFileItem audioFileItem, String url, long nextId, long parentId) throws InvalidValueException {
         String creator = audioFileItem.getArtist();
-        Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DLNA_ORG_PN + ";" + DLNA_ORG_OP + ";" + DLNA_ORG_CI + ";" + DLNA_ORG_FLAGS),
+        Res res = new Res(new ProtocolInfo("http-get:*:" + MIMETYPE_AUDIO_MPEG + ":" + DlnaUtil.DLNA_ORG_PN + ";" + DlnaUtil.DLNA_ORG_OP + ";" + DlnaUtil.DLNA_ORG_CI + ";" + DlnaUtil.DLNA_ORG_FLAGS),
                 audioFileItem.getSize(), TimeUtil.convertMillis(audioFileItem.getLengthInMilliseconds()),
                 audioFileItem.getBitrate(), url);
         MusicTrack result = new MusicTrack(
