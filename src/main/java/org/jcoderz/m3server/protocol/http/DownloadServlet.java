@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.EofException;
 import org.jcoderz.m3server.protocol.http.RangeSet.Range;
+import org.jcoderz.m3server.util.DlnaUtil;
 import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3util.intern.util.Environment;
 
@@ -54,16 +55,7 @@ public class DownloadServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        long length = file.length();
-        response.setContentLength((int) length);
-        setMimeType(response, file);
-        // TODO: set headers on GET reponse also
-        // TODO: assemble DLNA String -> DlnaUtil
-        // TODO: Cache-Control: public
-        // TODO: Connection: keep-alive
-        response.setHeader("transferMode.dlna.org", "Streaming");
-        response.setHeader("contentFeatures.dlna.org", "DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=21500000000000000000000000000000");
-        response.setHeader("Accept-Ranges", "bytes");
+        addHeaders(response, file);
         response.setStatus(HttpStatus.OK_200);
     }
 
@@ -86,6 +78,7 @@ public class DownloadServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+        addHeaders(response);
         // TODO: use a servlet filter and attach those information to the current thread
         String clientHost = request.getRemoteHost();
         setMimeType(response, file);
@@ -128,7 +121,7 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    public void sendFile(OutputStream os, File f, String clientHost)
+    private void sendFile(OutputStream os, File f, String clientHost)
             throws IOException {
         try (InputStream fis = new FileInputStream(f)) {
             sendFile(os, fis, clientHost);
@@ -137,18 +130,7 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    public void setMimeType(HttpServletResponse response, File f) {
-        String path = f.getAbsolutePath();
-        int dot = path.lastIndexOf('.');
-        if (path.toLowerCase().endsWith(FILE_EXTENSION_MP3)) {
-            response.setContentType(MIMETYPE_AUDIO_MPEG);
-        } else {
-            response.setContentType(MIMETYPE_TEXT_PLAIN);
-            //throw new RuntimeException("TODO: Unknown extension");
-        }
-    }
-
-    public void sendFile(OutputStream os, InputStream is, String clientHost) {
+    private void sendFile(OutputStream os, InputStream is, String clientHost) {
         long count = 0L;
         try {
             byte[] buffer = new byte[8192];
@@ -159,17 +141,52 @@ public class DownloadServlet extends HttpServlet {
             }
             os.flush();
         } catch (EofException ex) {
-            logger.log(Level.FINER, "Connection reset by peer: " + clientHost);
+            logger.log(Level.FINER, "Connection reset by peer: {0}", clientHost);
         } catch (IOException ex) {
-            logger.log(Level.FINER, "I/O Exception occured: " + ex, ex);
+            logger.log(Level.FINER, "I/O Exception occured: {0}", ex);
         }
         logger.log(Level.FINER, "Sent {0} bytes", count);
     }
 
+    private void addHeaders(HttpServletResponse response, File file) {
+        long length = file.length();
+        response.setContentLength((int) length);
+        setMimeType(response, file);
+        addHeaders(response);
+    }
+
+    private void addHeaders(HttpServletResponse response) {
+        // TODO: set headers on GET reponse also
+        // TODO: assemble DLNA String -> DlnaUtil
+        response.setHeader("Connection", "keep-alive");
+        response.setHeader("Cache-Control", "public");
+        response.setHeader("transferMode.dlna.org", "Streaming");
+        response.setHeader("contentFeatures.dlna.org", DlnaUtil.contentFeatures(DlnaUtil.DLNA_FLAGS_LIMOP_BYTES));
+        response.setHeader("Accept-Ranges", "bytes");
+    }
+
+    private void setMimeType(HttpServletResponse response, File f) {
+        String path = f.getAbsolutePath();
+        int dot = path.lastIndexOf('.');
+        if (path.toLowerCase().endsWith(FILE_EXTENSION_MP3)) {
+            response.setContentType(MIMETYPE_AUDIO_MPEG);
+        } else {
+            throw new RuntimeException("TODO: Unknown extension");
+        }
+    }
+
+    /**
+     * This class provides an InputStream interface for a ByteBuffer.
+     */
     public static class ByteBufferBackedInputStream extends InputStream {
 
         private ByteBuffer buf;
 
+        /**
+         * Constructor.
+         *
+         * @param buf the byte buffer
+         */
         public ByteBufferBackedInputStream(ByteBuffer buf) {
             this.buf = buf;
         }

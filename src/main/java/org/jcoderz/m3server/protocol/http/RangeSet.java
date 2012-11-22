@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
+ * A RangeSet represents a set of ranges, requested by a client.
+ *
  * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16
  * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+ *
  * @author mrumpf
  */
 public class RangeSet {
@@ -14,13 +17,19 @@ public class RangeSet {
     private List<Range> ranges = new ArrayList<>();
     private long size;
 
-    public RangeSet(long size, String value) {
+    /**
+     * Constructor-
+     *
+     * @param size
+     * @param rangeset
+     */
+    public RangeSet(long size, String rangeset) {
         this.size = size;
         // skip the "bytes=" prefix
-        int idx = value.indexOf('=');
-        String r = value;
+        int idx = rangeset.indexOf('=');
+        String r = rangeset;
         if (idx != -1) {
-            r = value.substring(idx + 1);
+            r = rangeset.substring(idx + 1);
         }
         StringTokenizer strtok = new StringTokenizer(r, ",");
         while (strtok.hasMoreTokens()) {
@@ -30,19 +39,39 @@ public class RangeSet {
         }
     }
 
+    /**
+     * Returns the number of ranges.
+     *
+     * @return the range count
+     */
     public int getRangeCount() {
         return ranges.size();
     }
 
-    public Range getRange(int idx) {
-        return ranges.get(idx);
+    /**
+     * Returns the range of the given index.
+     *
+     * @param index the index of the range
+     * @return the range identified by the index
+     */
+    public Range getRange(int index) {
+        return ranges.get(index);
     }
 
+    /**
+     * Represents a range START-END.
+     */
     public static class Range {
 
         private long first;
         private long last;
 
+        /**
+         * Constructor.
+         *
+         * @param size the total size
+         * @param value the string that represents the range
+         */
         public Range(long size, String value) {
             StringTokenizer strtok = new StringTokenizer(value, "-");
             if (strtok.countTokens() == 2) {
@@ -67,10 +96,20 @@ public class RangeSet {
             }
         }
 
+        /**
+         * Returns the first position.
+         *
+         * @return the first position
+         */
         public long getFirstPos() {
             return first;
         }
 
+        /**
+         * Returns the last position.
+         *
+         * @return the last position
+         */
         public long getLastPos() {
             return last;
         }

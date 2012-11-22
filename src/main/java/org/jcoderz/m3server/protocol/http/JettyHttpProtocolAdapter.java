@@ -42,9 +42,13 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
      */
     private static final String PROPERTY_RESPONSE_FILTER_CLASS_KEY = "com.sun.jersey.spi.container.ContainerResponseFilters";
     /**
+     * The init parameter name for request filters.
+     */
+    private static final String PROPERTY_REQUEST_FILTER_CLASS_KEY = "com.sun.jersey.spi.container.ContainerRequestFilters";
+    /**
      * The standard Jersey logging filter.
      */
-    private static final String PROPERTY_RESPONSE_FILTER_CLASS = "com.sun.jersey.api.container.filter.LoggingFilter";
+    private static final String PROPERTY_LOGGING_FILTER_CLASS = "com.sun.jersey.api.container.filter.LoggingFilter";
     /**
      * Enable JSON POJO mapping.
      */
@@ -57,20 +61,6 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
         server = new Server(port);
         logger.log(Level.CONFIG, "Jetty HTTP server port: {0}", port);
         HandlerList hl = new HandlerList();
-
-        // library
-        /*
-         ContextHandler libraryContext = new ContextHandler();
-         final String libraryContextPath = Config.getConfig().getString(Config.HTTP_STATIC_CONTEXT_ROOT_KEY);
-         logger.log(Level.CONFIG, "static context path: {0}", libraryContextPath);
-         libraryContext.setContextPath(libraryContextPath);
-         final String libraryResourcePackage = Config.getConfig().getString(Config.HTTP_STATIC_PACKAGE_DIR_KEY);
-         logger.log(Level.CONFIG, "static resource package: {0}", libraryResourcePackage);
-         libraryContext.setResourceBase(libraryResourcePackage);
-         libraryContext.setClassLoader(Thread.currentThread().getContextClassLoader());
-         libraryContext.setHandler(new LibraryJettyHttpHandler());
-         hl.addHandler(libraryContext);
-         * */
 
         // webapp
         final String webappResourcePackage = Config.getConfig().getString(Config.HTTP_WEBAPP_PACKAGE_DIR_KEY);
@@ -88,9 +78,10 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
         logger.log(Level.CONFIG, "rest resource package: {0}", restResourcePackage);
         restServlet.setInitParameter(PROPERTY_PACKAGES, restResourcePackage);
         restServlet.setInitParameter(PROPERTY_RESOURCE_CONFIG_CLASS_KEY, PROPERTY_RESOURCE_CONFIG_CLASS);
-        // TODO: This does not work for binary data
-        //servletHolder.setInitParameter(PROPERTY_RESPONSE_FILTER_CLASS_KEY, PROPERTY_RESPONSE_FILTER_CLASS);
         restServlet.setInitParameter(PROPERTY_JSON_POJO_MAPPING_FEATURE, "" + true);
+        // add Jersey logging filter
+        restServlet.setInitParameter(PROPERTY_RESPONSE_FILTER_CLASS_KEY, PROPERTY_LOGGING_FILTER_CLASS);
+        restServlet.setInitParameter(PROPERTY_REQUEST_FILTER_CLASS_KEY, PROPERTY_LOGGING_FILTER_CLASS);
         logger.log(Level.CONFIG, "rest servlet init parameters: {0}", restServlet.getInitParameters());
         final String restServletContextPath = Config.getConfig().getString(Config.HTTP_SERVLET_REST_ROOT_CONTEXT_KEY) + "/*";
         logger.log(Level.CONFIG, "rest servlet context path: {0}", new Object[]{restServletContextPath});

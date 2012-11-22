@@ -25,31 +25,36 @@ public class RendererService {
 
     private static final Logger logger = Logging.getLogger(RendererService.class);
 
+    /**
+     * Lists all renderers.
+     *
+     * @return a list of renderers
+     */
     @GET
     @Path("/list")
     @Produces("application/json")
-    public Response renderers() {
+    public Response list() {
         Map<String, Renderer> r = RendererRegistry.getRenderers();
-
         return Response.ok(r).build();
     }
 
+    /**
+     * Plays the file specified by the path.
+     *
+     * @param renderer the renderer on which to play the file
+     * @param path the path that identifies a file
+     */
     @GET
-    @Path("/{renderer}/play/{path:.*}")
+    @Path("/{renderer}/play{path:.*}")
     @Consumes("application/json")
-    @Produces("application/json")
-    public Response play(@PathParam("renderer") String renderer, @PathParam("path") String path) {
-        logger.log(Level.INFO, "renderer={0}, path={0}", new Object[]{renderer, path});
+    public void play(@PathParam("renderer") String renderer, @PathParam("path") String path) {
         Map<String, Renderer> renderers = RendererRegistry.getRenderers();
         for (String rendererName : renderers.keySet()) {
-            logger.log(Level.INFO, "r={0}", rendererName);
             if (rendererName.toLowerCase().equals(renderer.toLowerCase())) {
                 Renderer ren = renderers.get(renderer);
                 logger.log(Level.INFO, "Playing on {0}: {1}", new Object[]{ren, path});
-                ren.play("/" + path);
+                ren.play(path);
             }
         }
-
-        return Response.ok().build();
     }
 }
