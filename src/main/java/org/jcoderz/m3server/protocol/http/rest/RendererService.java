@@ -1,11 +1,11 @@
 package org.jcoderz.m3server.protocol.http.rest;
 
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -48,13 +48,49 @@ public class RendererService {
     @Path("/{renderer}/play{path:.*}")
     @Consumes("application/json")
     public void play(@PathParam("renderer") String renderer, @PathParam("path") String path) {
+        Renderer r = findRenderer(renderer);
+        if (r != null) {
+            r.play(path);
+        }
+    }
+
+    /**
+     * Stops playback on the renderer.
+     *
+     * @param renderer the renderer on which to stop playback
+     */
+    @GET
+    @Path("/{renderer}/stop")
+    @Consumes("application/json")
+    public void stop(@PathParam("renderer") String renderer) {
+        Renderer r = findRenderer(renderer);
+        if (r != null) {
+            r.stop();
+        }
+    }
+
+    /**
+     * Pauses playback on the renderer.
+     *
+     * @param renderer the renderer on which to pause playback
+     */
+    @GET
+    @Path("/{renderer}/pause")
+    @Consumes("application/json")
+    public void pause(@PathParam("renderer") String renderer) {
+        Renderer r = findRenderer(renderer);
+        if (r != null) {
+            r.pause();
+        }
+    }
+
+    private Renderer findRenderer(String renderer) {
         Map<String, Renderer> renderers = RendererRegistry.getRenderers();
         for (String rendererName : renderers.keySet()) {
             if (rendererName.toLowerCase().equals(renderer.toLowerCase())) {
-                Renderer ren = renderers.get(renderer);
-                logger.log(Level.INFO, "Playing on {0}: {1}", new Object[]{ren, path});
-                ren.play(path);
+                return renderers.get(renderer);
             }
         }
+        return null;
     }
 }

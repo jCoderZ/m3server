@@ -30,6 +30,11 @@ public interface Renderer {
     void play(String url);
 
     /**
+     * Get info.
+     */
+    String info();
+
+    /**
      * Stops playback of the renderer.
      */
     void stop();
