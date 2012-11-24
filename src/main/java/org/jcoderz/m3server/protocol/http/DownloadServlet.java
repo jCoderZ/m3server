@@ -160,8 +160,8 @@ public class DownloadServlet extends HttpServlet {
         // TODO: assemble DLNA String -> DlnaUtil
         response.setHeader("Connection", "keep-alive");
         response.setHeader("Cache-Control", "public");
-        response.setHeader("transferMode.dlna.org", "Streaming");
-        response.setHeader("contentFeatures.dlna.org", DlnaUtil.contentFeatures(DlnaUtil.DLNA_FLAGS_LIMOP_BYTES));
+        response.setHeader(DlnaUtil.DLNA_TRANSFER_MODE_KEY, DlnaUtil.DLNA_TRANSFER_MODE_STREAMING);
+        response.setHeader(DlnaUtil.DLNA_CONTENT_FEATURES_KEY, DlnaUtil.contentFeatures(DlnaUtil.DLNA_FLAGS_LIMOP_BYTES));
         response.setHeader("Accept-Ranges", "bytes");
     }
 
