@@ -11,6 +11,9 @@ public class DlnaUtil {
 
     public static final String DLNA_DEVICE_VERSION = "M-DMS-1.50";
     public static final String DLNA_DEVICE_CLASS = "DMS-1.50";
+    public static final String DLNA_CONTENT_FEATURES_KEY = "contentFeatures.dlna.org";
+    public static final String DLNA_TRANSFER_MODE_KEY = "transferMode.dlna.org";
+    public static final String DLNA_TRANSFER_MODE_STREAMING = "Streaming";
     /**
      * Operations Parameter for HTTP. <ul><li>01 - Support of the range HTTP
      * header</li></ul> NOTE: DLNA.ORG_OP=01 is necessary, if not set the PS3

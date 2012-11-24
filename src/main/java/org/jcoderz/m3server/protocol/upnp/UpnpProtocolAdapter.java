@@ -2,6 +2,7 @@ package org.jcoderz.m3server.protocol.upnp;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jcoderz.m3server.protocol.ProtocolAdapter;
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
@@ -14,6 +15,7 @@ import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
+import org.teleal.cling.support.avtransport.callback.GetDeviceCapabilities;
 
 /**
  * The UPnP protocol adapter hides all UPnP details behind a common interface.
@@ -56,6 +58,9 @@ public class UpnpProtocolAdapter extends ProtocolAdapter implements RegistryList
         logger.log(Level.INFO, "Remote device available: {0} ({1})", new Object[]{device.getDetails().getFriendlyName(), device.getType().getType()});
         // we deal with MediaRenderer devices only
         if (MEDIA_RENDERER.equals(device.getType().getType())) {
+            logger.log(Level.FINER, "Remote device details: {0} ", ToStringBuilder.reflectionToString(device));
+            
+            // TODO: Find out the device capabilities and add those as attributes to the renderer
             Renderer r = RendererRegistry.findRenderer(device.getDetails().getFriendlyName());
             if (r == null) {
                 r = new UpnpRenderer(Config.getConfig(), upnpService, device);
