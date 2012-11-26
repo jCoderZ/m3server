@@ -2,9 +2,9 @@ package org.jcoderz.m3server.protocol.http.rest;
 
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.ws.rs.Consumes;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -44,9 +44,8 @@ public class RendererService {
      * @param renderer the renderer on which to play the file
      * @param path the path that identifies a file
      */
-    @GET
-    @Path("/{renderer}/play{path:.*}")
-    @Consumes("application/json")
+    @POST
+    @Path("/{renderer}/playpath{path:.*}")
     public void play(@PathParam("renderer") String renderer, @PathParam("path") String path) {
         Renderer r = findRenderer(renderer);
         if (r != null) {
@@ -60,9 +59,8 @@ public class RendererService {
      * @param renderer the renderer on which to play the file
      * @param path the path that identifies a file
      */
-    @GET
+    @POST
     @Path("/{renderer}/play")
-    @Consumes("application/json")
     public void play(@PathParam("renderer") String renderer) {
         Renderer r = findRenderer(renderer);
         if (r != null) {
@@ -78,7 +76,6 @@ public class RendererService {
      */
     @GET
     @Path("/{renderer}/position")
-    @Consumes("application/json")
     @Produces("application/json")
     public Position position(@PathParam("renderer") String renderer) {
         Position position = null;
@@ -90,13 +87,44 @@ public class RendererService {
     }
 
     /**
+     * Gets the volume of the renderer.
+     *
+     * @param renderer the renderer from which to get the volume
+     * @return the volume level
+     */
+    @GET
+    @Path("/{renderer}/volume")
+    @Produces("application/json")
+    public long volume(@PathParam("renderer") String renderer) {
+        long level = 0L;
+        Renderer r = findRenderer(renderer);
+        if (r != null) {
+            level = r.volume();
+        }
+        return level;
+    }
+
+    /**
+     * Sets the volume of the renderer.
+     *
+     * @param renderer the renderer on which to change the volume
+     */
+    @POST
+    @Path("/{renderer}/volume/{level}")
+    public void volume(@PathParam("renderer") String renderer, @PathParam("level") long level) {
+        Renderer r = findRenderer(renderer);
+        if (r != null) {
+            r.volume(level);
+        }
+    }
+
+    /**
      * Stops playback on the renderer.
      *
      * @param renderer the renderer on which to stop playback
      */
-    @GET
+    @POST
     @Path("/{renderer}/stop")
-    @Consumes("application/json")
     public void stop(@PathParam("renderer") String renderer) {
         Renderer r = findRenderer(renderer);
         if (r != null) {
@@ -109,9 +137,8 @@ public class RendererService {
      *
      * @param renderer the renderer on which to pause playback
      */
-    @GET
+    @POST
     @Path("/{renderer}/pause")
-    @Consumes("application/json")
     public void pause(@PathParam("renderer") String renderer) {
         Renderer r = findRenderer(renderer);
         if (r != null) {

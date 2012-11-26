@@ -28,7 +28,6 @@ import org.teleal.cling.model.state.StateVariableValue;
 import org.teleal.cling.model.types.InvalidValueException;
 import org.teleal.cling.model.types.UDAServiceId;
 import org.teleal.cling.model.types.UnsignedIntegerFourBytes;
-import org.teleal.cling.support.avtransport.callback.GetPositionInfo;
 import org.teleal.cling.support.avtransport.callback.Pause;
 import org.teleal.cling.support.avtransport.callback.Play;
 import org.teleal.cling.support.avtransport.callback.SetAVTransportURI;
@@ -39,7 +38,7 @@ import org.teleal.cling.support.avtransport.lastchange.AVTransportVariable.Trans
 import org.teleal.cling.support.contentdirectory.DIDLParser;
 import org.teleal.cling.support.lastchange.LastChange;
 import org.teleal.cling.support.model.DIDLContent;
-import org.teleal.cling.support.model.PositionInfo;
+import org.teleal.cling.support.renderingcontrol.callback.SetVolume;
 
 /**
  * This class represents UPnP/DLNA rendering devices.
@@ -115,6 +114,29 @@ public class UpnpRenderer extends AbstractRenderer {
     }
 
     @Override
+    public void volume(long level) {
+        Service service = device.findService(new UDAServiceId("RenderingControl"));
+        logger.log(Level.INFO, "Setting volume");
+
+        ActionCallback stopAction =
+                new SetVolume(service, level) {
+            @Override
+            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
+                // Something was wrong
+                System.err.println("### " + defaultMsg);
+            }
+        };
+        upnpService.getControlPoint().execute(stopAction);
+    }
+
+    @Override
+    public long volume() {
+        Service service = device.findService(new UDAServiceId("RenderingControl"));
+        logger.log(Level.INFO, "Getting volume");
+        return upnpGetVolume(service);
+    }
+
+    @Override
     public void pause() {
         Service service = device.findService(new UDAServiceId("AVTransport"));
         logger.log(Level.INFO, "Pausing");
@@ -186,6 +208,26 @@ public class UpnpRenderer extends AbstractRenderer {
             position.setAbsTime((String) args.get("AbsTime").getValue());
         }
         return position;
+    }
+
+    private long upnpGetVolume(Service service) throws InvalidValueException {
+        long level = 0L;
+        Action getVolumeAction = service.getAction("GetVolume");
+        if (getVolumeAction != null) {
+        ActionInvocation getVolumeInvocation = new ActionInvocation(getVolumeAction);
+        getVolumeInvocation.setInput("InstanceID", new UnsignedIntegerFourBytes(0));
+        getVolumeInvocation.setInput("Channel", "Master");
+        new ActionCallback.Default(getVolumeInvocation, upnpService.getControlPoint()).run();
+        Map<String, ActionArgumentValue> args = getVolumeInvocation.getOutputMap();
+        System.err.println("### " + args);
+        if (args != null) {
+            level = Long.valueOf((String) args.get("CurrentVolume").getValue());
+        }
+        }
+        else {
+            logger.warning("Method RenderingControl.GetVolume not supported by this renderer");
+        }
+        return level;
     }
 
     private void subscribeToAvTransportLastChangeEvent() {

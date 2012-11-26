@@ -30,17 +30,21 @@ public interface Renderer {
     void play(String url);
 
     /**
-     * Plays any stored item.
+     * Plays any stored URL.
      */
     void play();
 
     /**
-     * Get info.
+     * Returns information on the renderer.
+     *
+     * @return information on the renderer
      */
     String info();
 
     /**
-     * Get the position information.
+     * Gets position information.
+     * 
+     * @return position information
      */
     Position position();
 
@@ -53,4 +57,18 @@ public interface Renderer {
      * Pauses playback of the renderer.
      */
     void pause();
+
+    /**
+     * Returns the volume level of the renderer.
+     *
+     * @param level the volume level of the renderer
+     */
+    void volume(long level);
+
+    /**
+     * Returns the volume level of the renderer.
+     * 
+     * @return the volume level of the renderer
+     */
+    long volume();
 }
