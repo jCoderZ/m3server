@@ -72,19 +72,18 @@ public class UpnpRenderer extends AbstractRenderer {
     @Override
     public void play(String url) {
         Service service = device.findService(new UDAServiceId("AVTransport"));
-        logger.log(Level.INFO, "Playing: " + url);
+        logger.log(Level.INFO, "Playing: {0}", url);
 
         upnpSetAvTransportUri(service, url);
+        upnpPlay(service);
+    }
 
-        ActionCallback playAction =
-                new Play(service) {
-            @Override
-            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-                // Something was wrong
-                System.err.println("### " + defaultMsg);
-            }
-        };
-        upnpService.getControlPoint().execute(playAction);
+    @Override
+    public void play() {
+        Service service = device.findService(new UDAServiceId("AVTransport"));
+        logger.log(Level.INFO, "Playing");
+
+        upnpPlay(service);
     }
 
     public void getPositioninfo() {
@@ -146,7 +145,7 @@ public class UpnpRenderer extends AbstractRenderer {
             }
 
             String didlContentStr = new DIDLParser().generate(didlContent);
-            logger.info("didlContentStr=" + didlContentStr);
+            logger.log(Level.INFO, "didlContentStr={0}", didlContentStr);
             ActionCallback setAVTransportURIAction =
                     new SetAVTransportURI(service, url, didlContentStr) {
                 @Override
@@ -160,7 +159,16 @@ public class UpnpRenderer extends AbstractRenderer {
         }
     }
 
-    private void upnpPlay(Service service, String url) throws InvalidValueException {
+    private void upnpPlay(Service service) {
+        ActionCallback playAction =
+                new Play(service) {
+            @Override
+            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
+                // Something was wrong
+                System.err.println("### " + defaultMsg);
+            }
+        };
+        upnpService.getControlPoint().execute(playAction);
     }
 
     private void upnpGetPositionInfo(Service service) throws InvalidValueException {
@@ -270,4 +278,5 @@ public class UpnpRenderer extends AbstractRenderer {
 
         upnpService.getControlPoint().execute(callback);
     }
+
 }

@@ -54,6 +54,22 @@ public class RendererService {
     }
 
     /**
+     * Plays any stored path.
+     *
+     * @param renderer the renderer on which to play the file
+     * @param path the path that identifies a file
+     */
+    @GET
+    @Path("/{renderer}/play")
+    @Consumes("application/json")
+    public void play(@PathParam("renderer") String renderer) {
+        Renderer r = findRenderer(renderer);
+        if (r != null) {
+            r.play();
+        }
+    }
+
+    /**
      * Stops playback on the renderer.
      *
      * @param renderer the renderer on which to stop playback

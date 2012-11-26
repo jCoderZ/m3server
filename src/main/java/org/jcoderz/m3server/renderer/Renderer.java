@@ -30,6 +30,11 @@ public interface Renderer {
     void play(String url);
 
     /**
+     * Plays any stored item.
+     */
+    void play();
+
+    /**
      * Get info.
      */
     String info();
