@@ -173,27 +173,6 @@ public class UpnpRenderer extends AbstractRenderer {
 
     private Position upnpGetPositionInfo(Service service) throws InvalidValueException {
         final Position position = new Position();
-
-        /*
-         ActionCallback positionInfoAction =
-         new GetPositionInfo(service) {
-         @Override
-         public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-         // Something was wrong
-         System.err.println("### " + defaultMsg);
-         }
-
-         @Override
-         public void received(ActionInvocation invocation, PositionInfo positionInfo) {
-         position.setDuration(positionInfo.getTrackDuration());
-         position.setUri(positionInfo.getTrackURI());
-         position.setRelTime(positionInfo.getRelTime());
-         position.setAbsTime(positionInfo.getAbsTime());
-         System.err.println("### " + ToStringBuilder.reflectionToString(positionInfo, ToStringStyle.SIMPLE_STYLE));
-         }
-         };
-         upnpService.getControlPoint().execute(positionInfoAction);
-         */
         Action getPositionInfoAction = service.getAction("GetPositionInfo");
         ActionInvocation getPositionInfoInvocation = new ActionInvocation(getPositionInfoAction);
         getPositionInfoInvocation.setInput("InstanceID", new UnsignedIntegerFourBytes(0));
@@ -206,10 +185,6 @@ public class UpnpRenderer extends AbstractRenderer {
             position.setRelTime((String) args.get("RelTime").getValue());
             position.setAbsTime((String) args.get("AbsTime").getValue());
         }
-        //((UnsignedIntegerFourBytes) args.get("Track").getValue()).getValue(),
-        //(String) args.get("TrackMetaData").getValue(),
-        //(Integer) args.get("RelCount").getValue(),
-        //(Integer) args.get("AbsCount").getValue()
         return position;
     }
 

@@ -15,7 +15,6 @@ import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.registry.Registry;
 import org.teleal.cling.registry.RegistryListener;
-import org.teleal.cling.support.avtransport.callback.GetDeviceCapabilities;
 
 /**
  * The UPnP protocol adapter hides all UPnP details behind a common interface.
