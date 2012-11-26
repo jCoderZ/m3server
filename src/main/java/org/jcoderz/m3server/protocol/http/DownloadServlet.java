@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.EofException;
+import org.jcoderz.m3server.library.Item;
+import org.jcoderz.m3server.library.Library;
+import org.jcoderz.m3server.library.LibraryException;
 import org.jcoderz.m3server.protocol.http.RangeSet.Range;
 import org.jcoderz.m3server.util.DlnaUtil;
 import org.jcoderz.m3server.util.Logging;
@@ -64,6 +67,14 @@ public class DownloadServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
         // TODO: Temporary hack to make the servlet work
+        String pathInfo = request.getPathInfo();
+        try {
+            Item i = Library.browse(pathInfo);
+            logger.fine("item " + i);
+        } catch (LibraryException ex) {
+            logger.log(Level.SEVERE, null, ex);
+        }
+        
         String requestedFile = request.getPathInfo().substring("/audio/filesystem".length());
         logger.log(Level.FINE, "GET pathInfo={0}", requestedFile);
         if (requestedFile == null) {

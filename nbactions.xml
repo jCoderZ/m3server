@@ -64,7 +64,7 @@
             <goals>
                 <goal>test-compile</goal>
                 <goal>surefire:test</goal>
-                <goal>-DM3_LIBRARY_HOME=/home/micha/workspaces/jcoderz/m3library</goal>
+                <goal>-DM3_LIBRARY_HOME=/home/micha/workspaces/jcoderz/m3server/src/test/library</goal>
             </goals>
             <properties>
                 <test>${packageClassName}</test>
@@ -75,7 +75,7 @@
             <goals>
                 <goal>test-compile</goal>
                 <goal>surefire:test</goal>
-                <goal>-DM3_LIBRARY_HOME=/home/micha/workspaces/jcoderz/m3library</goal>
+                <goal>-DM3_LIBRARY_HOME=/home/micha/workspaces/jcoderz/m3server/src/test/library</goal>
             </goals>
             <properties>
                 <test>${packageClassName}</test>
