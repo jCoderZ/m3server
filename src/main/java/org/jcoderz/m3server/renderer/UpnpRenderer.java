@@ -16,15 +16,18 @@ import org.jcoderz.m3server.util.UrlUtil;
 import org.teleal.cling.UpnpService;
 import org.teleal.cling.controlpoint.ActionCallback;
 import org.teleal.cling.controlpoint.SubscriptionCallback;
+import org.teleal.cling.model.action.ActionArgumentValue;
 import org.teleal.cling.model.action.ActionInvocation;
 import org.teleal.cling.model.gena.CancelReason;
 import org.teleal.cling.model.gena.GENASubscription;
 import org.teleal.cling.model.message.UpnpResponse;
+import org.teleal.cling.model.meta.Action;
 import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.Service;
 import org.teleal.cling.model.state.StateVariableValue;
 import org.teleal.cling.model.types.InvalidValueException;
 import org.teleal.cling.model.types.UDAServiceId;
+import org.teleal.cling.model.types.UnsignedIntegerFourBytes;
 import org.teleal.cling.support.avtransport.callback.GetPositionInfo;
 import org.teleal.cling.support.avtransport.callback.Pause;
 import org.teleal.cling.support.avtransport.callback.Play;
@@ -32,6 +35,7 @@ import org.teleal.cling.support.avtransport.callback.SetAVTransportURI;
 import org.teleal.cling.support.avtransport.callback.Stop;
 import org.teleal.cling.support.avtransport.lastchange.AVTransportLastChangeParser;
 import org.teleal.cling.support.avtransport.lastchange.AVTransportVariable;
+import org.teleal.cling.support.avtransport.lastchange.AVTransportVariable.TransportState;
 import org.teleal.cling.support.contentdirectory.DIDLParser;
 import org.teleal.cling.support.lastchange.LastChange;
 import org.teleal.cling.support.model.DIDLContent;
@@ -86,11 +90,12 @@ public class UpnpRenderer extends AbstractRenderer {
         upnpPlay(service);
     }
 
-    public void getPositioninfo() {
+    @Override
+    public Position position() {
         Service service = device.findService(new UDAServiceId("AVTransport"));
         logger.log(Level.INFO, "Getting Position Info");
 
-        upnpGetPositionInfo(service);
+        return upnpGetPositionInfo(service);
     }
 
     @Override
@@ -123,11 +128,6 @@ public class UpnpRenderer extends AbstractRenderer {
             }
         };
         upnpService.getControlPoint().execute(pauseAction);
-    }
-
-    @Override
-    public String info() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void upnpSetAvTransportUri(Service service, String path) throws InvalidValueException {
@@ -171,21 +171,46 @@ public class UpnpRenderer extends AbstractRenderer {
         upnpService.getControlPoint().execute(playAction);
     }
 
-    private void upnpGetPositionInfo(Service service) throws InvalidValueException {
-        ActionCallback positionInfoAction =
-                new GetPositionInfo(service) {
-            @Override
-            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-                // Something was wrong
-                System.err.println("### " + defaultMsg);
-            }
+    private Position upnpGetPositionInfo(Service service) throws InvalidValueException {
+        final Position position = new Position();
 
-            @Override
-            public void received(ActionInvocation invocation, PositionInfo positionInfo) {
-                System.err.println("### " + ToStringBuilder.reflectionToString(positionInfo, ToStringStyle.SIMPLE_STYLE));
-            }
-        };
-        upnpService.getControlPoint().execute(positionInfoAction);
+        /*
+         ActionCallback positionInfoAction =
+         new GetPositionInfo(service) {
+         @Override
+         public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
+         // Something was wrong
+         System.err.println("### " + defaultMsg);
+         }
+
+         @Override
+         public void received(ActionInvocation invocation, PositionInfo positionInfo) {
+         position.setDuration(positionInfo.getTrackDuration());
+         position.setUri(positionInfo.getTrackURI());
+         position.setRelTime(positionInfo.getRelTime());
+         position.setAbsTime(positionInfo.getAbsTime());
+         System.err.println("### " + ToStringBuilder.reflectionToString(positionInfo, ToStringStyle.SIMPLE_STYLE));
+         }
+         };
+         upnpService.getControlPoint().execute(positionInfoAction);
+         */
+        Action getPositionInfoAction = service.getAction("GetPositionInfo");
+        ActionInvocation getPositionInfoInvocation = new ActionInvocation(getPositionInfoAction);
+        getPositionInfoInvocation.setInput("InstanceID", new UnsignedIntegerFourBytes(0));
+        new ActionCallback.Default(getPositionInfoInvocation, upnpService.getControlPoint()).run();
+        Map<String, ActionArgumentValue> args = getPositionInfoInvocation.getOutputMap();
+        System.err.println("### " + args);
+        if (args != null) {
+            position.setDuration((String) args.get("TrackDuration").getValue());
+            position.setUri((String) args.get("TrackURI").getValue());
+            position.setRelTime((String) args.get("RelTime").getValue());
+            position.setAbsTime((String) args.get("AbsTime").getValue());
+        }
+        //((UnsignedIntegerFourBytes) args.get("Track").getValue()).getValue(),
+        //(String) args.get("TrackMetaData").getValue(),
+        //(Integer) args.get("RelCount").getValue(),
+        //(Integer) args.get("AbsCount").getValue()
+        return position;
     }
 
     private void subscribeToAvTransportLastChangeEvent() {
@@ -214,7 +239,7 @@ public class UpnpRenderer extends AbstractRenderer {
 
             @Override
             public void eventReceived(GENASubscription sub) {
-                logger.log(Level.FINE, "Subscription events received: {0} (seqId: {1})", new Object[] {sub.getCurrentValues().keySet(), sub.getCurrentSequence().getValue()});
+                logger.log(Level.FINE, "Subscription events received: {0} (seqId: {1})", new Object[]{sub.getCurrentValues().keySet(), sub.getCurrentSequence().getValue()});
 
                 Map<String, StateVariableValue> values = sub.getCurrentValues();
                 StateVariableValue lastChange = values.get("LastChange");
@@ -225,43 +250,49 @@ public class UpnpRenderer extends AbstractRenderer {
                     AVTransportLastChangeParser lcParser = new AVTransportLastChangeParser();
                     try {
                         LastChange lc = new LastChange(lcParser, lcStr);
-                        
+
+
+                        TransportState ts = lc.getEventedValue(0, AVTransportVariable.TransportState.class);
+                        if (ts.getValue() == org.teleal.cling.support.model.TransportState.PLAYING) {
+                            // TODO
+                        }
+
                         /*
-                        <Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/">   
-                                <InstanceID val="0">     
-                                        <TransportState val="PLAYING"/>     
-                                        <TransportStatus val="OK"/>     
-                                        <CurrentPlayMode val="NORMAL"/>     
-                                        <TransportPlaySpeed val="1"/>     
-                                        <NumberOfTracks val="1"/>     
-                                        <NextAVTransportURI val=""/>     
-                                        <NextAVTransportURIMetaData val=""/>   
-                                        <CurrentTrack val="1"/>     
-                                        <CurrentTrackDuration val="0:03:27.733"/>     
-                                        <CurrentMediaDuration val="0:03:27.733"/>     
-                                        <CurrentTrackMetaData val="##########################################"/>     
-                                            <DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">
-                                                    <item id="100" parentID="99" restricted="false">
-                                                            <dc:title>Highway to Hell</dc:title>
-                                                            <dc:creator>AC/DC</dc:creator>
-                                                            <upnp:class>object.item.audioItem.musicTrack</upnp:class>
-                                                            <upnp:album>Highway to Hell</upnp:album>
-                                                            <upnp:artist role="">AC/DC</upnp:artist>
-                                                            <upnp:originalTrackNumber>2</upnp:originalTrackNumber>
-                                                            <upnp:genre>(79)Hard Rock</upnp:genre>
-                                                            <res bitrate="24576" duration="3:28" protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000" size="5044510">http://192.168.0.17:8080/m3server/download/audio/filesystem/01-gold/A/AC-DC/Highway%20to%20Hell/01%20-%20Highway%20to%20Hell.mp3</res>
-                                                    </item>
-                                            </DIDL-Lite>"/>
-                                        <PlaybackStorageMedium val="NETWORK"/>     
-                                        <PossiblePlaybackStorageMedia val="NETWORK"/>     
-                                        <RecordStorageMedium val="NOT_IMPLEMENTED"/>     
-                                        <PossibleRecordStorageMedia val="NOT_IMPLEMENTED"/>     
-                                        <RecordMediumWriteStatus val="NOT_IMPLEMENTED"/>     
-                                        <CurrentRecordQualityMode val="NOT_IMPLEMENTED"/>     
-                                        <PossibleRecordQualityModes val="NOT_IMPLEMENTED"/>     
-                                </InstanceID>
-                        </Event>
-                        */
+                         <Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/">   
+                         <InstanceID val="0">     
+                         <TransportState val="PLAYING"/>     
+                         <TransportStatus val="OK"/>     
+                         <CurrentPlayMode val="NORMAL"/>     
+                         <TransportPlaySpeed val="1"/>     
+                         <NumberOfTracks val="1"/>     
+                         <NextAVTransportURI val=""/>     
+                         <NextAVTransportURIMetaData val=""/>   
+                         <CurrentTrack val="1"/>     
+                         <CurrentTrackDuration val="0:03:27.733"/>     
+                         <CurrentMediaDuration val="0:03:27.733"/>     
+                         <CurrentTrackMetaData val="##########################################"/>     
+                         <DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">
+                         <item id="100" parentID="99" restricted="false">
+                         <dc:title>Highway to Hell</dc:title>
+                         <dc:creator>AC/DC</dc:creator>
+                         <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+                         <upnp:album>Highway to Hell</upnp:album>
+                         <upnp:artist role="">AC/DC</upnp:artist>
+                         <upnp:originalTrackNumber>2</upnp:originalTrackNumber>
+                         <upnp:genre>(79)Hard Rock</upnp:genre>
+                         <res bitrate="24576" duration="3:28" protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000" size="5044510">http://192.168.0.17:8080/m3server/download/audio/filesystem/01-gold/A/AC-DC/Highway%20to%20Hell/01%20-%20Highway%20to%20Hell.mp3</res>
+                         </item>
+                         </DIDL-Lite>"/>
+                         <PlaybackStorageMedium val="NETWORK"/>     
+                         <PossiblePlaybackStorageMedia val="NETWORK"/>     
+                         <RecordStorageMedium val="NOT_IMPLEMENTED"/>     
+                         <PossibleRecordStorageMedia val="NOT_IMPLEMENTED"/>     
+                         <RecordMediumWriteStatus val="NOT_IMPLEMENTED"/>     
+                         <CurrentRecordQualityMode val="NOT_IMPLEMENTED"/>     
+                         <PossibleRecordQualityModes val="NOT_IMPLEMENTED"/>     
+                         </InstanceID>
+                         </Event>
+                         */
                         logger.log(Level.FINE, "LastChange parsed {0}", ToStringBuilder.reflectionToString(lc.getEventedValue(0, AVTransportVariable.CurrentMediaDuration.class), ToStringStyle.SIMPLE_STYLE));
                     } catch (Exception ex) {
                         Logger.getLogger(UpnpRenderer.class.getName()).log(Level.SEVERE, null, ex);
@@ -279,4 +310,8 @@ public class UpnpRenderer extends AbstractRenderer {
         upnpService.getControlPoint().execute(callback);
     }
 
+    @Override
+    public String info() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
