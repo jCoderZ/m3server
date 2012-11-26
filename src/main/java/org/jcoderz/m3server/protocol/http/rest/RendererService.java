@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import org.jcoderz.m3server.renderer.Position;
 
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
@@ -67,6 +68,25 @@ public class RendererService {
         if (r != null) {
             r.play();
         }
+    }
+
+    /**
+     * Gets the position info of the server.
+     *
+     * @param renderer the renderer on which to play the file
+     * @return the position info
+     */
+    @GET
+    @Path("/{renderer}/position")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Position position(@PathParam("renderer") String renderer) {
+        Position position = null;
+        Renderer r = findRenderer(renderer);
+        if (r != null) {
+            position = r.position();
+        }
+        return position;
     }
 
     /**

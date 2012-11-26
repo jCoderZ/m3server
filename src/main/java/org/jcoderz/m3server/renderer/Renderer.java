@@ -40,6 +40,11 @@ public interface Renderer {
     String info();
 
     /**
+     * Get the position information.
+     */
+    Position position();
+
+    /**
      * Stops playback of the renderer.
      */
     void stop();
