@@ -181,7 +181,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         List<UpnpContainer> l = idChildUpnpObjectMap.get(parentId);
         if (l == null) {
             l = new ArrayList<>();
-            idChildUpnpObjectMap.put(parentId, new ArrayList<UpnpContainer>());
+            idChildUpnpObjectMap.put(parentId, l);
         }
         l.add(uc);
 
@@ -283,7 +283,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                     logger.log(Level.FINER, "Returning existing DIDL container with id ''{0}'': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
                     didlContent.addContainer((Container) ucChild.getDidlObject());
                 } else if (FileItem.class.isAssignableFrom(ucChild.getItem().getClass())) {
-                    logger.log(Level.FINER, "Returning existing DIDL item with id '{0}': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
+                    logger.log(Level.FINER, "Returning existing DIDL item with id ''{0}'': {1}", new Object[]{ucChild.getId(), ucChild.getItem().getName()});
                     didlContent.addItem((org.teleal.cling.support.model.item.Item) ucChild.getDidlObject());
                 } else {
                     // TODO: ???
