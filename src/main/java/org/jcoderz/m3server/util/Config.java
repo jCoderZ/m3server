@@ -5,13 +5,16 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.jcoderz.m3server.library.LibraryRuntimeException;
 
 /**
  * This class wraps the Apache Commons Configuration implementation.
  *
  * @author mrumpf
  */
-public final class Config {
+public class Config {
 
     // HTTP
     public static final String HTTP_PORT_KEY = "http.port";
@@ -36,7 +39,11 @@ public final class Config {
     private static CompositeConfiguration CONFIG;
     public static final String LIBRARY_ROOTS = "library.roots";
 
-    private Config() {
+    /**
+     * Allow sub-classes for test configuration overrides.
+     */
+    protected Config() {
+        // do not allow instances
     }
 
     private static void init() {
@@ -45,17 +52,13 @@ public final class Config {
             CONFIG.addConfiguration(new SystemConfiguration());
             CONFIG.addConfiguration(new PropertiesConfiguration(M3SERVER_PROPERTIES));
         } catch (ConfigurationException ex) {
-            ex.printStackTrace();
-            // TODO: Throw runtime exception
+            throw new LibraryRuntimeException("Initialization of configuration failed", ex);
         }
     }
 
     public static synchronized Configuration getConfig() {
         if (CONFIG == null) {
             init();
-            if (CONFIG == null) {
-                // TODO: Throw runtime exception
-            }
         }
         return CONFIG;
     }
