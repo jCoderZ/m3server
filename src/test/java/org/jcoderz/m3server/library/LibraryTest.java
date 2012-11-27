@@ -1,8 +1,10 @@
 package org.jcoderz.m3server.library;
 
+import java.io.File;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.Logging;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -25,18 +27,11 @@ public class LibraryTest {
 
     @BeforeClass
     public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
+        File cwd = new File(System.getProperty("user.dir"));
+        File src = new File(cwd, "src");
+        File test = new File(src, "test");
+        File lib = new File(test, "library");
+        Config.getConfig().setProperty("M3_LIBRARY_HOME", lib.getAbsolutePath());
     }
 
     @Test
@@ -47,15 +42,82 @@ public class LibraryTest {
     }
 
     @Test
+    public void testGetAudio() throws Exception {
+        Item audio = Library.browse("/audio");
+        assertNotNull(audio);
+        assertEquals("The item name does not match", "audio", audio.getName());
+        Item parent = audio.getParent();
+        assertNotNull(parent);
+        assertEquals("The item name does not match", "Root", parent.getName());
+    }
+
+    @Test
+    public void testGetAudioFilesystem() throws Exception {
+        Item fs = Library.browse("/audio/filesystem");
+        assertNotNull(fs);
+        assertEquals("The item name does not match", "filesystem", fs.getName());
+        Item parent = fs.getParent();
+        assertNotNull(parent);
+        assertEquals("The item name does not match", "audio", parent.getName());
+    }
+
+    @Test
+    public void testGetAudioFilesystem01Gold() throws Exception {
+        Item i = Library.browse("/audio/filesystem/01-gold");
+        assertNotNull(i);
+        assertEquals("The item name does not match", "01-gold", i.getName());
+        Item parent = i.getParent();
+        assertNotNull(parent);
+        assertEquals("The item name does not match", "filesystem", parent.getName());
+    }
+
+    @Test
+    public void testGetAudioFilesystem01GoldD() throws Exception {
+        Item d = Library.browse("/audio/filesystem/01-gold/D");
+        assertNotNull(d);
+        assertEquals("The item name does not match", "D", d.getName());
+        Item parent = d.getParent();
+        assertNotNull(parent);
+        assertEquals("The item name does not match", "01-gold", parent.getName());
+    }
+
+    @Test
+    public void testGetAudioFilesystem01GoldDDsk2000() throws Exception {
+        Item dsk = Library.browse("/audio/filesystem/01-gold/D/Dsk-2000");
+        assertNotNull(dsk);
+        assertEquals("The item name does not match", "Dsk-2000", dsk.getName());
+        Item parent = dsk.getParent();
+        assertNotNull(parent);
+        assertEquals("The item name does not match", "D", parent.getName());
+    }
+
+    @Test
+    public void testGetAudioFilesystem01GoldDDsk2000ElectroDef() throws Exception {
+        Item def = Library.browse("/audio/filesystem/01-gold/D/Dsk-2000/Electro-def");
+        assertNotNull(def);
+        assertEquals("The item name does not match", "Electro-def", def.getName());
+        Item parent = def.getParent();
+        assertNotNull(parent);
+        assertEquals("The item name does not match", "Dsk-2000", parent.getName());
+        assertTrue("The item is not of type FolderItem", FolderItem.class.isAssignableFrom(def.getClass()));
+        FolderItem fi = (FolderItem) def;
+        List<Item> c = fi.getChildren();
+        assertEquals("Number of children does not match", 4, c.size());
+        for (Item i : c) {
+            assertTrue("The item is not of type FileItem", FileItem.class.isAssignableFrom(i.getClass()));
+        }
+    }
+
+    @Test
     public void testAddFolder() throws Exception {
         Item root = Library.getRoot();
         Item xxx = Library.addFolder("/xxx", FolderItem.class.getName(), null);
         Item yyy = Library.addFolder("/xxx/yyy", FolderItem.class.getName(), new Properties());
         Item zzz = Library.addFolder("/xxx/yyy/zzz", FolderItem.class.getName(), null);
-        assertNotNull("The xxx item must not be null", xxx);        
-        assertTrue("The xxx is not a root folder", !xxx.isSubtreeRoot());        
-        assertTrue("The zzz is not a root folder", !zzz.isSubtreeRoot());        
-        assertTrue("The yyy is a root folder", yyy.isSubtreeRoot());        
+        assertNotNull("The xxx item must not be null", xxx);
+        assertTrue("The xxx is not a root folder", !xxx.isSubtreeRoot());
+        assertTrue("The zzz is not a root folder", !zzz.isSubtreeRoot());
+        assertTrue("The yyy is a root folder", yyy.isSubtreeRoot());
         assertNull("The parent of the root element must be null", root.getParent());
         assertEquals("Root must be the parent of the xxx folder item", root, xxx.getParent());
         assertEquals("xxx must be the parent of the yyy folder item", xxx, yyy.getParent());
@@ -104,8 +166,7 @@ public class LibraryTest {
             if (FolderItem.class.isAssignableFrom(item.getClass())) {
                 FolderItem fi = (FolderItem) item;
                 System.out.println(item.getFullPath() + " " + fi.getChildren());
-            }
-            else {
+            } else {
                 System.out.println(item.getFullPath());
             }
         }
