@@ -2,13 +2,20 @@ package org.jcoderz.m3server.library.filesystem;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
@@ -68,20 +75,22 @@ public class FileSystemFolderItem extends FolderItem {
         if (rootStr != null && !rootStr.isEmpty()) {
             root = new File(rootStr);
             logger.log(Level.CONFIG, "File system '" + name + "' root folder: {0}", root);
+            if (!root.exists()) {
+                throw new LibraryRuntimeException("The folder defined by the 'root' property does not exist: " + rootStr);
+            }
         }
     }
 
-    /**
-     * Returns the file-system root.
-     *
-     * @return the file-system root
-     */
-    @JsonIgnore
-    public File getRoot() {
-        File result = root;
-        if (result == null) {
-            FileSystemFolderItem i = (FileSystemFolderItem) getParent();
-            result = i.getRoot();
+    @Override
+    public String getRootUrl() {
+        String result = null;
+        if (root != null) {
+            result = root.getAbsolutePath();
+            if (result == null) {
+                FileSystemFolderItem i = (FileSystemFolderItem) getParent();
+                result = i.getRootUrl();
+            }
+            result = "file://" + result;
         }
         return result;
     }
@@ -89,12 +98,14 @@ public class FileSystemFolderItem extends FolderItem {
     @Override
     public List<Item> getChildren() {
         children = new ArrayList<>();
-        File key = getRoot();
-        String p = getFullSubtreePath();
-        if (!"/".equals(p)) {
-            key = new File(key, p);
+        File key = null;
+        try {
+            key = new File(getUrl().toURI());
+        } catch (URISyntaxException ex) {
+            logger.log(Level.SEVERE, "Malformed URL exception: " + getRootUrl(), ex);
         }
         if (key.exists()) {
+            String p = getSubtreePath();
             if (key.isDirectory()) {
                 String[] files = key.list(MP3_FILTER);
                 for (String file : files) {
@@ -113,6 +124,13 @@ public class FileSystemFolderItem extends FolderItem {
                         fi.setSize(f.length());
                         fi.setGenre(mb.getGenre());
                         fi.setName(file);
+                        try {
+                            Path path = Paths.get(f.toURI());
+                            UserPrincipal owner = Files.getOwner(path);
+                            fi.setCreator(owner.getName());
+                        } catch (IOException ex) {
+                            Logger.getLogger(FileSystemFolderItem.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         fi.setLengthString(mb.getLengthString());
                         fi.setLengthInMilliseconds(mb.getLengthInMilliSeconds());
                         fi.setAlbum(mb.getAlbum());

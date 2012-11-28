@@ -19,6 +19,7 @@ public class Config {
     public static final String HTTP_PROTOCOL_KEY = "http.protocol";
     public static final String HTTP_HOSTNAME_KEY = "http.hostname";
     public static final String HTTP_SERVLET_ROOT_CONTEXT_KEY = "http.servlet.root.context";
+    public static final String HTTP_SERVLET_DOWNLOAD_BASE_URL = "http.servlet.download.base.url";
     public static final String HTTP_SERVLET_DOWNLOAD_ROOT_CONTEXT_KEY = "http.servlet.download.root.context";
     public static final String HTTP_SERVLET_REST_ROOT_CONTEXT_KEY = "http.servlet.rest.root.context";
     public static final String HTTP_SERVLET_PACKAGE_RESOURCES_KEY = "http.servlet.rest.package.resources";
@@ -52,6 +53,11 @@ public class Config {
         } catch (ConfigurationException ex) {
             throw new LibraryRuntimeException("Initialization of configuration failed", ex);
         }
+        CONFIG.addProperty(HTTP_SERVLET_DOWNLOAD_BASE_URL, CONFIG.getString(Config.HTTP_PROTOCOL_KEY) + "://"
+                + CONFIG.getString(Config.HTTP_HOSTNAME_KEY) + ":"
+                + CONFIG.getString(Config.HTTP_PORT_KEY)
+                + CONFIG.getString(Config.HTTP_SERVLET_ROOT_CONTEXT_KEY)
+                + CONFIG.getString(Config.HTTP_SERVLET_DOWNLOAD_ROOT_CONTEXT_KEY));
     }
 
     /**

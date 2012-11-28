@@ -67,7 +67,6 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     private static final Long ROOT_PARENT_ID = -1L;
     private static long idCounter = 0;
     private Configuration config;
-    private String staticBaseUrl;
 
     /**
      * Constructor.
@@ -76,11 +75,6 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
      */
     public UpnpMediaServer(Configuration config) {
         this.config = config;
-        staticBaseUrl = config.getString(Config.HTTP_PROTOCOL_KEY) + "://"
-                + config.getString(Config.HTTP_HOSTNAME_KEY) + ":"
-                + config.getString(Config.HTTP_PORT_KEY)
-                + config.getString(Config.HTTP_SERVLET_ROOT_CONTEXT_KEY)
-                + config.getString(Config.HTTP_SERVLET_DOWNLOAD_ROOT_CONTEXT_KEY);
         // Populate the maps with the root entry
         createDidlContainer(ROOT_ID, ROOT_PARENT_ID, Library.getRoot());
     }
@@ -172,7 +166,7 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
     }
 
     private UpnpContainer createDidlItem(long nextId, long parentId, Item item) throws UnsupportedEncodingException {
-        String url = staticBaseUrl + UrlUtil.encodePath(item.getFullPath());
+        String url = config.getString(Config.HTTP_SERVLET_DOWNLOAD_BASE_URL) + UrlUtil.encodePath(item.getPath());
 
         DIDLObject didlObject = DidlUtil.createMusicTrack((AudioFileItem) item, url, nextId, parentId);
 
@@ -207,11 +201,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 new AnnotationLocalServiceBinder().read(AbstractContentDirectoryService.class);
         contentDirectoryService.setManager(
                 new DefaultServiceManager<AbstractContentDirectoryService>(contentDirectoryService, null) {
-                    @Override
-                    protected AbstractContentDirectoryService createServiceInstance() throws Exception {
-                        return new UpnpMediaServer(config);
-                    }
-                });
+            @Override
+            protected AbstractContentDirectoryService createServiceInstance() throws Exception {
+                return new UpnpMediaServer(config);
+            }
+        });
         LocalService<ConnectionManagerService> connectionManagerService =
                 new AnnotationLocalServiceBinder().read(ConnectionManagerService.class);
         final ProtocolInfos sourceProtocols =
@@ -224,11 +218,11 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
 
         connectionManagerService.setManager(
                 new DefaultServiceManager<ConnectionManagerService>(connectionManagerService, null) {
-                    @Override
-                    protected ConnectionManagerService createServiceInstance() throws Exception {
-                        return new ConnectionManagerService(sourceProtocols, null);
-                    }
-                });
+            @Override
+            protected ConnectionManagerService createServiceInstance() throws Exception {
+                return new ConnectionManagerService(sourceProtocols, null);
+            }
+        });
 
         // TODO: Add icon
         LocalDevice device = null;

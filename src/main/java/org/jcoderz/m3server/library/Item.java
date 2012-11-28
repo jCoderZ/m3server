@@ -23,28 +23,14 @@ public interface Item extends Comparable<Item> {
      *
      * @return the full path in the library tree
      */
-    String getFullPath();
+    String getPath();
 
     /**
-     * Returns the path only to the next subtree root.
+     * Returns the path to the next subtree root.
      *
      * @return the path to the next subtree root
      */
-    String getFullSubtreePath();
-
-    /**
-     * Returns the URL for the item.
-     *
-     * @return the URL for the item
-     */
-    URL getUrl();
-
-    /**
-     * Sets the base URL of the item.
-     *
-     * @param url the base URL of the item
-     */
-    void setUrl(URL url);
+    String getSubtreePath();
 
     /**
      * Returns the full URL of the item.
@@ -52,7 +38,15 @@ public interface Item extends Comparable<Item> {
      * @return the full URL of the item
      */
     @JsonIgnore
-    URL getFullSubtreeUrl();
+    URL getUrl();
+
+    /**
+     * Returns the root file.
+     *
+     * @return the root file
+     */
+    @JsonIgnore
+    String getRootUrl();
 
     /**
      * Returns whether the item is the root of a subtree.
@@ -68,13 +62,33 @@ public interface Item extends Comparable<Item> {
      */
     void setSubtreeRoot(boolean isSubtreeRoot);
 
+    /**
+     * Returns the item creator.
+     *
+     * @return the item creator
+     */
     String getCreator();
 
-    String getName();
-
+    /**
+     * Sets the item creator.
+     *
+     * @param creator the item creator
+     */
     void setCreator(String creator);
 
-    void setName(String path);
+    /**
+     * Returns the name of the item.
+     *
+     * @return the name of the item
+     */
+    String getName();
+
+    /**
+     * Sets the name of the item.
+     *
+     * @param name the name of the item
+     */
+    void setName(String name);
 
     void accept(Visitor visitor);
 }

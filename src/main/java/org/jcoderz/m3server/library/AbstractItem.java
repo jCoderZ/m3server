@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Logging;
+import org.jcoderz.m3server.util.UrlUtil;
 
 /**
  * This class provides the common implementation for all item types.
@@ -43,19 +44,10 @@ public abstract class AbstractItem implements Item {
 
     @Override
     public URL getUrl() {
-        return url;
-    }
-
-    @Override
-    public void setUrl(URL u) {
-        this.url = u;
-    }
-
-    @Override
-    public URL getFullSubtreeUrl() {
         try {
             String u = createUrl(this);
-            return new URL(u);
+            // TODO: Is this replace correct?
+            return new URL(u.replaceAll(" ", "%20"));
         } catch (MalformedURLException ex) {
             logger.log(Level.SEVERE, null, ex);
         }
@@ -72,23 +64,31 @@ public abstract class AbstractItem implements Item {
             } else {
                 result = p + "/" + item.getName();
             }
+        } else if (item.isSubtreeRoot()) {
+            result = item.getRootUrl();
         } else {
-            if (item.getUrl() != null) {
-                result = item.getUrl().toString();
-            } else {
-                new Exception().printStackTrace();
-            }
+            // TODO: parent is null
         }
         return result;
     }
 
+    /**
+     * Returns the root file.
+     *
+     * @return the root file
+     */
     @Override
-    public String getFullPath() {
+    public String getRootUrl() {
+        return null;
+    }
+
+    @Override
+    public String getPath() {
         return createPath(this, false);
     }
 
     @Override
-    public String getFullSubtreePath() {
+    public String getSubtreePath() {
         return createPath(this, true);
     }
 

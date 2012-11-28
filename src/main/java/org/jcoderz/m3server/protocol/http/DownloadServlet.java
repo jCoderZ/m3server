@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -44,15 +45,8 @@ public class DownloadServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        String requestedFile = request.getPathInfo().substring("/audio/filesystem".length());
-        logger.log(Level.FINE, "HEAD pathInfo={0}", requestedFile);
-        if (requestedFile == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        File root = Environment.getAudioFolder().getAbsoluteFile();
-        logger.log(Level.FINE, "Library root: {0}", root);
-        File file = new File(root, requestedFile);
+        File file = getFile(request);
+        logger.log(Level.FINE, "File: {0}", file);
         if (!file.exists()) {
             logger.log(Level.SEVERE, "File not found: {0}", file);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -66,24 +60,9 @@ public class DownloadServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO: Temporary hack to make the servlet work
-        String pathInfo = request.getPathInfo();
-        try {
-            Item i = Library.browse(pathInfo);
-            logger.fine("item " + i);
-        } catch (LibraryException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        }
-        
-        String requestedFile = request.getPathInfo().substring("/audio/filesystem".length());
-        logger.log(Level.FINE, "GET pathInfo={0}", requestedFile);
-        if (requestedFile == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        File root = Environment.getAudioFolder().getAbsoluteFile();
-        logger.log(Level.FINE, "Library root: {0}", root);
-        File file = new File(root, requestedFile);
+
+        File file = getFile(request);
+        logger.log(Level.FINE, "File: {0}", file);
         if (!file.exists()) {
             logger.log(Level.SEVERE, "File not found: {0}", file);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -184,6 +163,25 @@ public class DownloadServlet extends HttpServlet {
         } else {
             throw new RuntimeException("TODO: Unknown extension");
         }
+    }
+
+    private File getFile(HttpServletRequest request) {
+        String pathInfo = request.getPathInfo();
+        Item i = null;
+        try {
+            i = Library.browse(pathInfo);
+        } catch (LibraryException ex) {
+            logger.log(Level.SEVERE, null, ex);
+            // TODO: Throw exception
+        }
+        logger.log(Level.FINE, "Item: {0}", i);
+        File file = null;
+        try {
+            file = new File(i.getUrl().toURI());
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(DownloadServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return file;
     }
 
     /**

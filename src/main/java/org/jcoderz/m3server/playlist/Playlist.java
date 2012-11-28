@@ -61,7 +61,7 @@ public class Playlist {
     private void playlistBody(PlaylistType type, StringBuilder sb, Item item, int i) {
         switch (type) {
             case M3U: {
-                sb.append(item.getUrl());
+                sb.append(item.getPath());
                 sb.append("\n");
                 break;
             }
@@ -69,7 +69,7 @@ public class Playlist {
                 sb.append("#EXTINF:-1,");
                 sb.append(item.getName());
                 sb.append("\n");
-                sb.append(item.getUrl());
+                sb.append(item.getPath());
                 sb.append("\n");
                 break;
             }
@@ -77,7 +77,7 @@ public class Playlist {
                 sb.append("File");
                 sb.append(i);
                 sb.append('=');
-                sb.append(item.getUrl());
+                sb.append(item.getPath());
                 sb.append("\n");
                 sb.append("Title");
                 sb.append(i);

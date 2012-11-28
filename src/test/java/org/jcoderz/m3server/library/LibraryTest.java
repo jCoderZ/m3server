@@ -1,14 +1,12 @@
 package org.jcoderz.m3server.library;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.Logging;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -109,6 +107,28 @@ public class LibraryTest {
     }
 
     @Test
+    public void testGetAudioFile() throws Exception {
+        Item f = Library.browse("/audio/filesystem/01-gold/D/Dsk-2000/Electro-def/01 - intro.mp3");
+        assertNotNull(f);
+        assertEquals("The item name does not match", "01 - intro.mp3", f.getName());
+        Item parent = f.getParent();
+        assertNotNull(parent);
+        assertEquals("The item name does not match", "Electro-def", parent.getName());
+        assertTrue("The item is not of type FileItem", FileItem.class.isAssignableFrom(f.getClass()));
+        FileItem fi = (FileItem) f;
+        assertEquals("The full path does not match", "/audio/filesystem/01-gold/D/Dsk-2000/Electro-def/01 - intro.mp3", fi.getPath());
+        assertEquals("The file length does not match", 5236640, fi.getSize());
+        assertEquals("The full sub-tree path does not match", "/01-gold/D/Dsk-2000/Electro-def/01 - intro.mp3", fi.getSubtreePath());
+        assertNotNull("The creator must not be null", fi.getCreator());
+
+        URL url = fi.getUrl();
+        assertNotNull("The url must not be null", url);
+        File file = new File(url.toURI());
+        assertNotNull("The file must not be null", file);
+        assertTrue("The file does not exist", file.exists());
+    }
+
+    @Test
     public void testAddFolder() throws Exception {
         Item root = Library.getRoot();
         Item xxx = Library.addFolder("/xxx", FolderItem.class.getName(), null);
@@ -155,7 +175,7 @@ public class LibraryTest {
 
         @Override
         public void visit(Item item) {
-            System.out.println("---" + item.getFullPath());
+            System.out.println("---" + item.getPath());
         }
     }
 
@@ -165,9 +185,9 @@ public class LibraryTest {
         public void visit(Item item) {
             if (FolderItem.class.isAssignableFrom(item.getClass())) {
                 FolderItem fi = (FolderItem) item;
-                System.out.println(item.getFullPath() + " " + fi.getChildren());
+                System.out.println(item.getPath() + " " + fi.getChildren());
             } else {
-                System.out.println(item.getFullPath());
+                System.out.println(item.getPath());
             }
         }
     }
@@ -177,7 +197,7 @@ public class LibraryTest {
         @Override
         public void visit(Item item) {
             if (item.isSubtreeRoot()) {
-                System.out.println("### subtree=" + item.getFullPath());
+                System.out.println("### subtree=" + item.getPath());
                 Visitor visitor = new FullSubtreePathVisitor();
                 Library.visitTree(item, visitor);
             }
