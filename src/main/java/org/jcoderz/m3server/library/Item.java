@@ -46,7 +46,7 @@ public interface Item extends Comparable<Item> {
      * @return the root file
      */
     @JsonIgnore
-    String getRootUrl();
+    String getSubtreeRootUrl();
 
     /**
      * Returns whether the item is the root of a subtree.

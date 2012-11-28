@@ -3,9 +3,7 @@ package org.jcoderz.m3server.library.filesystem;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,13 +80,13 @@ public class FileSystemFolderItem extends FolderItem {
     }
 
     @Override
-    public String getRootUrl() {
+    public String getSubtreeRootUrl() {
         String result = null;
         if (root != null) {
             result = root.getAbsolutePath();
             if (result == null) {
                 FileSystemFolderItem i = (FileSystemFolderItem) getParent();
-                result = i.getRootUrl();
+                result = i.getSubtreeRootUrl();
             }
             result = "file://" + result;
         }
@@ -102,7 +100,7 @@ public class FileSystemFolderItem extends FolderItem {
         try {
             key = new File(getUrl().toURI());
         } catch (URISyntaxException ex) {
-            logger.log(Level.SEVERE, "Malformed URL exception: " + getRootUrl(), ex);
+            logger.log(Level.SEVERE, "Malformed URL exception: " + getSubtreeRootUrl(), ex);
         }
         if (key.exists()) {
             String p = getSubtreePath();

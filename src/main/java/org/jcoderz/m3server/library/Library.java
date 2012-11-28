@@ -227,6 +227,9 @@ public class Library {
         }
     }
 
+    /**
+     * TODO: Move this to the DownloadServlet...
+     */
     public Artwork coverImage(String file) {
         File root = Environment.getAudioFolder();
         if (file == null || file.isEmpty()) {

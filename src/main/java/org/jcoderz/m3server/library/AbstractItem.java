@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Logging;
-import org.jcoderz.m3server.util.UrlUtil;
 
 /**
  * This class provides the common implementation for all item types.
@@ -24,9 +23,18 @@ public abstract class AbstractItem implements Item {
     protected Object data;
     protected URL url;
 
+    /**
+     * Empty default constructor.
+     */
     public AbstractItem() {
     }
 
+    /**
+     * Constructor.
+     *
+     * @param parent the parent item
+     * @param name the name of the item
+     */
     public AbstractItem(Item parent, String name) {
         this.name = name;
         this.parent = parent;
@@ -65,20 +73,15 @@ public abstract class AbstractItem implements Item {
                 result = p + "/" + item.getName();
             }
         } else if (item.isSubtreeRoot()) {
-            result = item.getRootUrl();
+            result = item.getSubtreeRootUrl();
         } else {
             // TODO: parent is null
         }
         return result;
     }
 
-    /**
-     * Returns the root file.
-     *
-     * @return the root file
-     */
     @Override
-    public String getRootUrl() {
+    public String getSubtreeRootUrl() {
         return null;
     }
 
