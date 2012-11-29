@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
@@ -24,7 +25,7 @@ import org.jcoderz.m3server.library.LibraryException;
 import org.jcoderz.m3server.protocol.http.RangeSet.Range;
 import org.jcoderz.m3server.util.DlnaUtil;
 import org.jcoderz.m3server.util.Logging;
-import org.jcoderz.m3util.intern.util.Environment;
+import org.jcoderz.m3server.util.UrlUtil;
 
 /**
  * This servlet implements the HTTP range functionality. Tests can easily be
@@ -168,20 +169,16 @@ public class DownloadServlet extends HttpServlet {
     private File getFile(HttpServletRequest request) {
         String pathInfo = request.getPathInfo();
         Item i = null;
+        File result = null;
         try {
             i = Library.browse(pathInfo);
-        } catch (LibraryException ex) {
+            result = new File(new URI(UrlUtil.encodePath(i.getUrl())));
+        } catch (URISyntaxException | LibraryException ex) {
             logger.log(Level.SEVERE, null, ex);
             // TODO: Throw exception
         }
         logger.log(Level.FINE, "Item: {0}", i);
-        File file = null;
-        try {
-            file = new File(i.getUrl().toURI());
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(DownloadServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return file;
+        return result;
     }
 
     /**

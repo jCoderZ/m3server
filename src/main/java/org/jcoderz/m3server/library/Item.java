@@ -38,7 +38,7 @@ public interface Item extends Comparable<Item> {
      * @return the full URL of the item
      */
     @JsonIgnore
-    URL getUrl();
+    String getUrl();
 
     /**
      * Returns the root file.

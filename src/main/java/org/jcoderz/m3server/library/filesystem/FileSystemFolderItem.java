@@ -3,6 +3,7 @@ package org.jcoderz.m3server.library.filesystem;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +20,7 @@ import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.LibraryRuntimeException;
 import org.jcoderz.m3server.util.Logging;
+import org.jcoderz.m3server.util.UrlUtil;
 
 import org.jcoderz.m3util.intern.MusicBrainzMetadata;
 
@@ -96,12 +98,13 @@ public class FileSystemFolderItem extends FolderItem {
     @Override
     public List<Item> getChildren() {
         children = new ArrayList<>();
-        File key = null;
+        URI uri = null;
         try {
-            key = new File(getUrl().toURI());
+            uri = new URI(UrlUtil.encodePath(getUrl()));
         } catch (URISyntaxException ex) {
-            logger.log(Level.SEVERE, "Malformed URL exception: " + getSubtreeRootUrl(), ex);
+            Logger.getLogger(FileSystemFolderItem.class.getName()).log(Level.SEVERE, null, ex);
         }
+        File key = new File(uri);
         if (key.exists()) {
             String p = getSubtreePath();
             if (key.isDirectory()) {

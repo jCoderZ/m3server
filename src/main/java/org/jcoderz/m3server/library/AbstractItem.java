@@ -1,8 +1,6 @@
 package org.jcoderz.m3server.library;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Logging;
 
@@ -51,16 +49,8 @@ public abstract class AbstractItem implements Item {
     }
 
     @Override
-    public URL getUrl() {
-        try {
-            String u = createUrl(this);
-            // TODO: Is this replace correct?
-            return new URL(u.replaceAll(" ", "%20"));
-        } catch (MalformedURLException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        }
-        // TODO: throw exception
-        return null;
+    public String getUrl() {
+        return createUrl(this);
     }
 
     private String createUrl(Item item) {
