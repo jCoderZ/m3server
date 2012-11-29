@@ -1,12 +1,13 @@
 package org.jcoderz.m3server.library;
 
 import java.io.File;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.Logging;
+import org.jcoderz.m3server.util.UrlUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -121,9 +122,9 @@ public class LibraryTest {
         assertEquals("The full sub-tree path does not match", "/01-gold/D/Dsk-2000/Electro-def/01 - intro.mp3", fi.getSubtreePath());
         assertNotNull("The creator must not be null", fi.getCreator());
 
-        URL url = fi.getUrl();
+        String url = fi.getUrl();
         assertNotNull("The url must not be null", url);
-        File file = new File(url.toURI());
+        File file = new File(new URI(UrlUtil.encodePath(url)));
         assertNotNull("The file must not be null", file);
         assertTrue("The file does not exist", file.exists());
     }
