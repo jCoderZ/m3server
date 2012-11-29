@@ -23,32 +23,23 @@ public class UrlUtil {
      * @param path the path to encode
      * @return the encoded path
      */
-    public static String encodePath(String path) {
+    public static String encodePath(String url) {
         StringBuilder strbuf = new StringBuilder();
-        StringTokenizer strtok = new StringTokenizer(path, "/");
+        String sub = url;
+        if (sub.startsWith("file://")) {
+            sub = sub.substring("file://".length());
+        }
+        StringTokenizer strtok = new StringTokenizer(sub, "/");
         while (strtok.hasMoreTokens()) {
             String tok = strtok.nextToken();
             strbuf.append('/');
             strbuf.append(encodeURLComponent(tok));
         }
-        return strbuf.toString();
-    }
-
-    /**
-     * URL decodes the path.
-     *
-     * @param path the path to decode
-     * @return the decoded path
-     */
-    public static String decodePath(String url) {
-        StringBuilder strbuf = new StringBuilder();
-        StringTokenizer strtok = new StringTokenizer(url, "/");
-        while (strtok.hasMoreTokens()) {
-            String tok = strtok.nextToken();
-            strbuf.append('/');
-            strbuf.append(URLDecoder.decode(tok));
+        String result = strbuf.toString();
+        if (!url.equals(sub)) {
+            result = "file://" + result;
         }
-        return strbuf.toString();
+        return result;
     }
 
     public static String encodeURLComponent(final String s) {
