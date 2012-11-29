@@ -1,190 +1,193 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset=utf-8 />
-	<title>M3Server</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="resources/jQuery.jPlayer.2.1.0/skin/prettify-jPlayer.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet"
-		href="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.css" />
-	<link rel="stylesheet"
-		href="resources/jQuery.jPlayer.2.1.0/skin/blue.monday/jplayer.blue.monday.css" />
-	<script type="text/javascript" src="resources/jquery-1.7.2.min.js"></script>
-	<script type="text/javascript" src="resources/app.js"></script>
-	<script type="text/javascript"
-		src="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.js"></script>
-	<script type="text/javascript"
-		src="resources/jQuery.jPlayer.2.1.0/jquery.jplayer.min.js"></script>
-	<script type="text/javascript"
-		src="resources/jQuery.jPlayer.2.1.0/add-on/jplayer.playlist.min.js"></script>
-	<script type="text/javascript"
-		src="resources/jQuery.jPlayer.2.1.0/add-on/jquery.jplayer.inspector.js"></script>
-</head>
-<body>
-	<div data-role="page" id="play-page">
+    <head>
+        <meta charset=utf-8 />
+        <title>M3Server</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="resources/jQuery.jPlayer.2.1.0/skin/prettify-jPlayer.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet"
+              href="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.css" />
+        <link rel="stylesheet"
+              href="resources/jQuery.jPlayer.2.1.0/skin/blue.monday/jplayer.blue.monday.css" />
+        <script type="text/javascript" src="resources/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="resources/app.js"></script>
+        <script type="text/javascript"
+        src="resources/jquery.mobile/jquery.mobile-1.2.0-alpha.1.min.js"></script>
+        <script type="text/javascript"
+        src="resources/jQuery.jPlayer.2.1.0/jquery.jplayer.min.js"></script>
+        <script type="text/javascript"
+        src="resources/jQuery.jPlayer.2.1.0/add-on/jplayer.playlist.min.js"></script>
+        <script type="text/javascript"
+        src="resources/jQuery.jPlayer.2.1.0/add-on/jquery.jplayer.inspector.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="play-page">
 
-		<div data-role="header" data-position="fixed" data-id="header">
+            <div data-role="header" data-position="fixed" data-id="header">
 
-			<div data-role="navbar">
-				<ul>
-					<li><a href="#play-page"
-						class="ui-btn-active ui-state-persist" data-role="tab"
-						data-iconpos="top" data-icon="grid">Play</a></li>
-					<li><a href="#browse-page" data-role="tab" data-iconpos="top"
-						data-icon="grid">Browse</a></li>
-					<li><a href="#search-page" data-role="tab" data-iconpos="top"
-						data-icon="search">Search</a></li>
-					<li><a href="#settings-page" data-role="tab"
-						data-iconpos="top" data-icon="info">Settings</a></li>
-				</ul>
-			</div>
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#play-page"
+                               class="ui-btn-active ui-state-persist" data-role="tab"
+                               data-iconpos="top" data-icon="grid">Play</a></li>
+                        <li><a href="#browse-page" data-role="tab" data-iconpos="top"
+                               data-icon="grid">Browse</a></li>
+                        <li><a href="#search-page" data-role="tab" data-iconpos="top"
+                               data-icon="search">Search</a></li>
+                        <li><a href="#settings-page" data-role="tab"
+                               data-iconpos="top" data-icon="info">Settings</a></li>
+                    </ul>
+                </div>
 
-		</div>
+            </div>
 
-		<div data-role="content">
+            <div data-role="content">
 
-			<div id="jp_container_1" class="jp-video jp-video-270p">
-				<div class="jp-type-playlist">
-					<div id="jquery_jplayer_1" class="jp-jplayer"></div>
-					<div class="jp-gui">
-						<div class="jp-video-play">
-							<a href="javascript:;" class="jp-video-play-icon" tabindex="1">play</a>
-						</div>
-						<div class="jp-interface">
-							<div class="jp-progress">
-								<div class="jp-seek-bar">
-									<div class="jp-play-bar"></div>
-								</div>
-							</div>
-							<div class="jp-current-time"></div>
-							<div class="jp-duration"></div>
-							<div class="jp-title">
-								<ul>
-									<li></li>
-								</ul>
-							</div>
-							<div class="jp-controls-holder">
-								<ul class="jp-controls">
-									<li><a href="javascript:;" class="jp-previous" tabindex="1">previous</a></li>
-									<li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
-									<li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
-									<li><a href="javascript:;" class="jp-next" tabindex="1">next</a></li>
-									<li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
-									<li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
-									<li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
-									<li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
-								</ul>
-								<div class="jp-volume-bar">
-									<div class="jp-volume-bar-value"></div>
-								</div>
-								<ul class="jp-toggles">
-									<li><a href="javascript:;" class="jp-full-screen" tabindex="1" title="full screen">full screen</a></li>
-									<li><a href="javascript:;" class="jp-restore-screen" tabindex="1" title="restore screen">restore screen</a></li>
-									<li><a href="javascript:;" class="jp-shuffle" tabindex="1" title="shuffle">shuffle</a></li>
-									<li><a href="javascript:;" class="jp-shuffle-off" tabindex="1" title="shuffle off">shuffle off</a></li>
-									<li><a href="javascript:;" class="jp-repeat" tabindex="1" title="repeat">repeat</a></li>
-									<li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="jp-playlist">
-						<ul>
-							<!-- The method Playlist.displayPlaylist() uses this unordered list -->
-							<li></li>
-						</ul>
-					</div>
-					<div class="jp-no-solution">
-						<span>Update Required</span>
-						To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
-					</div>
-				</div>
-			</div>
-<!-- 
-			<div id="jplayer_inspector_1"></div>
-			 -->
-		</div>
+                <div id="jp_container_1" class="jp-video jp-video-270p">
+                    <div class="jp-type-playlist">
+                        <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+                        <div class="jp-gui">
+                            <div class="jp-video-play">
+                                <a href="javascript:;" class="jp-video-play-icon" tabindex="1">play</a>
+                            </div>
+                            <div class="jp-interface">
+                                <div class="jp-progress">
+                                    <div class="jp-seek-bar">
+                                        <div class="jp-play-bar"></div>
+                                    </div>
+                                </div>
+                                <div class="jp-current-time"></div>
+                                <div class="jp-duration"></div>
+                                <div class="jp-title">
+                                    <ul>
+                                        <li></li>
+                                    </ul>
+                                </div>
+                                <div class="jp-controls-holder">
+                                    <ul class="jp-controls">
+                                        <li><a href="javascript:;" class="jp-previous" tabindex="1">previous</a></li>
+                                        <li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
+                                        <li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
+                                        <li><a href="javascript:;" class="jp-next" tabindex="1">next</a></li>
+                                        <li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+                                        <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
+                                        <li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
+                                        <li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+                                    </ul>
+                                    <div class="jp-volume-bar">
+                                        <div class="jp-volume-bar-value"></div>
+                                    </div>
+                                    <ul class="jp-toggles">
+                                        <li><a href="javascript:;" class="jp-full-screen" tabindex="1" title="full screen">full screen</a></li>
+                                        <li><a href="javascript:;" class="jp-restore-screen" tabindex="1" title="restore screen">restore screen</a></li>
+                                        <li><a href="javascript:;" class="jp-shuffle" tabindex="1" title="shuffle">shuffle</a></li>
+                                        <li><a href="javascript:;" class="jp-shuffle-off" tabindex="1" title="shuffle off">shuffle off</a></li>
+                                        <li><a href="javascript:;" class="jp-repeat" tabindex="1" title="repeat">repeat</a></li>
+                                        <li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="jp-playlist">
+                            <ul>
+                                <!-- The method Playlist.displayPlaylist() uses this unordered list -->
+                                <li></li>
+                            </ul>
+                        </div>
+                        <div class="jp-no-solution">
+                            <span>Update Required</span>
+                            To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+                        </div>
+                    </div>
+                </div>
+                <!--
+                                        <div id="jplayer_inspector_1"></div>
+                -->
+            </div>
 
-	</div>
+        </div>
 
-	<div data-role="page" id="browse-page">
+        <div data-role="page" id="browse-page">
 
-		<div data-role="header" data-position="fixed" data-id="header">
-			<div data-role="navbar">
-				<ul>
-					<li><a href="#play-page" data-role="tab" data-iconpos="top"
-						data-icon="grid">Play</a></li>
-					<li><a href="#browse-page"
-						class="ui-btn-active ui-state-persist" data-role="tab"
-						data-iconpos="top" data-icon="grid">Browse</a></li>
-					<li><a href="#search-page" data-role="tab" data-iconpos="top"
-						data-icon="search">Search</a></li>
-					<li><a href="#settings-page" data-role="tab"
-						data-iconpos="top" data-icon="info">Settings</a></li>
-				</ul>
-			</div>
-		</div>
+            <div data-role="header" data-position="fixed" data-id="header">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#play-page" data-role="tab" data-iconpos="top"
+                               data-icon="grid">Play</a></li>
+                        <li><a href="#browse-page"
+                               class="ui-btn-active ui-state-persist" data-role="tab"
+                               data-iconpos="top" data-icon="grid">Browse</a></li>
+                        <li><a href="#search-page" data-role="tab" data-iconpos="top"
+                               data-icon="search">Search</a></li>
+                        <li><a href="#settings-page" data-role="tab"
+                               data-iconpos="top" data-icon="info">Settings</a></li>
+                    </ul>
+                </div>
+            </div>
 
-		<div data-role="content">
-			<div id="browserresult">
-				<ul id="browseresultlist" data-filter="true" data-role="listview"></ul>
-			</div>
-		</div>
+            <div data-role="content">
+                <select name="select-renderer" id="select-renderer">
+                </select>
 
-	</div>
+                <div id="browserresult">
+                    <ul id="browseresultlist" data-filter="true" data-role="listview"></ul>
+                </div>
+            </div>
 
-	<div data-role="page" id="search-page">
+        </div>
 
-		<div data-role="header" data-position="fixed" data-id="header">
-			<div data-role="navbar">
-				<ul>
-					<li><a href="#play-page" data-role="tab" data-iconpos="top"
-						data-icon="grid">Play</a></li>
-					<li><a href="#browse-page" data-role="tab" data-iconpos="top"
-						data-icon="grid">Browse</a></li>
-					<li><a href="#search-page"
-						class="ui-btn-active ui-state-persist" data-role="tab"
-						data-iconpos="top" data-icon="search">Search</a></li>
-					<li><a href="#settings-page" data-role="tab"
-						data-iconpos="top" data-icon="info">Settings</a></li>
-				</ul>
-			</div>
-		</div>
+        <div data-role="page" id="search-page">
 
-		<div data-role="content">
-			<form id="searchform" action="library/search" method="get">
-				<input type="search" name="term" id="term" value="" />
-			</form>
-			<div id="searchresult">
-				<ul id="searchresultlist" data-filter="true" data-role="listview"></ul>
-			</div>
-		</div>
+            <div data-role="header" data-position="fixed" data-id="header">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#play-page" data-role="tab" data-iconpos="top"
+                               data-icon="grid">Play</a></li>
+                        <li><a href="#browse-page" data-role="tab" data-iconpos="top"
+                               data-icon="grid">Browse</a></li>
+                        <li><a href="#search-page"
+                               class="ui-btn-active ui-state-persist" data-role="tab"
+                               data-iconpos="top" data-icon="search">Search</a></li>
+                        <li><a href="#settings-page" data-role="tab"
+                               data-iconpos="top" data-icon="info">Settings</a></li>
+                    </ul>
+                </div>
+            </div>
 
-	</div>
+            <div data-role="content">
+                <form id="searchform" action="library/search" method="get">
+                    <input type="search" name="term" id="term" value="" />
+                </form>
+                <div id="searchresult">
+                    <ul id="searchresultlist" data-filter="true" data-role="listview"></ul>
+                </div>
+            </div>
 
-	<div data-role="page" id="settings-page">
+        </div>
 
-		<div data-role="header" data-position="fixed" data-id="header">
-			<div data-role="navbar">
-				<ul>
-					<li><a href="#play-page" data-role="tab" data-iconpos="top"
-						data-icon="grid">Play</a></li>
-					<li><a href="#browse-page" data-role="tab" data-iconpos="top"
-						data-icon="grid">Browse</a></li>
-					<li><a href="#search-page" data-role="tab" data-iconpos="top"
-						data-icon="search">Search</a></li>
-					<li><a href="#settings-page"
-						class="ui-btn-active ui-state-persist" data-role="tab"
-						data-iconpos="top" data-icon="info">Settings</a></li>
-				</ul>
-			</div>
-		</div>
+        <div data-role="page" id="settings-page">
 
-		<div data-role="content">Settings content</div>
+            <div data-role="header" data-position="fixed" data-id="header">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#play-page" data-role="tab" data-iconpos="top"
+                               data-icon="grid">Play</a></li>
+                        <li><a href="#browse-page" data-role="tab" data-iconpos="top"
+                               data-icon="grid">Browse</a></li>
+                        <li><a href="#search-page" data-role="tab" data-iconpos="top"
+                               data-icon="search">Search</a></li>
+                        <li><a href="#settings-page"
+                               class="ui-btn-active ui-state-persist" data-role="tab"
+                               data-iconpos="top" data-icon="info">Settings</a></li>
+                    </ul>
+                </div>
+            </div>
 
-	</div>
-</body>
-<script type="text/javascript" src="resources/jQuery.jPlayer.2.1.0/prettify-jPlayer.js"></script>
+            <div data-role="content">Settings content</div>
+
+        </div>
+    </body>
+    <script type="text/javascript" src="resources/jQuery.jPlayer.2.1.0/prettify-jPlayer.js"></script>
 
 </html>
 
