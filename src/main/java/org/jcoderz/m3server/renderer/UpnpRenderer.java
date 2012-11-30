@@ -214,17 +214,16 @@ public class UpnpRenderer extends AbstractRenderer {
         long level = 0L;
         Action getVolumeAction = service.getAction("GetVolume");
         if (getVolumeAction != null) {
-        ActionInvocation getVolumeInvocation = new ActionInvocation(getVolumeAction);
-        getVolumeInvocation.setInput("InstanceID", new UnsignedIntegerFourBytes(0));
-        getVolumeInvocation.setInput("Channel", "Master");
-        new ActionCallback.Default(getVolumeInvocation, upnpService.getControlPoint()).run();
-        Map<String, ActionArgumentValue> args = getVolumeInvocation.getOutputMap();
-        System.err.println("### " + args);
-        if (args != null) {
-            level = Long.valueOf((String) args.get("CurrentVolume").getValue());
-        }
-        }
-        else {
+            ActionInvocation getVolumeInvocation = new ActionInvocation(getVolumeAction);
+            getVolumeInvocation.setInput("InstanceID", new UnsignedIntegerFourBytes(0));
+            getVolumeInvocation.setInput("Channel", "Master");
+            new ActionCallback.Default(getVolumeInvocation, upnpService.getControlPoint()).run();
+            Map<String, ActionArgumentValue> args = getVolumeInvocation.getOutputMap();
+            System.err.println("### " + args);
+            if (args != null) {
+                level = Long.valueOf((String) args.get("CurrentVolume").getValue());
+            }
+        } else {
             logger.warning("Method RenderingControl.GetVolume not supported by this renderer");
         }
         return level;
@@ -270,24 +269,24 @@ public class UpnpRenderer extends AbstractRenderer {
 
 
                         TransportState ts = lc.getEventedValue(0, AVTransportVariable.TransportState.class);
-                        if (ts.getValue() == org.teleal.cling.support.model.TransportState.PLAYING) {
+                        if (ts != null && ts.getValue() == org.teleal.cling.support.model.TransportState.PLAYING) {
                             // TODO
                         }
 
                         /*
-                         <Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/">   
-                         <InstanceID val="0">     
-                         <TransportState val="PLAYING"/>     
-                         <TransportStatus val="OK"/>     
-                         <CurrentPlayMode val="NORMAL"/>     
-                         <TransportPlaySpeed val="1"/>     
-                         <NumberOfTracks val="1"/>     
-                         <NextAVTransportURI val=""/>     
-                         <NextAVTransportURIMetaData val=""/>   
-                         <CurrentTrack val="1"/>     
-                         <CurrentTrackDuration val="0:03:27.733"/>     
-                         <CurrentMediaDuration val="0:03:27.733"/>     
-                         <CurrentTrackMetaData val="##########################################"/>     
+                         <Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/">
+                         <InstanceID val="0">
+                         <TransportState val="PLAYING"/>
+                         <TransportStatus val="OK"/>
+                         <CurrentPlayMode val="NORMAL"/>
+                         <TransportPlaySpeed val="1"/>
+                         <NumberOfTracks val="1"/>
+                         <NextAVTransportURI val=""/>
+                         <NextAVTransportURIMetaData val=""/>
+                         <CurrentTrack val="1"/>
+                         <CurrentTrackDuration val="0:03:27.733"/>
+                         <CurrentMediaDuration val="0:03:27.733"/>
+                         <CurrentTrackMetaData val="##########################################"/>
                          <DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">
                          <item id="100" parentID="99" restricted="false">
                          <dc:title>Highway to Hell</dc:title>
@@ -300,13 +299,13 @@ public class UpnpRenderer extends AbstractRenderer {
                          <res bitrate="24576" duration="3:28" protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000" size="5044510">http://192.168.0.17:8080/m3server/download/audio/filesystem/01-gold/A/AC-DC/Highway%20to%20Hell/01%20-%20Highway%20to%20Hell.mp3</res>
                          </item>
                          </DIDL-Lite>"/>
-                         <PlaybackStorageMedium val="NETWORK"/>     
-                         <PossiblePlaybackStorageMedia val="NETWORK"/>     
-                         <RecordStorageMedium val="NOT_IMPLEMENTED"/>     
-                         <PossibleRecordStorageMedia val="NOT_IMPLEMENTED"/>     
-                         <RecordMediumWriteStatus val="NOT_IMPLEMENTED"/>     
-                         <CurrentRecordQualityMode val="NOT_IMPLEMENTED"/>     
-                         <PossibleRecordQualityModes val="NOT_IMPLEMENTED"/>     
+                         <PlaybackStorageMedium val="NETWORK"/>
+                         <PossiblePlaybackStorageMedia val="NETWORK"/>
+                         <RecordStorageMedium val="NOT_IMPLEMENTED"/>
+                         <PossibleRecordStorageMedia val="NOT_IMPLEMENTED"/>
+                         <RecordMediumWriteStatus val="NOT_IMPLEMENTED"/>
+                         <CurrentRecordQualityMode val="NOT_IMPLEMENTED"/>
+                         <PossibleRecordQualityModes val="NOT_IMPLEMENTED"/>
                          </InstanceID>
                          </Event>
                          */
