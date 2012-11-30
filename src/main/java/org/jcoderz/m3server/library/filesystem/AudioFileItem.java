@@ -3,6 +3,7 @@ package org.jcoderz.m3server.library.filesystem;
 import java.io.File;
 import java.util.logging.Logger;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.util.Logging;
@@ -84,6 +85,7 @@ public class AudioFileItem extends FileItem {
         this.genre = genre;
     }
 
+    @JsonIgnore
     public File getFile() {
         return file;
     }
