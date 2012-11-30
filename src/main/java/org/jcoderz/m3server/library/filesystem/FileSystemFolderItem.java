@@ -118,7 +118,7 @@ public class FileSystemFolderItem extends FolderItem {
                         }
                         addChild(fi);
                     } else {
-                        MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
+                        MusicBrainzMetadata mb = new MusicBrainzMetadata(f, true);
                         AudioFileItem fi = new AudioFileItem(this, file);
                         fi.setFile(f);
                         fi.setBitrate(mb.getBitrate() * 1024L / 8);
