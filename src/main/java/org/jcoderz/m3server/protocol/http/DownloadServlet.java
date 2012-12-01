@@ -93,6 +93,7 @@ public class DownloadServlet extends HttpServlet {
                     sendFile(response.getOutputStream(), file, clientHost);
                 } else {
                     logger.log(Level.FINE, "Sending partial file as requested: {0}", re);
+                    response.setHeader("Content-Range", "bytes " + re.getFirstPos() + "-" + re.getLastPos() + "/" + length);
                     response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                     response.setContentLength((int) (re.getLastPos() - re.getFirstPos() + 1));
                     RandomAccessFile raf = new RandomAccessFile(file, "r");
