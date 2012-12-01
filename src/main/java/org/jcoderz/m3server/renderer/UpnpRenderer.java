@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.filesystem.AudioFileItem;
+import org.jcoderz.m3server.renderer.Info.State;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.DidlUtil;
 import org.jcoderz.m3server.util.Logging;
@@ -52,6 +53,7 @@ public class UpnpRenderer extends AbstractRenderer {
     private UpnpService upnpService;
     private Configuration config;
     private String staticBaseUrl;
+    private Info info;
 
     /**
      * Constructor.
@@ -63,6 +65,7 @@ public class UpnpRenderer extends AbstractRenderer {
         this.upnpService = upnpService;
         this.device = device;
         this.config = config;
+        this.info = new Info();
 
         staticBaseUrl = config.getString(Config.HTTP_PROTOCOL_KEY) + "://"
                 + config.getString(Config.HTTP_HOSTNAME_KEY) + ":"
@@ -90,11 +93,11 @@ public class UpnpRenderer extends AbstractRenderer {
     }
 
     @Override
-    public Position position() {
+    public Info info() {
         Service service = device.findService(new UDAServiceId("AVTransport"));
-        logger.log(Level.INFO, "Getting Position Info");
+        logger.log(Level.INFO, "Getting Info");
 
-        return upnpGetPositionInfo(service);
+        return upnpGetInfo(service);
     }
 
     @Override
@@ -193,21 +196,25 @@ public class UpnpRenderer extends AbstractRenderer {
         upnpService.getControlPoint().execute(playAction);
     }
 
-    private Position upnpGetPositionInfo(Service service) throws InvalidValueException {
-        final Position position = new Position();
+    private Info upnpGetInfo(Service service) throws InvalidValueException {
+
         Action getPositionInfoAction = service.getAction("GetPositionInfo");
         ActionInvocation getPositionInfoInvocation = new ActionInvocation(getPositionInfoAction);
         getPositionInfoInvocation.setInput("InstanceID", new UnsignedIntegerFourBytes(0));
         new ActionCallback.Default(getPositionInfoInvocation, upnpService.getControlPoint()).run();
         Map<String, ActionArgumentValue> args = getPositionInfoInvocation.getOutputMap();
-        System.err.println("### " + args);
         if (args != null) {
-            position.setDuration((String) args.get("TrackDuration").getValue());
-            position.setUri((String) args.get("TrackURI").getValue());
-            position.setRelTime((String) args.get("RelTime").getValue());
-            position.setAbsTime((String) args.get("AbsTime").getValue());
+            info.setTrack((String) args.get("Track").getValue());
+            info.setDuration((String) args.get("TrackDuration").getValue());
+            info.setUri((String) args.get("TrackURI").getValue());
+            info.setRelTime((String) args.get("RelTime").getValue());
+            info.setAbsTime((String) args.get("AbsTime").getValue());
+            info.setRelCount((String) args.get("RelCount").getValue());
+            info.setAbsCount((String) args.get("AbsCount").getValue());
+            String didl = (String) args.get("TrackMetaData").getValue();
+            // TODO: Parse the didl string
         }
-        return position;
+        return info;
     }
 
     private long upnpGetVolume(Service service) throws InvalidValueException {
@@ -266,13 +273,18 @@ public class UpnpRenderer extends AbstractRenderer {
                     AVTransportLastChangeParser lcParser = new AVTransportLastChangeParser();
                     try {
                         LastChange lc = new LastChange(lcParser, lcStr);
-
-
                         TransportState ts = lc.getEventedValue(0, AVTransportVariable.TransportState.class);
-                        if (ts != null && ts.getValue() == org.teleal.cling.support.model.TransportState.PLAYING) {
-                            // TODO
+                        if (ts != null) {
+                            if (ts.getValue() == org.teleal.cling.support.model.TransportState.PLAYING) {
+                                info.setState(State.PLAYING);
+                            } else if (ts.getValue() == org.teleal.cling.support.model.TransportState.STOPPED) {
+                                info.setState(State.STOPPED);
+                            } else if (ts.getValue() == org.teleal.cling.support.model.TransportState.PAUSED_PLAYBACK) {
+                                info.setState(State.PAUSED);
+                            } else if (ts.getValue() == org.teleal.cling.support.model.TransportState.TRANSITIONING) {
+                                info.setState(State.TRANSITIONING);
+                            }
                         }
-
                         /*
                          <Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/">
                          <InstanceID val="0">
@@ -324,10 +336,5 @@ public class UpnpRenderer extends AbstractRenderer {
         };
 
         upnpService.getControlPoint().execute(callback);
-    }
-
-    @Override
-    public String info() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

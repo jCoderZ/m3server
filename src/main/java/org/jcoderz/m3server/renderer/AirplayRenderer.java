@@ -11,6 +11,7 @@ import org.jcoderz.m3server.util.Logging;
 public class AirplayRenderer extends AbstractRenderer {
 
     private static final Logger logger = Logging.getLogger(AirplayRenderer.class);
+
     /**
      * Constructor.
      *
@@ -36,17 +37,12 @@ public class AirplayRenderer extends AbstractRenderer {
     }
 
     @Override
-    public String info() {
+    public Info info() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void play() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Position position() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

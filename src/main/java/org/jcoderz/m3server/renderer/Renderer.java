@@ -39,14 +39,7 @@ public interface Renderer {
      *
      * @return information on the renderer
      */
-    String info();
-
-    /**
-     * Gets position information.
-     * 
-     * @return position information
-     */
-    Position position();
+    Info info();
 
     /**
      * Stops playback of the renderer.
@@ -67,7 +60,7 @@ public interface Renderer {
 
     /**
      * Returns the volume level of the renderer.
-     * 
+     *
      * @return the volume level of the renderer
      */
     long volume();

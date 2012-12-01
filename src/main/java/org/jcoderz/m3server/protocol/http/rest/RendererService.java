@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import org.jcoderz.m3server.renderer.Position;
+import org.jcoderz.m3server.renderer.Info;
 
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
@@ -75,13 +75,13 @@ public class RendererService {
      * @return the position info
      */
     @GET
-    @Path("/{renderer}/position")
+    @Path("/{renderer}/info")
     @Produces("application/json")
-    public Position position(@PathParam("renderer") String renderer) {
-        Position position = null;
+    public Info info(@PathParam("renderer") String renderer) {
+        Info position = null;
         Renderer r = findRenderer(renderer);
         if (r != null) {
-            position = r.position();
+            position = r.info();
         }
         return position;
     }
