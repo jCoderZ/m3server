@@ -1,6 +1,5 @@
 package org.jcoderz.m3server.library;
 
-import java.net.URL;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
