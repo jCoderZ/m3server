@@ -78,6 +78,23 @@
         </configuration>
       </plugin>
       <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-shade-plugin</artifactId>
         <version>2.0</version>
         <executions>
@@ -87,18 +104,31 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>META-INF/*.SF</exclude>
+                  <exclude>META-INF/*.RSA</exclude>
+                  <exclude>META-INF/*.INF</exclude>
+                </excludes>
+              </artifactSet>
               <transformers>
                 <transformer>
                   <mainClass>org.jcoderz.m3server.Main</mainClass>
                 </transformer>
+                <transformer>
+                  <resource>META-INF/services/javax.ws.rs.ext.MessageBodyReader</resource>
+                </transformer>
+                <transformer>
+                  <resource>META-INF/services/javax.ws.rs.ext.MessageBodyWriter</resource>
+                </transformer>
               </transformers>
               <filters>
                 <filter>
-                  <artifact>*:*</artifact>
+                  <artifact>org.eclipse.jetty.orbit:javax.servlet</artifact>
                   <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/ECLIPSE.SF</exclude>
+                    <exclude>META-INF/ECLIPSE.RSA</exclude>
+                    <exclude>META-INF/eclipse.inf</exclude>
                   </excludes>
                 </filter>
               </filters>
@@ -153,13 +183,6 @@
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs-all</artifactId>
-      <version>2.3.4.Final</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
