@@ -71,7 +71,8 @@ public class FileSystemFolderItem extends FolderItem {
         super(parent, name);
         this.properties = properties;
         isRoot = true;
-        String rootStr = (String) properties.get("root");
+        // TODO: Do we need a better properties library?
+        String rootStr = ((String) properties.get("root")).replaceAll("\\$\\{M3_LIBRARY_HOME\\}", System.getProperty("M3_LIBRARY_HOME"));
         if (rootStr != null && !rootStr.isEmpty()) {
             root = new File(rootStr);
             logger.log(Level.CONFIG, "File system '" + name + "' root folder: {0}", root);
