@@ -204,15 +204,20 @@ public class UpnpRenderer extends AbstractRenderer {
         new ActionCallback.Default(getPositionInfoInvocation, upnpService.getControlPoint()).run();
         Map<String, ActionArgumentValue> args = getPositionInfoInvocation.getOutputMap();
         if (args != null) {
-            info.setTrack((String) args.get("Track").getValue());
+            // TODO: Use types other than string
+            UnsignedIntegerFourBytes val = (UnsignedIntegerFourBytes) args.get("Track").getValue();
+            info.setTrack(val.toString());
             info.setDuration((String) args.get("TrackDuration").getValue());
             info.setUri((String) args.get("TrackURI").getValue());
             info.setRelTime((String) args.get("RelTime").getValue());
             info.setAbsTime((String) args.get("AbsTime").getValue());
-            info.setRelCount((String) args.get("RelCount").getValue());
-            info.setAbsCount((String) args.get("AbsCount").getValue());
-            String didl = (String) args.get("TrackMetaData").getValue();
+            Integer intVal = (Integer) args.get("RelCount").getValue();
+            info.setRelCount(intVal.toString());
+            intVal = (Integer) args.get("AbsCount").getValue();
+            info.setAbsCount(intVal.toString());
+
             // TODO: Parse the didl string
+            String didl = (String) args.get("TrackMetaData").getValue();
         }
         return info;
     }
