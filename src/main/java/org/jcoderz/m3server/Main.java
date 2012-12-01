@@ -23,6 +23,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Configuration config = Config.getConfig();
+        String home = config.getString("M3_LIBRARY_HOME");
+        if (home == null || home.isEmpty()) {
+            logger.severe("M3_LIBRARY_HOME has not been set");
+            System.exit(1);
+        }
+
         Library.init(config);
 
         ProtocolAdapterRegistry.register(JettyHttpProtocolAdapter.class, config);
@@ -38,7 +44,7 @@ public class Main {
         ProtocolAdapterRegistry.startupAdapters();
         logger.info("Startup of m3server done!");
         ProtocolAdapterRegistry.waitForTermination();
-        
+
         logger.info("Shutting down m3server...");
         ProtocolAdapterRegistry.shutdownAdapters();
         logger.info("Shutdown of m3server done! Exiting...");
