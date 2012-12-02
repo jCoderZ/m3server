@@ -2,8 +2,10 @@ package org.jcoderz.m3server.protocol.http;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import java.net.URL;
+import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.DispatcherType;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -97,6 +99,9 @@ public class JettyHttpProtocolAdapter extends ProtocolAdapter {
         ServletContextHandler servletContextHandler = new ServletContextHandler(server, servletRootContextPath);
         servletContextHandler.addServlet(restServlet, restServletContextPath);
         servletContextHandler.addServlet(downloadServlet, downloadServletContextPath);
+        EnumSet<DispatcherType> all = EnumSet.of(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.FORWARD,
+                DispatcherType.INCLUDE, DispatcherType.REQUEST);
+        servletContextHandler.addFilter(ThreadContextFilter.class, "/*", all);
         hl.addHandler(servletContextHandler);
 
         server.setHandler(hl);
