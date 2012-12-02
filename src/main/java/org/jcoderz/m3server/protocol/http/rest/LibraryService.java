@@ -20,7 +20,7 @@ import org.jcoderz.m3server.library.LibraryException;
 import org.jcoderz.m3server.util.Logging;
 
 /**
- * This class provides a RESTful service to the Library functionality.
+ * This class provides a RESTful service interface to the Library functionality.
  *
  * @mrumpf
  */
