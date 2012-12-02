@@ -1,14 +1,18 @@
 package org.jcoderz.m3server.renderer;
 
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
+import org.jcoderz.m3server.library.LibraryException;
 import org.jcoderz.m3server.library.filesystem.AudioFileItem;
+import org.jcoderz.m3server.playlist.PlaylistManager;
 import org.jcoderz.m3server.renderer.Info.State;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.DidlUtil;
@@ -39,6 +43,7 @@ import org.teleal.cling.support.avtransport.lastchange.AVTransportVariable.Trans
 import org.teleal.cling.support.contentdirectory.DIDLParser;
 import org.teleal.cling.support.lastchange.LastChange;
 import org.teleal.cling.support.model.DIDLContent;
+import org.teleal.cling.support.model.Res;
 import org.teleal.cling.support.renderingcontrol.callback.SetVolume;
 
 /**
@@ -80,8 +85,16 @@ public class UpnpRenderer extends AbstractRenderer {
         Service service = device.findService(new UDAServiceId("AVTransport"));
         logger.log(Level.INFO, "Playing: {0}", url);
 
-        upnpSetAvTransportUri(service, url);
-        upnpPlay(service);
+        try {
+            Item item = Library.browse(url);
+            upnpSetAvTransportUri(service, item, url);
+            upnpPlay(service);
+            PlaylistManager.addItem(getName(), item);
+        } catch (LibraryException ex) {
+            logger.log(Level.SEVERE, "The item could not be found" + url, ex);
+            // TODO: throw ??
+        }
+
     }
 
     @Override
@@ -155,21 +168,28 @@ public class UpnpRenderer extends AbstractRenderer {
         upnpService.getControlPoint().execute(pauseAction);
     }
 
-    private void upnpSetAvTransportUri(Service service, String path) throws InvalidValueException {
-        try {
-            DIDLContent didlContent = new DIDLContent();
-            Item item = Library.browse(path);
-            // TODO: create base url from config
-            String url = staticBaseUrl + UrlUtil.encodePath(path);
-            if (AudioFileItem.class.isAssignableFrom(item.getClass())) {
-                AudioFileItem audioFileItem = (AudioFileItem) item;
-                // TODO: remove dummy ids
-                didlContent.addItem(DidlUtil.createMusicTrack(audioFileItem, url, 100, 99));
-            } else {
-                // TODO
+    private void upnpSetAvTransportUri(Service service, Item item, String path) throws InvalidValueException {
+        DIDLContent didlContent = new DIDLContent();
+        String url = staticBaseUrl + UrlUtil.encodePath(path);
+        if (AudioFileItem.class.isAssignableFrom(item.getClass())) {
+            AudioFileItem audioFileItem = (AudioFileItem) item;
+            // TODO: remove dummy ids
+            didlContent.addItem(DidlUtil.createMusicTrack(audioFileItem, url, 100, 99));
+        } else if (FolderItem.class.isAssignableFrom(item.getClass())) {
+            FolderItem fi = (FolderItem) item;
+            List<Item> children = fi.getChildren();
+            for (Item child : children) {
+                if (AudioFileItem.class.isAssignableFrom(child.getClass())) {
+                    AudioFileItem audioFileItem = (AudioFileItem) child;
+                    // TODO: remove dummy ids
+                    didlContent.addItem(DidlUtil.createMusicTrack(audioFileItem, url, 100, 99));
+                }
             }
+        }
 
-            String didlContentStr = new DIDLParser().generate(didlContent);
+        String didlContentStr;
+        try {
+            didlContentStr = new DIDLParser().generate(didlContent);
             logger.log(Level.INFO, "didlContentStr={0}", didlContentStr);
             ActionCallback setAVTransportURIAction =
                     new SetAVTransportURI(service, url, didlContentStr) {
@@ -180,7 +200,8 @@ public class UpnpRenderer extends AbstractRenderer {
             };
             upnpService.getControlPoint().execute(setAVTransportURIAction);
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "TODO", ex);
+            logger.log(Level.SEVERE, "DIDLParser threw an unspecified exception", ex);
+            // TOOD: Throw runtime ???
         }
     }
 
@@ -215,9 +236,7 @@ public class UpnpRenderer extends AbstractRenderer {
             info.setRelCount(intVal.toString());
             intVal = (Integer) args.get("AbsCount").getValue();
             info.setAbsCount(intVal.toString());
-
-            // TODO: Parse the didl string
-            String didl = (String) args.get("TrackMetaData").getValue();
+            parseMetadata((String) args.get("TrackMetaData").getValue());
         }
         return info;
     }
@@ -341,5 +360,39 @@ public class UpnpRenderer extends AbstractRenderer {
         };
 
         upnpService.getControlPoint().execute(callback);
+    }
+
+    private void parseMetadata(String xml) {
+        // TODO: Parse the didl string
+        String didl = xml;
+        DIDLParser parser = new DIDLParser();
+        try {
+            DIDLContent c = parser.parse(didl);
+            List<org.teleal.cling.support.model.item.Item> l = c.getItems();
+            for (org.teleal.cling.support.model.item.Item i : l) {
+                // TODO
+                i.getTitle();
+                i.getCreator();
+                i.getClazz();
+                List<Res> resources = i.getResources();
+                for (Res res : resources) {
+                }
+                /*
+                 <DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">
+                 <item id="100" parentID="99" restricted="false">
+                 <dc:title>Love Is Reason</dc:title>
+                 <dc:creator>a-ha</dc:creator>
+                 <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+                 <upnp:album>Hunting High and Low</upnp:album>
+                 <upnp:artist role="">a-ha</upnp:artist>
+                 <upnp:originalTrackNumber>2</upnp:originalTrackNumber>
+                 <upnp:genre>(13)Pop</upnp:genre>
+                 <res bitrate="20480" duration="3:07" protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01500000000000000000000000000000" size="3798198">http://192.168.0.17:8080/m3server/download/audio/filesystem/01-gold/A/a-ha/Hunting%20High%20and%20Low/08%20-%20Love%20Is%20Reason.mp3</res>
+                 </item>
+                 </DIDL-Lite>                             */
+            }
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "TODO", ex);
+        }
     }
 }

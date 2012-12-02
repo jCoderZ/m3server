@@ -2,6 +2,8 @@ package org.jcoderz.m3server.playlist;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.jcoderz.m3server.library.Item;
 
 /**
@@ -17,10 +19,17 @@ public class Playlist {
         M3U, M3UEXT, PLS
     };
     private String name;
+    private String baseUrl;
     List<Item> items = new ArrayList<>();
 
     public Playlist(String name) {
         this.name = name;
+        this.baseUrl = "";
+    }
+
+    public Playlist(String name, String baseUrl) {
+        this.name = name;
+        this.baseUrl = baseUrl;
     }
 
     public void add(Item i) {
@@ -61,7 +70,7 @@ public class Playlist {
     private void playlistBody(PlaylistType type, StringBuilder sb, Item item, int i) {
         switch (type) {
             case M3U: {
-                sb.append(item.getPath());
+                sb.append(baseUrl).append(item.getPath());
                 sb.append("\n");
                 break;
             }
@@ -69,7 +78,7 @@ public class Playlist {
                 sb.append("#EXTINF:-1,");
                 sb.append(item.getName());
                 sb.append("\n");
-                sb.append(item.getPath());
+                sb.append(baseUrl).append(item.getPath());
                 sb.append("\n");
                 break;
             }
@@ -77,7 +86,7 @@ public class Playlist {
                 sb.append("File");
                 sb.append(i);
                 sb.append('=');
-                sb.append(item.getPath());
+                sb.append(baseUrl).append(item.getPath());
                 sb.append("\n");
                 sb.append("Title");
                 sb.append(i);
@@ -91,5 +100,10 @@ public class Playlist {
                 break;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
     }
 }
