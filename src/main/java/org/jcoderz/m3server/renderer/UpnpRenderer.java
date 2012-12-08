@@ -81,20 +81,21 @@ public class UpnpRenderer extends AbstractRenderer {
     }
 
     @Override
-    public void play(String url) {
+    public Item playpath(String url) {
         Service service = device.findService(new UDAServiceId("AVTransport"));
         logger.log(Level.INFO, "Playing: {0}", url);
 
+        Item item = null;
         try {
-            Item item = Library.browse(url);
+            item = Library.browse(url);
+
             upnpSetAvTransportUri(service, item, url);
             upnpPlay(service);
-            PlaylistManager.addItem(getName(), item);
         } catch (LibraryException ex) {
             logger.log(Level.SEVERE, "The item could not be found" + url, ex);
             // TODO: throw ??
         }
-
+        return item;
     }
 
     @Override

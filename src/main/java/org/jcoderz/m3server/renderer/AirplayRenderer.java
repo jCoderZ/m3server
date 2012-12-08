@@ -1,6 +1,7 @@
 package org.jcoderz.m3server.renderer;
 
 import java.util.logging.Logger;
+import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.util.Logging;
 
 /**
@@ -22,7 +23,7 @@ public class AirplayRenderer extends AbstractRenderer {
     }
 
     @Override
-    public void play(String url) {
+    public Item playpath(String url) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

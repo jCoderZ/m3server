@@ -1,5 +1,8 @@
 package org.jcoderz.m3server.renderer;
 
+import org.jcoderz.m3server.library.Item;
+import org.jcoderz.m3server.playlist.Playlist;
+
 /**
  * The Renderer interface.
  *
@@ -26,8 +29,9 @@ public interface Renderer {
      * Sends a URL for playback to the renderer.
      *
      * @param url the URL to play
+     * @return the item represented by the path
      */
-    void play(String url);
+    Item playpath(String url);
 
     /**
      * Plays any stored URL.
@@ -64,4 +68,18 @@ public interface Renderer {
      * @return the volume level of the renderer
      */
     long volume();
+
+    /**
+     * Sets a playlist on the renderer.
+     *
+     * @param playlist the playlist to set
+     */
+    void playlist(Playlist playlist);
+
+    /**
+     * Returns the playlist of the renderer.
+     *
+     * @return the playlist of the renderer
+     */
+    Playlist playlist();
 }
