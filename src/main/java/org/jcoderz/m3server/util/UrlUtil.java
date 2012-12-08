@@ -1,10 +1,12 @@
 package org.jcoderz.m3server.util;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class with URL related helper methods.
@@ -12,6 +14,8 @@ import java.util.StringTokenizer;
  * @author mrumpf
  */
 public class UrlUtil {
+
+    private static final Logger logger = Logging.getLogger(UrlUtil.class);
 
     private UrlUtil() {
         // do not allow instances
@@ -76,5 +80,24 @@ public class UrlUtil {
         } catch (UnsupportedEncodingException uee) {
             throw new RuntimeException("UTF-8 unsupported!?", uee);
         }
+    }
+
+    /**
+     * Returns the hostname for the specified IP address or the IP address when
+     * hostname resolution failed.
+     *
+     * @param inetAddr the IP address to find the hostname for
+     * @return the hostname of the IP address
+     */
+    public static String getHostByName(String inetAddr) {
+        String result = inetAddr;
+        try {
+            InetAddress addr = InetAddress.getByName(inetAddr);
+            result = addr.getHostName();
+        } catch (UnknownHostException ex) {
+            logger.log(Level.WARNING, "", ex);
+        }
+        return result;
+
     }
 }
