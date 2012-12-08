@@ -30,6 +30,6 @@ public final class PlaylistManager {
     }
 
     public static Map<String, Playlist> getPlaylists() {
-        return Collections.unmodifiableMap(PLAYLIST_MAP);
+        return PLAYLIST_MAP;
     }
 }

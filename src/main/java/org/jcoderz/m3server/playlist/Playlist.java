@@ -25,10 +25,18 @@ public class Playlist {
 
     };
     private String name;
-    List<Item> items = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
     public Playlist(String name) {
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Item> getItems() {
+        return items;
     }
 
     public void add(Item item) {
