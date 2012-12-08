@@ -9,11 +9,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import org.jcoderz.m3server.library.Item;
+import org.jcoderz.m3server.playlist.PlaylistManager;
 import org.jcoderz.m3server.renderer.Info;
 
 import org.jcoderz.m3server.renderer.Renderer;
 import org.jcoderz.m3server.renderer.RendererRegistry;
 import org.jcoderz.m3server.util.Logging;
+import org.jcoderz.m3server.util.ThreadContext;
+import org.jcoderz.m3server.util.UrlUtil;
 
 /**
  * This class provides a RESTful service to the renderer functionality.
@@ -46,10 +50,11 @@ public class RendererService {
      */
     @POST
     @Path("/{renderer}/playpath{path:.*}")
-    public void play(@PathParam("renderer") String renderer, @PathParam("path") String path) {
+    public void playpath(@PathParam("renderer") String renderer, @PathParam("path") String path) {
         Renderer r = findRenderer(renderer);
         if (r != null) {
-            r.play(path);
+            Item i = r.playpath(path);
+            PlaylistManager.getPlaylist(UrlUtil.getHostByName(ThreadContext.getContext().getHost())).add(i);
         }
     }
 
