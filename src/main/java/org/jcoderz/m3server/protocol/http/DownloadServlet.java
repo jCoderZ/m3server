@@ -19,7 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.configuration.Configuration;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.EofException;
 import org.jcoderz.m3server.library.FolderItem;
@@ -28,10 +27,12 @@ import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
 import org.jcoderz.m3server.library.filesystem.AudioFileItem;
 import org.jcoderz.m3server.playlist.Playlist;
+import org.jcoderz.m3server.playlist.PlaylistManager;
 import org.jcoderz.m3server.protocol.http.RangeSet.Range;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.DlnaUtil;
 import org.jcoderz.m3server.util.Logging;
+import org.jcoderz.m3server.util.ThreadContext;
 import org.jcoderz.m3server.util.UrlUtil;
 
 /**
@@ -78,8 +79,6 @@ public class DownloadServlet extends HttpServlet {
             return;
         }
         addHeaders(response);
-        // TODO: use a servlet filter and attach those information to the current thread
-        String clientHost = request.getRemoteHost();
         if (file.isFile()) {
 
             setMimeType(response, file);
@@ -100,7 +99,7 @@ public class DownloadServlet extends HttpServlet {
                         response.setContentLength((int) length);
                         response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                         // full file requested
-                        sendFile(response.getOutputStream(), file, clientHost);
+                        sendFile(response.getOutputStream(), file);
                     } else {
                         logger.log(Level.FINE, "Sending partial file as requested: {0}", re);
                         response.setHeader("Content-Range", "bytes " + re.getFirstPos() + "-" + re.getLastPos() + "/" + length);
@@ -112,14 +111,14 @@ public class DownloadServlet extends HttpServlet {
                             MappedByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, re.getFirstPos(), (re.getLastPos() - re.getFirstPos() + 1));
                             logger.log(Level.FINE, "buf: {0}", buf.toString());
                             ByteBufferBackedInputStream bais = new ByteBufferBackedInputStream(buf);
-                            sendFile(response.getOutputStream(), bais, clientHost);
+                            sendFile(response.getOutputStream(), bais);
                         }
                     }
                 }
             } else {
                 response.setStatus(HttpStatus.OK_200);
                 response.setContentLength((int) length);
-                sendFile(response.getOutputStream(), file, clientHost);
+                sendFile(response.getOutputStream(), file);
             }
         } else if (file.isDirectory()) {
             response.setHeader("Connection", "keep-alive");
@@ -129,13 +128,7 @@ public class DownloadServlet extends HttpServlet {
             response.setHeader("Accept-Ranges", "bytes");
             response.setContentType(MIMETYPE_AUDIO_MPEGURL);
 
-            Configuration config = Config.getConfig();
-            String baseUrl = config.getString(Config.HTTP_PROTOCOL_KEY) + "://"
-                    + config.getString(Config.HTTP_HOSTNAME_KEY) + ":"
-                    + config.getString(Config.HTTP_PORT_KEY)
-                    + config.getString(Config.HTTP_SERVLET_ROOT_CONTEXT_KEY)
-                    + config.getString(Config.HTTP_SERVLET_DOWNLOAD_ROOT_CONTEXT_KEY);
-            Playlist pls = new Playlist("adhoc", baseUrl);
+            Playlist pls = new Playlist("adhoc");
             try {
                 Item i = Library.browse(request.getPathInfo());
                 if (FolderItem.class.isAssignableFrom(i.getClass())) {
@@ -151,25 +144,25 @@ public class DownloadServlet extends HttpServlet {
                 Logger.getLogger(DownloadServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            String plsStr = pls.export(Playlist.PlaylistType.M3U);
+            String plsStr = pls.export(Playlist.PlaylistType.M3U, Config.getDownloadBaseUrl());
             byte[] bytes = plsStr.getBytes();
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             response.setStatus(HttpStatus.OK_200);
             response.setContentLength(bytes.length);
-            sendFile(response.getOutputStream(), bais, clientHost);
+            sendFile(response.getOutputStream(), bais);
         }
     }
 
-    private void sendFile(OutputStream os, File f, String clientHost)
+    private void sendFile(OutputStream os, File f)
             throws IOException {
         try (InputStream fis = new FileInputStream(f)) {
-            sendFile(os, fis, clientHost);
+            sendFile(os, fis);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "TODO: sendFile", ex);
         }
     }
 
-    private void sendFile(OutputStream os, InputStream is, String clientHost) {
+    private void sendFile(OutputStream os, InputStream is) {
         long count = 0L;
         try {
             byte[] buffer = new byte[8192];
@@ -180,7 +173,7 @@ public class DownloadServlet extends HttpServlet {
             }
             os.flush();
         } catch (EofException ex) {
-            logger.log(Level.FINER, "Connection reset by peer: {0}", clientHost);
+            logger.log(Level.FINER, "Connection reset by peer: {0}", ThreadContext.getContext().getHost());
         } catch (IOException ex) {
             logger.log(Level.FINER, "I/O Exception occured: {0}", ex);
         }
@@ -221,6 +214,7 @@ public class DownloadServlet extends HttpServlet {
         try {
             i = Library.browse(pathInfo);
             result = new File(new URI(UrlUtil.encodePath(i.getUrl())));
+            PlaylistManager.getPlaylist(ThreadContext.getContext().getHost()).add(i);
         } catch (URISyntaxException | LibraryException ex) {
             logger.log(Level.SEVERE, null, ex);
             // TODO: Throw exception

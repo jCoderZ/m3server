@@ -2,9 +2,12 @@ package org.jcoderz.m3server.playlist;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.jcoderz.m3server.library.Item;
+import org.jcoderz.m3server.util.Logging;
 
 /**
  * This class represents a playlist. It can be exported in different formats:
@@ -14,40 +17,42 @@ import org.jcoderz.m3server.library.Item;
  */
 public class Playlist {
 
+    private static final Logger logger = Logging.getLogger(Playlist.class);
+
     public enum PlaylistType {
 
-        M3U, M3UEXT, PLS
+        M3U, M3UEXT, PLS /* M3U8 ?? */
+
     };
     private String name;
-    private String baseUrl;
     List<Item> items = new ArrayList<>();
 
     public Playlist(String name) {
         this.name = name;
-        this.baseUrl = "";
     }
 
-    public Playlist(String name, String baseUrl) {
-        this.name = name;
-        this.baseUrl = baseUrl;
+    public void add(Item item) {
+        logger.log(Level.FINE, "Adding item {0} to device playlist {1}", new Object[]{name, item});
+        items.add(item);
     }
 
-    public void add(Item i) {
-        items.add(i);
+    public void remove(Item item) {
+        logger.log(Level.FINE, "Removing item {0} from device playlist {1}", new Object[]{name, item});
+        items.remove(item);
     }
 
-    public String export(PlaylistType type) {
+    public String export(PlaylistType type, String baseUrl) {
         StringBuilder sb = new StringBuilder();
-        playlistHeader(type, sb);
+        playlistHeader(baseUrl, type, sb);
         int i = 1;
         for (Item item : items) {
-            playlistBody(type, sb, item, i);
+            playlistBody(baseUrl, type, sb, item, i);
             i++;
         }
         return sb.toString();
     }
 
-    private void playlistHeader(PlaylistType type, StringBuilder sb) {
+    private void playlistHeader(String baseUrl, PlaylistType type, StringBuilder sb) {
         switch (type) {
             case M3U: {
                 break;
@@ -67,7 +72,7 @@ public class Playlist {
         }
     }
 
-    private void playlistBody(PlaylistType type, StringBuilder sb, Item item, int i) {
+    private void playlistBody(String baseUrl, PlaylistType type, StringBuilder sb, Item item, int i) {
         switch (type) {
             case M3U: {
                 sb.append(baseUrl).append(item.getPath());

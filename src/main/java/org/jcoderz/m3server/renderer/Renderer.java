@@ -68,18 +68,4 @@ public interface Renderer {
      * @return the volume level of the renderer
      */
     long volume();
-
-    /**
-     * Sets a playlist on the renderer.
-     *
-     * @param playlist the playlist to set
-     */
-    void playlist(Playlist playlist);
-
-    /**
-     * Returns the playlist of the renderer.
-     *
-     * @return the playlist of the renderer
-     */
-    Playlist playlist();
 }
