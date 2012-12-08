@@ -71,4 +71,13 @@ public class Config {
         }
         return CONFIG;
     }
+
+    public static String getDownloadBaseUrl() {
+        String baseUrl = CONFIG.getString(Config.HTTP_PROTOCOL_KEY) + "://"
+                + CONFIG.getString(Config.HTTP_HOSTNAME_KEY) + ":"
+                + CONFIG.getString(Config.HTTP_PORT_KEY)
+                + CONFIG.getString(Config.HTTP_SERVLET_ROOT_CONTEXT_KEY)
+                + CONFIG.getString(Config.HTTP_SERVLET_DOWNLOAD_ROOT_CONTEXT_KEY);
+        return baseUrl;
+    }
 }
