@@ -27,18 +27,38 @@ public class Playlist {
     private String name;
     private List<Item> items = new ArrayList<>();
 
+    /**
+     * Constructor.
+     *
+     * @param name the name of the playlist
+     */
     public Playlist(String name) {
         this.name = name;
     }
 
+    /**
+     * Returns the name of the playlist.
+     *
+     * @return the name of the playlist
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns a list of items from this playlist.
+     *
+     * @return the list of items
+     */
     public List<Item> getItems() {
         return items;
     }
 
+    /**
+     * Adds an item to the playlist.
+     *
+     * @param item the item to add
+     */
     public void add(Item item) {
         logger.log(Level.FINE, "Adding item {0} to device playlist {1}", new Object[]{name, item});
         items.add(item);
@@ -49,6 +69,13 @@ public class Playlist {
         items.remove(item);
     }
 
+    /**
+     * Exports the playlist as String.
+     *
+     * @param type the type to export
+     * @param baseUrl the base url
+     * @return the playlist as string of the specified format
+     */
     public String export(PlaylistType type, String baseUrl) {
         StringBuilder sb = new StringBuilder();
         playlistHeader(baseUrl, type, sb);

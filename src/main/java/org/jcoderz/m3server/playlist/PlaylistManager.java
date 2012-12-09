@@ -1,6 +1,5 @@
 package org.jcoderz.m3server.playlist;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -20,6 +19,12 @@ public final class PlaylistManager {
         // do not allow instances of this class
     }
 
+    /**
+     * Returns a playlist for the specified device.
+     *
+     * @param device the name of the device
+     * @return the playlist for the device
+     */
     public static synchronized Playlist getPlaylist(String device) {
         Playlist result = PLAYLIST_MAP.get(device);
         if (result == null) {
@@ -29,6 +34,11 @@ public final class PlaylistManager {
         return result;
     }
 
+    /**
+     * Returns a map of all playlists.
+     *
+     * @return the device playlist map
+     */
     public static Map<String, Playlist> getPlaylists() {
         return PLAYLIST_MAP;
     }
