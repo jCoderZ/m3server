@@ -1,0 +1,19 @@
+input#progress-slider {
+    visibility: hidden;
+    position:relative;
+    left:-500px;
+    height: 0px;
+}
+
+div.ui-slider {
+    position:relative;
+    /*left:-50px;*/
+}
+
+#progress-start {
+    text-align:right;
+}
+
+#title {
+    text-align:center;
+}

@@ -1,20 +1,21 @@
-var playlist =
-        $(document).ready(function() {
-    playlist = new jPlayerPlaylist({
-        jPlayer: "#jquery_jplayer_1",
-        cssSelectorAncestor: "#jp_container_1"
-    }, [
-    ], {
-        swfPath: "jQuery.jPlayer.2.1.0",
-        supplied: "oga, mp3",
-        size: {
-            width: "320px",
-            height: "320px"
-        }
-    });
+var playlist;
+$(document).ready(function() {
+    /*
+     playlist = new jPlayerPlaylist({
+     jPlayer: "#jquery_jplayer_1",
+     cssSelectorAncestor: "#jp_container_1"
+     }, [
+     ], {
+     swfPath: "jQuery.jPlayer.2.1.0",
+     supplied: "oga, mp3",
+     size: {
+     width: "320px",
+     height: "320px"
+     }
+     });
 
-    $("#jplayer_inspector_1").jPlayerInspector({jPlayer: $("#jquery_jplayer_1")});
-
+     $("#jplayer_inspector_1").jPlayerInspector({jPlayer: $("#jquery_jplayer_1")});
+     */
     $("#search-page").live('pageinit', function() {
 
         $("#searchform").submit(function(event) {
@@ -58,12 +59,14 @@ function search(term) {
                 'text': val.name,
                 'click': function(event) {
                     event.preventDefault();
-                    playlist.add({
-                        title: val.title,
-                        artist: val.artist,
-                        mp3: "rest/library/browse/" + val['path'],
-                        poster: "rest/library/browse/" + val['path'] + "/cover"
-                    });
+                    /*
+                     playlist.add({
+                     title: val.title,
+                     artist: val.artist,
+                     mp3: "rest/library/browse/" + val['path'],
+                     poster: "rest/library/browse/" + val['path'] + "/cover"
+                     });
+                     */
                     return false;
                 }
             }).append($('<h3>', {
@@ -140,8 +143,7 @@ function browse(path) {
 
 function play(renderer, path) {
     var jqxhr = $.post("/m3server/rest/renderer/" + renderer + "/playpath" + path, function() {
-        //alert("/m3server/rest/renderer/" + renderer + "/playpath" + path);
-
+// TODO: Highlight line
     });
 }
 
