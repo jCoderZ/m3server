@@ -16,7 +16,7 @@ public abstract class AbstractItem implements Item {
     protected boolean isRoot = false;
     protected String name;
     protected String displayName;
-    protected String icon;
+    protected Icon icon;
     protected String creator;
     protected Object data;
     protected URL url;
@@ -123,6 +123,16 @@ public abstract class AbstractItem implements Item {
     @Override
     public void setName(String path) {
         this.name = path;
+    }
+
+    @Override
+    public Icon getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(Icon icon) {
+        this.icon = icon;
     }
 
     @Override

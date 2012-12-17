@@ -1,6 +1,7 @@
 package org.jcoderz.m3server.protocol.upnp;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import org.teleal.cling.support.contentdirectory.ContentDirectoryException;
 import org.teleal.cling.support.contentdirectory.DIDLParser;
 import org.teleal.cling.support.model.BrowseFlag;
 import org.teleal.cling.support.model.BrowseResult;
+import org.teleal.cling.support.model.DIDLAttribute;
 import org.teleal.cling.support.model.DIDLContent;
 import org.teleal.cling.support.model.DIDLObject;
 import org.teleal.cling.support.model.Protocol;
@@ -46,6 +48,7 @@ import org.teleal.cling.support.model.ProtocolInfo;
 import org.teleal.cling.support.model.ProtocolInfos;
 import org.teleal.cling.support.model.SortCriterion;
 import org.teleal.cling.support.model.container.Container;
+import org.xml.sax.Attributes;
 
 /**
  * The UPnP MediaServer implementation.
@@ -173,6 +176,13 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         String url = config.getString(Config.HTTP_SERVLET_DOWNLOAD_BASE_URL) + UrlUtil.encodePath(item.getPath());
 
         DIDLObject didlObject = DidlUtil.createMusicTrack((AudioFileItem) item, url, nextId, parentId);
+
+        // add album art
+        DIDLObject.Property albumArtURI = new DIDLObject.Property.UPNP.ALBUM_ART_URI(URI.create(url + "?cover=front"));
+        albumArtURI.addAttribute(new DIDLObject.Property.DLNA.PROFILE_ID(new DIDLAttribute(
+                DIDLObject.Property.DLNA.NAMESPACE.URI,
+                "dlna", "JPEG_TN")));
+        didlObject.addProperty(albumArtURI);
 
         UpnpContainer uc = new UpnpContainer(nextId, didlObject, item);
         idUpnpObjectMap.put(nextId, uc);

@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.EofException;
 import org.jcoderz.m3server.library.FolderItem;
+import org.jcoderz.m3server.library.Icon;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
@@ -92,6 +93,84 @@ public class DownloadServlet extends HttpServlet {
             return;
         }
         addHeaders(response);
+
+        if (request.getParameterMap().size() > 0 && request.getParameterMap().get("cover") != null) {
+            String[] values = request.getParameterMap().get("cover");
+            Icon icon = item.getIcon();
+            ByteArrayInputStream bais = new ByteArrayInputStream(icon.getData());
+            sendFile(response.getOutputStream(), bais);
+        } else {
+            handleFile(file, response, request, item);
+        }
+    }
+
+    private void sendFile(OutputStream os, File f)
+            throws IOException {
+        try (InputStream fis = new FileInputStream(f)) {
+            sendFile(os, fis);
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "TODO: sendFile", ex);
+        }
+    }
+
+    private void sendFile(OutputStream os, InputStream is) {
+        long count = 0L;
+        try {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                count += bytesRead;
+                os.write(buffer, 0, bytesRead);
+            }
+            os.flush();
+        } catch (EofException ex) {
+            logger.log(Level.FINER, "Connection reset by peer: {0}", ThreadContext.getContext().getHost());
+        } catch (IOException ex) {
+            logger.log(Level.FINER, "I/O Exception occured: {0}", ex);
+        }
+        logger.log(Level.FINER, "Sent {0} bytes", count);
+    }
+
+    private void addHeaders(HttpServletResponse response, File file) {
+        long length = file.length();
+        response.setContentLength((int) length);
+        setMimeType(response, file);
+        addHeaders(response);
+    }
+
+    private void addHeaders(HttpServletResponse response) {
+        // TODO: set headers on GET reponse also
+        // TODO: assemble DLNA String -> DlnaUtil
+        response.setHeader("Connection", "keep-alive");
+        response.setHeader("Cache-Control", "public");
+        response.setHeader(DlnaUtil.DLNA_TRANSFER_MODE_KEY, DlnaUtil.DLNA_TRANSFER_MODE_STREAMING);
+        response.setHeader(DlnaUtil.DLNA_CONTENT_FEATURES_KEY, DlnaUtil.contentFeatures(DlnaUtil.DLNA_FLAGS_LIMOP_BYTES));
+        response.setHeader("Accept-Ranges", "bytes");
+    }
+
+    private void setMimeType(HttpServletResponse response, File f) {
+        String path = f.getAbsolutePath();
+        int dot = path.lastIndexOf('.');
+        if (path.toLowerCase().endsWith(FILE_EXTENSION_MP3)) {
+            response.setContentType(MIMETYPE_AUDIO_MPEG);
+        } else {
+            throw new RuntimeException("TODO: Unknown extension");
+        }
+    }
+
+    private File getFile(Item i) {
+        File result = null;
+        try {
+            result = new File(new URI(UrlUtil.encodePath(i.getUrl())));
+        } catch (URISyntaxException ex) {
+            logger.log(Level.SEVERE, null, ex);
+            // TODO: Throw exception
+        }
+        logger.log(Level.FINE, "Item: {0}", i);
+        return result;
+    }
+
+    private void handleFile(File file, HttpServletResponse response, HttpServletRequest request, Item item) throws IOException {
         if (file.isFile()) {
 
             setMimeType(response, file);
@@ -170,72 +249,6 @@ public class DownloadServlet extends HttpServlet {
             response.setContentLength(bytes.length);
             sendFile(response.getOutputStream(), bais);
         }
-    }
-
-    private void sendFile(OutputStream os, File f)
-            throws IOException {
-        try (InputStream fis = new FileInputStream(f)) {
-            sendFile(os, fis);
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "TODO: sendFile", ex);
-        }
-    }
-
-    private void sendFile(OutputStream os, InputStream is) {
-        long count = 0L;
-        try {
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = is.read(buffer)) != -1) {
-                count += bytesRead;
-                os.write(buffer, 0, bytesRead);
-            }
-            os.flush();
-        } catch (EofException ex) {
-            logger.log(Level.FINER, "Connection reset by peer: {0}", ThreadContext.getContext().getHost());
-        } catch (IOException ex) {
-            logger.log(Level.FINER, "I/O Exception occured: {0}", ex);
-        }
-        logger.log(Level.FINER, "Sent {0} bytes", count);
-    }
-
-    private void addHeaders(HttpServletResponse response, File file) {
-        long length = file.length();
-        response.setContentLength((int) length);
-        setMimeType(response, file);
-        addHeaders(response);
-    }
-
-    private void addHeaders(HttpServletResponse response) {
-        // TODO: set headers on GET reponse also
-        // TODO: assemble DLNA String -> DlnaUtil
-        response.setHeader("Connection", "keep-alive");
-        response.setHeader("Cache-Control", "public");
-        response.setHeader(DlnaUtil.DLNA_TRANSFER_MODE_KEY, DlnaUtil.DLNA_TRANSFER_MODE_STREAMING);
-        response.setHeader(DlnaUtil.DLNA_CONTENT_FEATURES_KEY, DlnaUtil.contentFeatures(DlnaUtil.DLNA_FLAGS_LIMOP_BYTES));
-        response.setHeader("Accept-Ranges", "bytes");
-    }
-
-    private void setMimeType(HttpServletResponse response, File f) {
-        String path = f.getAbsolutePath();
-        int dot = path.lastIndexOf('.');
-        if (path.toLowerCase().endsWith(FILE_EXTENSION_MP3)) {
-            response.setContentType(MIMETYPE_AUDIO_MPEG);
-        } else {
-            throw new RuntimeException("TODO: Unknown extension");
-        }
-    }
-
-    private File getFile(Item i) {
-        File result = null;
-        try {
-            result = new File(new URI(UrlUtil.encodePath(i.getUrl())));
-        } catch (URISyntaxException ex) {
-            logger.log(Level.SEVERE, null, ex);
-            // TODO: Throw exception
-        }
-        logger.log(Level.FINE, "Item: {0}", i);
-        return result;
     }
 
     /**

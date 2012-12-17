@@ -9,14 +9,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.UserPrincipal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jaudiotagger.tag.datatype.Artwork;
 import org.jcoderz.m3server.library.FileItem;
 import org.jcoderz.m3server.library.FolderItem;
+import org.jcoderz.m3server.library.Icon;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.LibraryRuntimeException;
 import org.jcoderz.m3server.util.Logging;
@@ -143,6 +144,8 @@ public class FileSystemFolderItem extends FolderItem {
         fi.setAlbum(mb.getAlbum());
         fi.setArtist(mb.getArtist());
         fi.setTitle(mb.getTitle());
+        Artwork aw = mb.getCoverImage();
+        fi.setIcon(new Icon(aw.getMimeType(), aw.getBinaryData()));
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, "Adding audio file child ''{0}'' to folder: {1}", new Object[]{fi, this});
         }

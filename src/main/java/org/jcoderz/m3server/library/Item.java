@@ -89,5 +89,19 @@ public interface Item extends Comparable<Item> {
      */
     void setName(String name);
 
+    /**
+     * Returns the icon of the item.
+     *
+     * @return the icon of the item
+     */
+    Icon getIcon();
+
+    /**
+     * Sets the icon of the item.
+     *
+     * @param icon the icon of the item
+     */
+    void setIcon(Icon icon);
+
     void accept(Visitor visitor);
 }
