@@ -12,7 +12,6 @@ import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
 import org.jcoderz.m3server.library.filesystem.AudioFileItem;
-import org.jcoderz.m3server.playlist.PlaylistManager;
 import org.jcoderz.m3server.renderer.Info.State;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.DidlUtil;
