@@ -46,9 +46,9 @@ import org.teleal.cling.support.model.DIDLObject;
 import org.teleal.cling.support.model.Protocol;
 import org.teleal.cling.support.model.ProtocolInfo;
 import org.teleal.cling.support.model.ProtocolInfos;
+import org.teleal.cling.support.model.Res;
 import org.teleal.cling.support.model.SortCriterion;
 import org.teleal.cling.support.model.container.Container;
-import org.xml.sax.Attributes;
 
 /**
  * The UPnP MediaServer implementation.
@@ -151,6 +151,15 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
             logger.log(Level.FINER, "Creating DIDL container id ''{0}'' (parent: {1}): {2}", new Object[]{nextId, parentId, item});
         }
         Container c = DidlUtil.createContainer(nextId, parentId, item);
+
+        String url = config.getString(Config.HTTP_SERVLET_DOWNLOAD_BASE_URL) + UrlUtil.encodePath(item.getPath()) + "?cover=front";
+        // add album art
+        //<res protocolInfo="http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN;DLNA.ORG_OP=00;DLNA.ORG_CI=1;DLNA.ORG_FLAGS=00D00000000000000000000000000000" resolution="160x146">http://192.168.0.17:8895/resource/8/COVER_IMAGE</res>
+        Res res = new Res();
+        // TODO: create String
+        res.setProtocolInfo(new ProtocolInfo("http-get:*:image/jpeg:DLNA.ORG_PN=JPEG_TN;DLNA.ORG_OP=00;DLNA.ORG_CI=1;DLNA.ORG_FLAGS=00D00000000000000000000000000000"));
+        res.setValue(url);
+        c.addResource(res);
 
         UpnpContainer uc = new UpnpContainer(nextId, c, item);
         idUpnpObjectMap.put(nextId, uc);

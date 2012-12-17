@@ -39,9 +39,6 @@ public class DidlUtil {
         // sampleFrequency="44100"
         //result.setDate("TODO");
         //result.setDescription("TODO");
-        // cover image
-        //result.addResource(res);
-        // icon ??
         result.setOriginalTrackNumber(2);
         result.setGenres(new String[]{audioFileItem.getGenre()});
         result.setRestricted(false);

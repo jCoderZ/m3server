@@ -30,18 +30,21 @@ public class UrlUtil {
     public static String encodePath(String url) {
         StringBuilder strbuf = new StringBuilder();
         String sub = url;
-        if (sub.startsWith("file://")) {
-            sub = sub.substring("file://".length());
-        }
-        StringTokenizer strtok = new StringTokenizer(sub, "/");
-        while (strtok.hasMoreTokens()) {
-            String tok = strtok.nextToken();
-            strbuf.append('/');
-            strbuf.append(encodeURLComponent(tok));
-        }
-        String result = strbuf.toString();
-        if (!url.equals(sub)) {
-            result = "file://" + result;
+        String result = null;
+        if (sub != null) {
+            if (sub.startsWith("file://")) {
+                sub = sub.substring("file://".length());
+            }
+            StringTokenizer strtok = new StringTokenizer(sub, "/");
+            while (strtok.hasMoreTokens()) {
+                String tok = strtok.nextToken();
+                strbuf.append('/');
+                strbuf.append(encodeURLComponent(tok));
+            }
+            result = strbuf.toString();
+            if (!url.equals(sub)) {
+                result = "file://" + result;
+            }
         }
         return result;
     }
