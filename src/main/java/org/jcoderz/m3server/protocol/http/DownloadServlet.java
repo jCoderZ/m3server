@@ -55,23 +55,36 @@ public class DownloadServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        File file = getFile(request);
-        logger.log(Level.FINE, "File: {0}", file);
-        if (!file.exists()) {
-            logger.log(Level.SEVERE, "File not found: {0}", file);
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
+        String pathInfo = request.getPathInfo();
+        try {
+            Item i = Library.browse(pathInfo);
+            File file = getFile(i);
+            logger.log(Level.FINE, "File: {0}", file);
+            if (!file.exists()) {
+                logger.log(Level.SEVERE, "File not found: {0}", file);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            addHeaders(response, file);
+            response.setStatus(HttpStatus.OK_200);
+        } catch (LibraryException ex) {
+            // TODO: Throw exception
         }
-        addHeaders(response, file);
-        response.setStatus(HttpStatus.OK_200);
     }
 
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
+        String pathInfo = request.getPathInfo();
+        Item item = null;
+        try {
+            item = Library.browse(pathInfo);
+        } catch (LibraryException ex) {
+            // TODO: Throw exception
+        }
 
-        File file = getFile(request);
+        File file = getFile(item);
         logger.log(Level.FINE, "File: {0}", file);
         if (!file.exists()) {
             logger.log(Level.SEVERE, "File not found: {0}", file);
@@ -100,6 +113,7 @@ public class DownloadServlet extends HttpServlet {
                         response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                         // full file requested
                         sendFile(response.getOutputStream(), file);
+                        PlaylistManager.getPlaylist(ThreadContext.getContext().getHost()).add(item);
                     } else {
                         logger.log(Level.FINE, "Sending partial file as requested: {0}", re);
                         response.setHeader("Content-Range", "bytes " + re.getFirstPos() + "-" + re.getLastPos() + "/" + length);
@@ -112,6 +126,10 @@ public class DownloadServlet extends HttpServlet {
                             logger.log(Level.FINE, "buf: {0}", buf.toString());
                             ByteBufferBackedInputStream bais = new ByteBufferBackedInputStream(buf);
                             sendFile(response.getOutputStream(), bais);
+                            // add the file only when this is the first range request
+                            if (re.getFirstPos() == 0) {
+                                PlaylistManager.getPlaylist(ThreadContext.getContext().getHost()).add(item);
+                            }
                         }
                     }
                 }
@@ -119,6 +137,7 @@ public class DownloadServlet extends HttpServlet {
                 response.setStatus(HttpStatus.OK_200);
                 response.setContentLength((int) length);
                 sendFile(response.getOutputStream(), file);
+                PlaylistManager.getPlaylist(ThreadContext.getContext().getHost()).add(item);
             }
         } else if (file.isDirectory()) {
             response.setHeader("Connection", "keep-alive");
@@ -207,15 +226,11 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    private File getFile(HttpServletRequest request) {
-        String pathInfo = request.getPathInfo();
-        Item i = null;
+    private File getFile(Item i) {
         File result = null;
         try {
-            i = Library.browse(pathInfo);
             result = new File(new URI(UrlUtil.encodePath(i.getUrl())));
-            PlaylistManager.getPlaylist(ThreadContext.getContext().getHost()).add(i);
-        } catch (URISyntaxException | LibraryException ex) {
+        } catch (URISyntaxException ex) {
             logger.log(Level.SEVERE, null, ex);
             // TODO: Throw exception
         }
