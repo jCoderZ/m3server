@@ -98,7 +98,6 @@ public class FileSystemFolderItem extends FolderItem {
 
     @Override
     public List<Item> getChildren() {
-        children = new ArrayList<>();
         URI uri = null;
         try {
             uri = new URI(UrlUtil.encodePath(getUrl()));
@@ -109,48 +108,9 @@ public class FileSystemFolderItem extends FolderItem {
         if (key.exists()) {
             String p = getSubtreePath();
             if (key.isDirectory()) {
-                String[] files = key.list(MP3_FILTER);
-                for (String file : files) {
-                    File f = new File(key, file);
-                    if (f.isDirectory()) {
-                        FileSystemFolderItem fi = new FileSystemFolderItem(this, file);
-                        if (logger.isLoggable(Level.FINEST)) {
-                            logger.log(Level.FINEST, "Adding folder child ''{0}'' to folder: {1}", new Object[]{fi, this});
-                        }
-                        addChild(fi);
-                    } else {
-                        MusicBrainzMetadata mb = new MusicBrainzMetadata(f, true);
-                        AudioFileItem fi = new AudioFileItem(this, file);
-                        fi.setFile(f);
-                        fi.setBitrate(mb.getBitrate() * 1024L / 8);
-                        fi.setSize(f.length());
-                        fi.setGenre(mb.getGenre());
-                        fi.setName(file);
-                        try {
-                            Path path = Paths.get(f.toURI());
-                            UserPrincipal owner = Files.getOwner(path);
-                            fi.setCreator(owner.getName());
-                        } catch (IOException ex) {
-                            Logger.getLogger(FileSystemFolderItem.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        fi.setLengthString(mb.getLengthString());
-                        fi.setLengthInMilliseconds(mb.getLengthInMilliSeconds());
-                        fi.setAlbum(mb.getAlbum());
-                        fi.setArtist(mb.getArtist());
-                        fi.setTitle(mb.getTitle());
-                        if (logger.isLoggable(Level.FINEST)) {
-                            logger.log(Level.FINEST, "Adding audio file child ''{0}'' to folder: {1}", new Object[]{fi, this});
-                        }
-                        addChild(fi);
-                    }
-                }
+                handleDirectory(key);
             } else if (key.isFile()) {
-                FileItem fi = new FileItem(this, p);
-                fi.setSize(key.length());
-                if (logger.isLoggable(Level.FINEST)) {
-                    logger.log(Level.FINEST, "Adding non-audio file child ''{0}'' to folder: {1}", new Object[]{fi, this});
-                }
-                addChild(fi);
+                handleFile(p, key);
             } else {
                 final String msg = "Don't know what to do, path '" + p + "' is neither a folder nor a file: " + key;
                 logger.severe(msg);
@@ -161,5 +121,56 @@ public class FileSystemFolderItem extends FolderItem {
         }
         Collections.sort(children);
         return children;
+    }
+
+    private void addAudioFileItemChild(File file, String name) {
+        MusicBrainzMetadata mb = new MusicBrainzMetadata(file, true);
+        AudioFileItem fi = new AudioFileItem(this, name);
+        fi.setFile(file);
+        fi.setBitrate(mb.getBitrate() * 1024L / 8);
+        fi.setSize(file.length());
+        fi.setGenre(mb.getGenre());
+        fi.setName(name);
+        try {
+            Path path = Paths.get(file.toURI());
+            UserPrincipal owner = Files.getOwner(path);
+            fi.setCreator(owner.getName());
+        } catch (IOException ex) {
+            Logger.getLogger(FileSystemFolderItem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        fi.setLengthString(mb.getLengthString());
+        fi.setLengthInMilliseconds(mb.getLengthInMilliSeconds());
+        fi.setAlbum(mb.getAlbum());
+        fi.setArtist(mb.getArtist());
+        fi.setTitle(mb.getTitle());
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "Adding audio file child ''{0}'' to folder: {1}", new Object[]{fi, this});
+        }
+        addChild(fi);
+    }
+
+    private void handleDirectory(File dir) {
+        String[] files = dir.list(MP3_FILTER);
+        for (String file : files) {
+            File f = new File(dir, file);
+            if (f.isDirectory()) {
+                FileSystemFolderItem fi = new FileSystemFolderItem(this, file);
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.log(Level.FINEST, "Adding folder child ''{0}'' to folder: {1}", new Object[]{fi, this});
+                }
+                addChild(fi);
+            } else {
+                addAudioFileItemChild(f, file);
+            }
+        }
+    }
+
+    private void handleFile(String name, File key) {
+        FileItem fi = new FileItem(this, name);
+        fi.setSize(key.length());
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "Adding non-audio file child ''{0}'' to folder: {1}", new Object[]{fi, this});
+        }
+        addChild(fi);
     }
 }

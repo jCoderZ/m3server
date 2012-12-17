@@ -100,6 +100,8 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
         BrowseResult result = null;
         long id = Long.valueOf(objectID).longValue();
         int maxCount = 0;
+        long count = 0L;
+        String resultXml = null;
         try {
             DIDLContent didlContent = new DIDLContent();
             UpnpContainer upnpContainer = idUpnpObjectMap.get(id);
@@ -118,17 +120,19 @@ public class UpnpMediaServer extends AbstractContentDirectoryService {
                 // TODO: throw unknown id
             }
 
-            String resultXml = new DIDLParser().generate(didlContent);
-            long count = didlContent.getContainers().size() + didlContent.getItems().size();
+            resultXml = new DIDLParser().generate(didlContent);
+            count = didlContent.getContainers().size() + didlContent.getItems().size();
             result = new BrowseResult(resultXml, count, maxCount, UPDATE_ID);
 
-            logger.exiting(UpnpMediaServer.class
-                    .getSimpleName(), "browse", "DIDL response xml (" + count + "): " + resultXml);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "An exception occured during browsing of folder " + id, ex);
             throw new ContentDirectoryException(
                     ContentDirectoryErrorCode.CANNOT_PROCESS,
                     ex.toString());
+        } finally {
+            logger.exiting(UpnpMediaServer.class
+                    .getSimpleName(), "browse", "DIDL response xml (" + count + "): " + resultXml);
+
         }
 
         return result;
