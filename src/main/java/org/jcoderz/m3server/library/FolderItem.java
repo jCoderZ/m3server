@@ -123,8 +123,6 @@ public class FolderItem extends AbstractItem {
      * @throws LibraryException when the child cannot be found
      */
     public Item getChild(String name) throws LibraryException {
-        // TODO: temporary hack to load all children
-        children = getChildren();
         Item result = null;
         for (Item i : children) {
             if (i.getName().equals(name)) {

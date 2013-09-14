@@ -21,18 +21,6 @@ public class LibraryTest {
 
     private static final Logger logger = Logging.getLogger(LibraryTest.class);
 
-    public LibraryTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-        File cwd = new File(System.getProperty("user.dir"));
-        File src = new File(cwd, "src");
-        File test = new File(src, "test");
-        File lib = new File(test, "library");
-        Config.getConfig().setProperty("M3_LIBRARY_HOME", lib.getAbsolutePath());
-    }
-
     @Test
     public void testGetRoot() {
         Item root = Library.getRoot();
@@ -101,7 +89,7 @@ public class LibraryTest {
         assertTrue("The item is not of type FolderItem", FolderItem.class.isAssignableFrom(def.getClass()));
         FolderItem fi = (FolderItem) def;
         List<Item> c = fi.getChildren();
-        assertEquals("Number of children does not match", 4, c.size());
+        assertEquals("Number of children does not match: " + c, 4, c.size());
         for (Item i : c) {
             assertTrue("The item is not of type FileItem", FileItem.class.isAssignableFrom(i.getClass()));
         }

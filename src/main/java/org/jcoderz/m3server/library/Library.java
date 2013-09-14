@@ -173,11 +173,6 @@ public class Library {
                 }
             }
         }
-        // just call getChildren to populate the next level
-        if (FileSystemFolderItem.class.isAssignableFrom(node.getClass())) {
-            FileSystemFolderItem fi = (FileSystemFolderItem) node;
-            List<Item> ignore = fi.getChildren();
-        }
         return node;
     }
 
@@ -189,7 +184,6 @@ public class Library {
      */
     public static List<Item> search(String query) throws LibraryException {
         List<Item> result = new ArrayList<>();
-
 
         for (FolderItem fi : rootFolderItems) {
             if (Searchable.class

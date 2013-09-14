@@ -1,5 +1,11 @@
 package org.jcoderz.m3server.library.filesystem;
 
+import org.jaudiotagger.tag.datatype.Artwork;
+import org.jcoderz.m3server.library.*;
+import org.jcoderz.m3server.util.Logging;
+import org.jcoderz.m3server.util.UrlUtil;
+import org.jcoderz.m3util.intern.MusicBrainzMetadata;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -9,27 +15,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.UserPrincipal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jaudiotagger.tag.datatype.Artwork;
-import org.jcoderz.m3server.library.FileItem;
-import org.jcoderz.m3server.library.FolderItem;
-import org.jcoderz.m3server.library.Icon;
-import org.jcoderz.m3server.library.Item;
-import org.jcoderz.m3server.library.LibraryRuntimeException;
-import org.jcoderz.m3server.util.Logging;
-import org.jcoderz.m3server.util.UrlUtil;
-
-import org.jcoderz.m3util.intern.MusicBrainzMetadata;
 
 /**
  * This class represents a file-system folder.
  *
  * @author mrumpf
- *
  */
 public class FileSystemFolderItem extends FolderItem {
 
@@ -50,12 +46,13 @@ public class FileSystemFolderItem extends FolderItem {
         }
     };
     private File root = null;
+    private volatile boolean childrenRead = false;
 
     /**
      * Standard constructor.
      *
      * @param parent the parent item
-     * @param name the name of the item
+     * @param name   the name of the item
      */
     public FileSystemFolderItem(Item parent, String name) {
         super(parent, name);
@@ -64,8 +61,8 @@ public class FileSystemFolderItem extends FolderItem {
     /**
      * Constructor for sub-tree root elements.
      *
-     * @param parent the parent item
-     * @param name the name of the item
+     * @param parent     the parent item
+     * @param name       the name of the item
      * @param properties a list of initialization properties
      */
     public FileSystemFolderItem(Item parent, String name, Properties properties) {
@@ -99,6 +96,61 @@ public class FileSystemFolderItem extends FolderItem {
 
     @Override
     public List<Item> getChildren() {
+        loadChildren();
+        return children;
+    }
+
+    @Override
+    public List<String> getChildrenNames() {
+        loadChildren();
+        return childrenNames;
+    }
+
+    @Override
+    public int getChildCount() {
+        loadChildren();
+        return children.size();
+    }
+
+    @Override
+    public Item getChild(int index) throws LibraryException {
+        loadChildren();
+        if (index >= children.size()) {
+            throw new LibraryException("The child with index '" + index + "' could not be found");
+        }
+        return children.get(index);
+    }
+
+    @Override
+    public Item getChild(String name) throws LibraryException {
+        loadChildren();
+        Item result = null;
+        for (Item i : children) {
+            if (i.getName().equals(name)) {
+                result = i;
+            }
+        }
+        if (result == null) {
+            throw new LibraryException("The child '" + name + "' could not be found");
+        }
+        return result;
+    }
+
+    /**
+     * This method provides the lazy loading of the child items.
+     */
+    private void loadChildren() {
+        if (!childrenRead) {
+            synchronized (this) {
+                if (!childrenRead) {
+                    syncLoadChildren();
+                }
+            }
+        }
+    }
+
+    private void syncLoadChildren() {
+        List<Item> c = new ArrayList<>();
         URI uri = null;
         try {
             uri = new URI(UrlUtil.encodePath(getUrl()));
@@ -121,7 +173,6 @@ public class FileSystemFolderItem extends FolderItem {
             // TODO: throw exception: file not found
         }
         Collections.sort(children);
-        return children;
     }
 
     private void addAudioFileItemChild(File file, String name) {
@@ -145,7 +196,12 @@ public class FileSystemFolderItem extends FolderItem {
         fi.setArtist(mb.getArtist());
         fi.setTitle(mb.getTitle());
         Artwork aw = mb.getCoverImage();
-        fi.setIcon(new Icon(aw.getMimeType(), aw.getBinaryData()));
+        if (aw != null) {
+            fi.setIcon(new Icon(aw.getMimeType(), aw.getBinaryData()));
+        }
+        else {
+            logger.log(Level.WARNING, "Cover image is not available in file {}", file);
+        }
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, "Adding audio file child ''{0}'' to folder: {1}", new Object[]{fi, this});
         }
