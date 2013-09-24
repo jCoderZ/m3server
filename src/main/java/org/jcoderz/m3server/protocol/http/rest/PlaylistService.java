@@ -1,8 +1,10 @@
 package org.jcoderz.m3server.protocol.http.rest;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -10,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
@@ -68,8 +71,9 @@ public class PlaylistService {
     @Produces("application/json")
     public void add(@PathParam("name") String name, @PathParam("path") String path) {
         try {
-            Item item = Library.browse(path);
-            PlaylistManager.getPlaylist(name).add(item);
+            Collection<Item> items = Library.LIBRARY.browse(new org.jcoderz.m3server.library.Path(path));
+            // FIXME: add all items
+            PlaylistManager.getPlaylist(name).add(null);
         } catch (LibraryException ex) {
             logger.log(Level.SEVERE, "TODO", ex);
             // TODO: Wrap into WebApplicatuionException
@@ -87,8 +91,9 @@ public class PlaylistService {
     @Produces("application/json")
     public void remove(@PathParam("name") String name, @PathParam("path") String path) {
         try {
-            Item item = Library.browse(path);
-            PlaylistManager.getPlaylist(name).remove(item);
+            Collection<Item> items = Library.LIBRARY.browse(new org.jcoderz.m3server.library.Path(path));
+            // FIXME: Remove all items
+            PlaylistManager.getPlaylist(name).remove(null);
         } catch (LibraryException ex) {
             logger.log(Level.SEVERE, "TODO", ex);
             // TODO: Wrap into WebApplicatuionException

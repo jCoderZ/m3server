@@ -1,107 +1,27 @@
 package org.jcoderz.m3server.library;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 
-/**
- * This is the common base interface for all item types.
- *
- * @author mrumpf
- */
-public interface Item extends Comparable<Item> {
+public abstract class Item {
+	private String name;
+	// TODO: Use AOP
+	private long lastaccess;
 
-    /**
-     * Returns the parent of this item.
-     *
-     * @return the parent or null if this item is the root node
-     */
-    @JsonIgnore
-    Item getParent();
+	public Item(String name) {
+		this.name = name;
+		lastaccess = System.currentTimeMillis();
+	}
 
-    /**
-     * Returns the full path in the library tree.
-     *
-     * @return the full path in the library tree
-     */
-    String getPath();
+	public String getName() {
+		lastaccess = System.currentTimeMillis();
+		return name;
+	}
 
-    /**
-     * Returns the path to the next subtree root.
-     *
-     * @return the path to the next subtree root
-     */
-    String getSubtreePath();
+	public void setName(String name) {
+		lastaccess = System.currentTimeMillis();
+		this.name = name;
+	}
 
-    /**
-     * Returns the full URL of the item.
-     *
-     * @return the full URL of the item
-     */
-    @JsonIgnore
-    String getUrl();
+	public abstract Path getPath();
 
-    /**
-     * Returns the root file.
-     *
-     * @return the root file
-     */
-    @JsonIgnore
-    String getSubtreeRootUrl();
-
-    /**
-     * Returns whether the item is the root of a subtree.
-     *
-     * @return whether the item is the root of a subtree
-     */
-    boolean isSubtreeRoot();
-
-    /**
-     * Sets the flag to indicate that the item is the root of a subtree.
-     *
-     * @param isSubtreeRoot true when the node is a subtree root item
-     */
-    void setSubtreeRoot(boolean isSubtreeRoot);
-
-    /**
-     * Returns the item creator.
-     *
-     * @return the item creator
-     */
-    String getCreator();
-
-    /**
-     * Sets the item creator.
-     *
-     * @param creator the item creator
-     */
-    void setCreator(String creator);
-
-    /**
-     * Returns the name of the item.
-     *
-     * @return the name of the item
-     */
-    String getName();
-
-    /**
-     * Sets the name of the item.
-     *
-     * @param name the name of the item
-     */
-    void setName(String name);
-
-    /**
-     * Returns the icon of the item.
-     *
-     * @return the icon of the item
-     */
-    Icon getIcon();
-
-    /**
-     * Sets the icon of the item.
-     *
-     * @param icon the icon of the item
-     */
-    void setIcon(Icon icon);
-
-    void accept(Visitor visitor);
+	public abstract Item getParent();
 }

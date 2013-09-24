@@ -1,17 +1,29 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.jcoderz.m3server.library;
 
 /**
- * The base class for library exceptions.
- *
- * @author mrumpf
+ * The library runtime exception.
  */
-public class LibraryException extends Exception {
+@SuppressWarnings("serial")
+public class LibraryException extends RuntimeException {
+	/**
+	 * Constructor.
+	 * @param message the exception message
+	 */
+	public LibraryException(String message) {
+		super(message);
+	}
 
-    public LibraryException(String msg) {
-        super(msg);
-    }
-
-    public LibraryException(String msg, Exception ex) {
-        super(msg, ex);
-    }
+	/**
+	 * Constructor.
+	 * @param message the exception message
+	 * @param th the cause of the exception
+	 */
+	public LibraryException(String message, Throwable th) {
+		super(message, th);
+	}
 }

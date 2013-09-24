@@ -10,20 +10,22 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jetty.http.HttpStatus;
-import org.jcoderz.m3server.library.FolderItem;
-import org.jcoderz.m3server.library.Icon;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
+import org.jcoderz.m3server.library.Path;
 import org.jcoderz.m3server.library.filesystem.AudioFileItem;
+import org.jcoderz.m3server.library.filesystem.FolderItem;
 import org.jcoderz.m3server.playlist.Playlist;
 import org.jcoderz.m3server.playlist.PlaylistManager;
 import org.jcoderz.m3server.protocol.http.RangeSet.Range;
@@ -56,7 +58,7 @@ public class DownloadServlet extends HttpServlet {
 
         String pathInfo = request.getPathInfo();
         try {
-            Item i = Library.browse(pathInfo);
+            Item i = Library.LIBRARY.item(new Path(pathInfo));
             File file = getFile(i);
             logger.log(Level.FINE, "File: {0}", file);
             if (!file.exists()) {
@@ -80,7 +82,7 @@ public class DownloadServlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
         Item item;
         try {
-            item = Library.browse(pathInfo);
+            item = Library.LIBRARY.item(new Path(pathInfo));
         } catch (LibraryException ex) {
             logger.log(Level.SEVERE, "Path not found: {0}", pathInfo);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -111,7 +113,6 @@ public class DownloadServlet extends HttpServlet {
         String cover = request.getParameterMap().get("cover")[0];
         // TODO: handle front and back ?
         if (cover != null && !cover.isEmpty()) {
-            Icon icon = item.getIcon();
             byte[] data = null;
             String mimetype = MimetypeUtil.MIMETYPE_IMAGE_PNG;
             if (FolderItem.class.isAssignableFrom(item.getClass())) {
@@ -119,6 +120,8 @@ public class DownloadServlet extends HttpServlet {
             } else {
                 data = ImageUtil.FILE_ICON_DEFAULT;
             }
+            /*
+            Icon icon = item.getIcon();
             if (icon != null) {
                 if (icon.getData() != null) {
                     data = icon.getData();
@@ -127,6 +130,7 @@ public class DownloadServlet extends HttpServlet {
                     mimetype = icon.getMimetype();
                 }
             }
+            */
             addHeaders(response, data.length, mimetype);
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             IoUtil.writeFile(response.getOutputStream(), bais);
@@ -192,12 +196,13 @@ public class DownloadServlet extends HttpServlet {
         response.setContentType(MimetypeUtil.MIMETYPE_AUDIO_MPEGURL);
 
         Playlist pls = new Playlist("adhoc");
+        Path path = new Path(request.getPathInfo());
         try {
-            Item i = Library.browse(request.getPathInfo());
+            Item i = Library.LIBRARY.item(path);
             if (FolderItem.class.isAssignableFrom(i.getClass())) {
                 FolderItem fi = (FolderItem) i;
-                List<Item> children = fi.getChildren();
-                for (Item child : children) {
+                Map<String, Item> children = fi.getChildren();
+                for (Item child : children.values()) {
                     if (AudioFileItem.class.isAssignableFrom(child.getClass())) {
                         pls.add(child);
                     }
@@ -251,7 +256,9 @@ public class DownloadServlet extends HttpServlet {
     private File getFile(Item i) {
         File result = null;
         try {
-            result = new File(new URI(UrlUtil.encodePath(i.getUrl())));
+        	Path path = i.getPath();
+        	// FIXME: Not correct. How to determine the URL?
+            result = new File(new URI(UrlUtil.encodePath(path.toString())));
         } catch (URISyntaxException ex) {
             logger.log(Level.SEVERE, null, ex);
             // TODO: Throw exception

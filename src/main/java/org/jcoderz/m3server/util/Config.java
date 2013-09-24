@@ -5,7 +5,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
-import org.jcoderz.m3server.library.LibraryRuntimeException;
+import org.jcoderz.m3server.library.LibraryException;
 
 /**
  * This class wraps the Apache Commons Configuration implementation.
@@ -51,7 +51,7 @@ public class Config {
             CONFIG.addConfiguration(new SystemConfiguration());
             CONFIG.addConfiguration(new PropertiesConfiguration(M3SERVER_PROPERTIES));
         } catch (ConfigurationException ex) {
-            throw new LibraryRuntimeException("Initialization of configuration failed", ex);
+            throw new LibraryException("Initialization of configuration failed", ex);
         }
         CONFIG.addProperty(HTTP_SERVLET_DOWNLOAD_BASE_URL, CONFIG.getString(Config.HTTP_PROTOCOL_KEY) + "://"
                 + CONFIG.getString(Config.HTTP_HOSTNAME_KEY) + ":"

@@ -4,14 +4,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.jcoderz.m3server.library.FolderItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
+import org.jcoderz.m3server.library.Path;
 import org.jcoderz.m3server.library.filesystem.AudioFileItem;
+import org.jcoderz.m3server.library.filesystem.FolderItem;
 import org.jcoderz.m3server.renderer.Info.State;
 import org.jcoderz.m3server.util.Config;
 import org.jcoderz.m3server.util.DidlUtil;
@@ -86,7 +88,7 @@ public class UpnpRenderer extends AbstractRenderer {
 
         Item item = null;
         try {
-            item = Library.browse(url);
+            item = Library.LIBRARY.item(new Path(url));
 
             upnpSetAvTransportUri(service, item, url);
             upnpPlay(service);
@@ -177,8 +179,8 @@ public class UpnpRenderer extends AbstractRenderer {
             didlContent.addItem(DidlUtil.createMusicTrack(audioFileItem, url, 100, 99));
         } else if (FolderItem.class.isAssignableFrom(item.getClass())) {
             FolderItem fi = (FolderItem) item;
-            List<Item> children = fi.getChildren();
-            for (Item child : children) {
+            Map<String, Item> children = fi.getChildren();
+            for (Item child : children.values()) {
                 if (AudioFileItem.class.isAssignableFrom(child.getClass())) {
                     AudioFileItem audioFileItem = (AudioFileItem) child;
                     // TODO: remove dummy ids

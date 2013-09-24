@@ -18,10 +18,11 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import org.jcoderz.m3server.library.filesystem.AudioFileItem;
 import org.jcoderz.m3server.library.Item;
 import org.jcoderz.m3server.library.Library;
 import org.jcoderz.m3server.library.LibraryException;
+import org.jcoderz.m3server.library.Path;
+import org.jcoderz.m3server.library.filesystem.AudioFileItem;
 import org.jcoderz.m3server.util.Logging;
 import org.jcoderz.m3util.intern.util.Environment;
 
@@ -63,13 +64,13 @@ public class Lucene implements Searchable {
             ScoreDoc[] hits = td.scoreDocs;
             for (int i = 0; i < hits.length; i++) {
                 Document doc = isearcher.doc(hits[i].doc);
-                Item item = Library.browse(doc.get("path"));
-                AudioFileItem mp3 = new AudioFileItem(item.getParent(), doc.get("title"));
+                Item item = Library.LIBRARY.item(new Path(doc.get("path")));
+                AudioFileItem mp3 = new AudioFileItem(doc.get("title"), item.getParent(), null);
                 mp3.setAlbum(doc.get("album-title"));
                 mp3.setArtist(doc.get("artist"));
                 mp3.setTitle(doc.get("title"));
                 String size = doc.get("size");
-                mp3.setSize(size != null ? Long.valueOf(size) : 0L);
+                // FIXME: mp3.setSize(size != null ? Long.valueOf(size) : 0L);
                 l.add(mp3);
             }
         } catch (LibraryException | ParseException | IOException | NumberFormatException ex) {

@@ -1,269 +1,190 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.jcoderz.m3server.library;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.configuration.Configuration;
-import org.jaudiotagger.tag.datatype.Artwork;
-import org.jcoderz.m3server.library.filesystem.FileSystemFolderItem;
-import org.jcoderz.m3server.library.search.Searchable;
-import org.jcoderz.m3server.util.Config;
-import org.jcoderz.m3server.util.ImageUtil;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
+import org.jcoderz.m3server.library.config.Parameter;
+import org.jcoderz.m3server.library.config.Provider;
+import org.jcoderz.m3server.library.config.Providers;
 import org.jcoderz.m3server.util.Logging;
-import org.jcoderz.m3util.intern.MusicBrainzMetadata;
-import org.jcoderz.m3util.intern.util.Environment;
 
 /**
- * The library class implements the media hierarchy in a protocol-neutral way.
- * Thus the media library can be used from the web client and from the UPnP
- * Media Server.
- *
- * @author mrumpf
+ * This is the main facade to the media library.
  */
 public class Library {
 
-    private static final Logger logger = Logging.getLogger(Library.class);
-    private static final FolderItem TREE_ROOT;
-    private static final List<FolderItem> rootFolderItems = new ArrayList<>();
+	private static final Logger logger = Logging.getLogger(Library.class);
 
-    static {
-        // create the root node
-        TREE_ROOT = new FolderItem(null, "Root");
-        try {
-            // Create the sub-folders
-            List<Object> l = Config.getConfig().getList(Config.LIBRARY_ROOTS);
-            logger.log(Level.CONFIG, "Virtual folders {0}", l);
-            for (Object o : l) {
-                String path = (String) o;
-                logger.log(Level.CONFIG, "Adding virtual folder {0}", path);
-                String clazz = Config.getConfig().getString(Config.LIBRARY_ROOTS + path.replace('/', '.') + ".clazz", FolderItem.class.getName());
-                Properties props = Config.getConfig().getProperties(Config.LIBRARY_ROOTS + path.replace('/', '.') + ".properties");
-                logger.log(Level.CONFIG, "Properties for folder {0}: {1} ({2})", new Object[]{path, props, clazz});
-                FolderItem i = addFolder(path, clazz, props);
-                rootFolderItems.add((FolderItem) i);
-            }
-        } catch (LibraryException ex) {
-            // TODO: Move init away from static initializer
-            final String msg = "An exception occured while configuring the top-level folder structure";
-            logger.log(Level.SEVERE, msg, ex);
-            throw new LibraryRuntimeException(msg, ex);
-        }
-    }
+	public enum Category {
+		AUDIO, VIDEO, PHOTOS;
+	}
 
-    /**
-     * Initializes the Library.
-     *
-     * @param config the configuration instance
-     */
-    public static void init(Configuration config) {
-        logger.info("Library initializing...");
-    }
+	private Map<Category, Map<String, IProvider>> categoryMap = new HashMap<>();
 
-    private Library() {
-        // do not allow instances
-    }
+	/**
+	 * The library singleton.
+	 */
+	public static final Library LIBRARY = new Library();
 
-    /**
-     * Returns the library root item.
-     *
-     * @return the library root item
-     */
-    public static Item getRoot() {
-        return TREE_ROOT;
-    }
+	/**
+	 * Returns an unmodifiable map of providers for the specified category.
+	 * 
+	 * @return an unmodifiable map of providers for the specified category.
+	 */
+	public Map<String, IProvider> getProviders(Category category) {
+		return Collections.unmodifiableMap(categoryMap.get(category));
+	}
 
-    /**
-     * Adds a path to the library.
-     *
-     * @param path the path to add
-     * @param clazz the class to instantiate
-     * @throws LibraryException when the path cannot be added
-     */
-    public static FolderItem addFolder(String path, String clazz) throws LibraryException {
-        return addFolder(path, clazz, null);
-    }
+	/**
+	 * Browse the library at the given path.
+	 * 
+	 * @param path
+	 *            the path to browse
+	 * @return a collection of items found at the path
+	 */
+	public Collection<Item> browse(Path path) {
+		// the first part of the path is the category name
+		String categoryName = path.index(0);
+		// the second part of the path is the provider name
+		String providerName = path.index(1);
+		Map<String, IProvider> providerMap = categoryMap.get(Category
+				.valueOf(categoryName));
+		IProvider provider = providerMap.get(providerName);
+		Path rest = path.subpath(2);
+		return provider.browse(rest);
+	}
 
-    /**
-     * Adds a path to the library.
-     *
-     * @param path the path to add
-     * @param clazz the class to instantiate
-     * @param properties initialization properties
-     * @throws LibraryException when the path cannot be added
-     */
-    public static FolderItem addFolder(String path, String clazz, Properties properties) throws LibraryException {
-        FolderItem newItem = null;
-        // TODO: Handle / at the end
-        int idx = path.lastIndexOf('/');
-        String newElement = path.substring(idx + 1);
-        Item parentItem = getParent(path);
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "Adding folder ''{0}'' (clazz={1}, props={2}, parent={3})", new Object[]{path, clazz, properties, parentItem});
-        }
+	public Item item(Path path) {
+		// the first part of the path is the category name
+		String categoryName = path.index(0);
+		// the second part of the path is the provider name
+		String providerName = path.index(1);
+		Map<String, IProvider> providerMap = categoryMap.get(Category
+				.valueOf(categoryName));
+		IProvider provider = providerMap.get(providerName);
+		Path rest = path.subpath(2);
+		return provider.item(rest);
+	}
 
-        if (FolderItem.class
-                .isAssignableFrom(parentItem.getClass())) {
-            FolderItem fi = (FolderItem) parentItem;
-            try {
-                Class clz = Thread.currentThread().getContextClassLoader().loadClass(clazz);
-                if (properties != null) {
-                    Constructor c = clz.getConstructor(new Class[]{Item.class, String.class, Properties.class});
-                    newItem = (FolderItem) c.newInstance(new Object[]{parentItem, newElement, properties});
-                } else {
-                    Constructor c = clz.getConstructor(new Class[]{Item.class, String.class});
-                    newItem = (FolderItem) c.newInstance(new Object[]{parentItem, newElement});
-                }
-                fi.addChild(newItem);
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                logger.log(Level.SEVERE, "TODO", ex);
-            }
-        } else {
-            final String msg = "Cannot add child to item type " + parentItem.getClass() + ". Must be of type FolderItem!";
-            logger.severe(msg);
-            throw new LibraryRuntimeException(msg);
-        }
-        return newItem;
-    }
+	public void addProvider(Category category, String name, IProvider provider) {
+		Map<String, IProvider> providerMap = LIBRARY.categoryMap.get(category);
+		if (providerMap != null) {
+			if (name != null && provider != null) {
+				providerMap.put(name, provider);
+			} else {
+				throw new IllegalArgumentException(
+						"Provider name must not be null");
+			}
+		} else {
+			throw new IllegalArgumentException("Unknown category " + category);
+		}
+	}
 
-    /**
-     * Returns the parent item for the specified path.
-     *
-     * @param path the path to get the parent item for
-     * @return the parent item for the specified path
-     * @throws LibraryException when the parent item could not be found
-     */
-    public static Item getParent(String path) throws LibraryException {
-        String p = path;
-        if (path.endsWith("/") && path.length() >= 2) {
-            p = path.substring(0, path.length() - 2);
-        }
-        Item result = TREE_ROOT;
-        // TODO: Handle / at the end
-        int idx = p.lastIndexOf('/');
-        String oldPath = (idx >= 1 ? p.substring(0, idx) : "");
-        if (!oldPath.isEmpty()) {
-            result = browse(oldPath);
-        }
-        return result;
-    }
+	public void addCategory(Category category) {
+		categoryMap.put(category, new HashMap<String, IProvider>());
+	}
 
-    /**
-     * Returns the item that matches the path.
-     *
-     * @param path the path to look for
-     * @return the item that matches the path
-     */
-    public static Item browse(String path) throws LibraryException {
-        String[] token = path.split("/");
-        Item node = TREE_ROOT;
-        for (String tok : token) {
-            if (!tok.isEmpty()) {
-                if (FolderItem.class.isAssignableFrom(node.getClass())) {
-                    FolderItem fi = (FolderItem) node;
-                    logger.log(Level.FINE, "Browsing folder {0}", fi);
-                    node = fi.getChild(tok);
-                } else {
-                    // TODO: ...
-                    logger.log(Level.FINE, "Browsing {0}", node);
-                }
-            }
-        }
-        return node;
-    }
+	public static void init() {
+		// add the root categories
+		for (Category category : Category.values()) {
+			LIBRARY.addCategory(category);
+		}
 
-    /**
-     * Returns the item that matches the path.
-     *
-     * @param query the query string
-     * @return the item that matches the path
-     */
-    public static List<Item> search(String query) throws LibraryException {
-        List<Item> result = new ArrayList<>();
+		try {
+			JAXBContext context = JAXBContext.newInstance(Providers.class);
+			Unmarshaller um = context.createUnmarshaller();
 
-        for (FolderItem fi : rootFolderItems) {
-            if (Searchable.class
-                    .isAssignableFrom(fi.getClass())) {
-                Searchable s = (Searchable) fi;
+			Providers providers = (Providers) um.unmarshal(Providers.class
+					.getResourceAsStream("library.xml"));
+			List<Provider> providerList = providers.getProviders();
+			for (Provider p : providerList) {
+				Category category = p.getCategory();
+				Map<String, IProvider> providerMap = LIBRARY.categoryMap
+						.get(category);
+				if (providerMap != null) {
+					Class<?> clazz = p.getClazz();
+					IProvider provider = (IProvider) clazz.newInstance();
+					String name = p.getName();
+					Method setNameMethod = clazz.getMethod("setName");
+					try {
+						setNameMethod.invoke(provider, name);
+					} catch (Exception e) {
+						logger.log(Level.SEVERE, "Error invoking method "
+								+ setNameMethod, e);
+						break;
+					}
 
-                logger.log(
-                        Level.FINE, "Searching ''{0}'' in {1}", new Object[]{query, fi});
-                List<Item> items = s.search(query);
+					List<Parameter> params = p.getParameters();
+					boolean initError = false;
+					for (Parameter param : params) {
+						Method[] methods = clazz.getMethods();
+						for (Method m : methods) {
+							if (m.getName()
+									.toLowerCase()
+									.equals("set"
+											+ param.getKey().toLowerCase())) {
+								try {
+									// TODO
+									String val = substitutePlaceholder(param
+											.getValue());
+									if (val != null) {
+										m.invoke(provider, val);
+									}
+								} catch (Exception e) {
+									logger.log(Level.SEVERE,
+											"Error invoking method " + m, e);
+									initError = true;
+									break;
+								}
+							}
+						}
+					}
+					if (!initError) {
+						LIBRARY.addProvider(category, name, provider);
+					}
+				} else {
+					logger.warning("Provider has unknown category: " + p);
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-                if (!items.isEmpty()) {
-                    result.addAll(items);
-                }
-            }
-        }
-        return result;
-    }
+		System.out.println(LIBRARY.categoryMap);
 
-    /**
-     * Helper method that traverses the tree and applies the visitor to each
-     * node.
-     *
-     * @param node the root element of the tree
-     */
-    public static void visitTree(Item node, Visitor visitor) {
-        node.accept(visitor);
+	}
 
-        if (FolderItem.class
-                .isAssignableFrom(node.getClass())) {
-            FolderItem fi = (FolderItem) node;
-            List<Item> c = fi.getChildren();
-            for (Item i : c) {
-                visitTree(i, visitor);
-            }
-        }
-    }
-
-    /**
-     * TODO: Move this to the DownloadServlet...
-     */
-    public Artwork coverImage(String file) {
-        File root = Environment.getAudioFolder();
-        if (file == null || file.isEmpty()) {
-            // TODO throw Exception
-        }
-
-        Artwork result = null;
-        File f = new File(root, file);
-        if (!f.exists()) {
-            // TODO throw Exception
-            throw new RuntimeException("File " + file + " does not exist!");
-        }
-        if (f.isDirectory()) {
-            String[] files = f.list();
-            for (String ff : files) {
-                File folderFile = new File(f, ff);
-                if (folderFile.isFile()) {
-                    MusicBrainzMetadata mb = new MusicBrainzMetadata(folderFile);
-                    result = mb.getCoverImage();
-                }
-            }
-            if (result == null) {
-                result = new Artwork();
-                result.setBinaryData(ImageUtil.FOLDER_ICON_DEFAULT);
-                result.setMimeType("image/png");
-            }
-        } else if (f.isFile()) {
-            MusicBrainzMetadata mb = new MusicBrainzMetadata(f);
-            result = mb.getCoverImage();
-            // when no image has been found inside the file
-            if (result == null || result.getBinaryData() == null) {
-                result = new Artwork();
-                result.setBinaryData(ImageUtil.FILE_ICON_DEFAULT);
-                result.setMimeType("image/png");
-            }
-        } else {
-            // TODO throw Exception
-            throw new RuntimeException("Unknown file type " + file);
-        }
-
-        return result;
-    }
+	private static String substitutePlaceholder(String value) {
+		String val = null;
+		String pattern = "\\$\\{(.*)\\}.*";
+		Pattern r = Pattern.compile(pattern);
+		Matcher m = r.matcher(value);
+		if (m.find()) {
+			String varName = m.group(1);
+			String varValue = System.getProperty(varName);
+			if (varValue != null) {
+				val = value.replaceAll("\\$\\{" + varName + "\\}", varValue);
+			} else {
+				logger.warning("Could not find system property " + varName);
+			}
+		}
+		return val;
+	}
 }
